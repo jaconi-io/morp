@@ -40,7 +40,7 @@ public class TenantExtractors implements Function<ServerWebExchange, String> {
                 .map(extractor -> extractor.apply(exchange))
                 .filter(Objects::nonNull)
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("no tenant found"));
+                .orElse(null);
     }
 
     private Function<ServerWebExchange, String> header(Map<String, String> config) {
