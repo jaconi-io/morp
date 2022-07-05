@@ -79,7 +79,11 @@ jaconi:
           okta:
             issuer-uri: https://dev-3715202.okta.com
 
-    tenant-credentials:
+    tenant:
       mybar:
-        client-id: foo
-        client-secret: bar
+        registration:
+          client-id: foo
+          client-secret: bar
+      myfoo:
+        claim-constraints:
+          email_verified: "true"
