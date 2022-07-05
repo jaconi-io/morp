@@ -47,5 +47,14 @@
         </li>
     </ul>
 </div>
+<div>&nbsp;</div>
+<div>
+    <span style="font-weight:bold">Authorities:</span>
+    <ul>
+        <li th:each="authority : ${authorities}">
+            <span style="font-weight:bold" th:text="${authority.authority}"></span>
+        </li>
+    </ul>
+</div>
 </body>
 </html>
