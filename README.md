@@ -2,3 +2,44 @@
 
 MORP is a multi-tenant OpenID Connect reverse proxy. With MORP you can protect web services that do not support OpenID
 Connect using multiple identity providers (for example, Google, GitHub, Okta, and Keycloak).
+
+# Deployment
+
+TODO
+
+# Development
+
+The project comes with a `docker-compose` setup that runs Keycloak with a couple of test realms for an interactive 
+developer experience. This setup is also used for running automated integration test.
+Bring up the setup either via CLI or via `gradle`.
+
+```shell
+# via CLI
+docker-compose up -d 
+
+# via gradle
+./gradlew composeUp
+```
+
+```shell
+open http://localhost:9000/auth
+```
+
+To shutdown the `docker-compose` backend run the following:
+
+```shell
+# via CLI
+docker-compose down
+
+# via gradle
+./gradlew composeDown
+```
+
+
+* Describe `application.properties` required to run proxy locally
+
+
+# TODO
+
+* Consider Spring profiles for a better `local` developer experience
+* Documentation of how to set gateway request and connection timeouts (per route)
