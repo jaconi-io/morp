@@ -1,0 +1,85 @@
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  metrics:
+    distribution:
+      percentiles-histogram:
+        spring.cloud.gateway.requests: true
+    tags:
+      application: ${spring.application.name}
+    web:
+      client:
+        request:
+          autotime:
+            percentiles-histogram: true
+      server:
+        request:
+          autotime:
+            percentiles-histogram: true
+  server:
+    port: 8081
+
+spring:
+  application:
+    name: morp
+  cloud:
+    gateway:
+      routes:
+        - id: httpbin
+          uri: https://httpbin.org
+          predicates:
+            - Path=/**
+  thymeleaf:
+    cache: false
+  main:
+    banner-mode: off
+  session:
+    # To enable Redis set 'store-type' to 'redis'
+    # Local redis can be started like this: `docker run -p 6379:6379 redis`
+    store-type: none
+
+tenant-extractor:
+  extractors:
+    - host-pattern:
+        pattern: ([a-z]+)-(dev|stg).example.com
+        capture-group: 1
+    - host-pattern:
+        pattern: ([a-z]+).localtest.me
+        capture-group: 1
+    - host-mapping:
+        special.example.com: foobar
+        another-special.example.com: foobaz
+    - path-pattern:
+        pattern: /([a-z]+)/tenant/([a-z]+)
+        capture-group: 2
+    - header:
+        name: X-Tenant-ID
+
+idp:
+  from-tenant:
+    pattern: .*
+    capture-group: 0
+    mapping:
+      myfoo: google
+      mybar: google
+      mybaz: okta
+
+jaconi:
+  oidc-proxy:
+    oauth2:
+      client:
+        registration:
+          google:
+          okta:
+            client-name: Okta-Dev
+            scope: openid,profile,email
+        provider:
+          okta:
+            issuer-uri: https://dev-3715202.okta.com
+
+    tenant-credentials:
+      mybar:
+        client-id: foo
+        client-secret: bar
