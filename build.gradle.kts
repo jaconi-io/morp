@@ -2,7 +2,7 @@ plugins {
     java
     id("org.springframework.boot") version "2.7.1"
     id("org.springframework.experimental.aot") version "0.12.0"
-    id("com.avast.gradle.docker-compose") version "0.14.9"
+    id("com.avast.gradle.docker-compose") version "0.16.8"
 }
 
 apply(plugin = "io.spring.dependency-management")
@@ -73,5 +73,6 @@ tasks {
         }
 
         dockerCompose.isRequiredBy(this)
+        dockerCompose.exposeAsSystemProperties(this)
     }
 }

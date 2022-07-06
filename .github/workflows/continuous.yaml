@@ -1,0 +1,39 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Checkout repository
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@v1
+        env:
+          JACONI_OIDCPROXY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENTID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          JACONI_OIDCPROXY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENTSECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          JACONI_OIDCPROXY_OAUTH2_CLIENT_REGISTRATION_OKTA_CLIENTID: ${{ secrets.OKTA_CLIENT_ID }}
+          JACONI_OIDCPROXY_OAUTH2_CLIENT_REGISTRATION_OKTA_CLIENTSECRET: ${{ secrets.OKTA_CLIENT_SECRET }}
+        with:
+          arguments: clean test
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: "build/test-results/**/*.xml"
