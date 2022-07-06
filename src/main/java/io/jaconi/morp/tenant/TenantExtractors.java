@@ -1,7 +1,7 @@
 package io.jaconi.morp.tenant;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.server.ServerWebExchange;
 
@@ -12,12 +12,11 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-@ConstructorBinding
-@ConfigurationProperties(prefix = "tenant-extractor")
+@Component
 public class TenantExtractors implements Function<ServerWebExchange, String> {
     private final List<Function<ServerWebExchange, String>> tenantExtractors;
 
-    public TenantExtractors(List<Map<String, Map<String, String>>> extractors) {
+    public TenantExtractors(@Value("${tenant-extractor.extractors}") List<Map<String, Map<String, String>>> extractors) {
         this.tenantExtractors = extractors.stream()
                 .map(config -> {
                     Assert.isTrue(config.size() == 1, "expected exactly one tenant extractor type");
