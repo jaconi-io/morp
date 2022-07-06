@@ -1,0 +1,30 @@
+version: "3.4"
+services:
+
+  # Run a vanilla Keycloak with some test realms
+  keycloak:
+    image: quay.io/keycloak/keycloak:18.0.1-legacy
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - KEYCLOAK_LOGLEVEL=INFO
+      # note: supports comma-separate list of files
+      - KEYCLOAK_IMPORT=/data/realm-1.json
+    ports:
+      - "9000:8080"
+    volumes:
+      - ./src/test/resources/keycloak:/data
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:8080/auth/realms/tenant1/.well-known/openid-configuration",
+        ]
+
+  # use httpbin as OAuth2 protected backend (so we can easily inspect the results of the OAuth2 dance)
+  httpbin:
+    image: kennethreitz/httpbin:latest
+    ports:
+      - 80

@@ -1,0 +1,59 @@
+
+# Tenant identification
+tenant-extractor:
+  extractors:
+    - host-pattern:
+        pattern: (\w+)-(dev|stg).example.com
+        capture-group: 1
+    - host-pattern:
+        pattern: ([a-z]+).localtest.me
+        capture-group: 1
+    - host-mapping:
+        special.example.com: foobar
+        another-special.example.com: foobaz
+    - path-pattern:
+        pattern: /([a-z]+)/tenant/([a-z]+)
+        capture-group: 2
+    - header:
+        name: X-Tenant-ID
+
+# Routing config
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: mockserver
+          uri: http://localhost:${mockServerPort}
+          predicates:
+            - Path=/upstream/**
+
+# Tenant -> IDP config
+idp:
+  from-tenant:
+    pattern: .*
+    capture-group: 0
+    mapping:
+      tenant1: keycloak
+
+jaconi:
+  oidc-proxy:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: morp
+            client-secret: secret
+            scope:
+              - openid
+              - profile
+              - email
+        provider:
+          keycloak:
+            # TODO demonstrate how realm can be a placeholder ?
+            issuer-uri: http://localhost:9000/auth/realms/tenant1
+
+    # TODO set it here or at the provider level ?
+    tenant-credentials:
+      tenant1:
+        client-id: morp
+        client-secret: secret
