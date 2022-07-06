@@ -24,6 +24,31 @@
     "jboss-logging"
   ],
   "adminEventsEnabled": false,
+  "users": [
+    {
+      "username": "test@jaconi.io",
+      "enabled": true,
+      "email": "test@jaconi.io",
+      "firstName": "Test",
+      "lastName": "User",
+      "createdTimestamp":1628700196735,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password"
+        }
+      ],
+      "realmRoles": [
+        "user"
+      ],
+      "clientRoles": {
+        "account": [
+          "view-profile",
+          "manage-account"
+        ]
+      }
+    }
+  ],
   "clients": [
     {
       "clientId": "morp",
