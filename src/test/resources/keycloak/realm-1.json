@@ -58,7 +58,7 @@
       "clientAuthenticatorType": "client-secret",
       "secret": "secret",
       "redirectUris": [
-        "http://tenant1-dev.example.com/login/oauth2/code/tenant1"
+        "*"
       ],
       "webOrigins": [],
       "notBefore": 0,

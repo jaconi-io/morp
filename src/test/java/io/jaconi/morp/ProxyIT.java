@@ -1,6 +1,7 @@
 package io.jaconi.morp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jsoup.Jsoup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
@@ -8,12 +9,15 @@ import org.mockserver.springtest.MockServerTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.BodyInserters;
 import reactor.netty.http.client.HttpClient;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
@@ -69,7 +73,7 @@ public class ProxyIT {
         // we should see a login mask after following several redirects
         var keycloakResponse = client.get()
                 .uri("/upstream/test")
-                .headers(h -> h.set("Host", "tenant1-dev.example.com"))
+                .header("x-tenant-id", "tenant1")
                 .exchange()
                 .expectStatus().isOk()
                 .expectAll(
@@ -78,25 +82,33 @@ public class ProxyIT {
                         spec -> spec.expectCookie().exists("KC_RESTART"))
                 .expectBody().returnResult();
 
-        System.out.println(keycloakResponse.getMethod());
-        System.out.println(keycloakResponse.getUrl());
-        System.out.println(keycloakResponse.getUriTemplate());
-        System.out.println(new String(keycloakResponse.getResponseBody(), UTF_8));
+        // extract the Keycloak login form HTML
+        var html = new String(keycloakResponse.getResponseBody(), UTF_8);
+        assertThat(html).contains("kc-form-login");
 
-        // TODO need to extract form target, rewrite it to localhost and post it with host header and user credentials
-        // form id kc-form-login
-        // form url = http://tenant1-dev.example.com/auth/realms/tenant1/login-actions/authenticate?session_code=z_SABVdMuPaSLGjG2b9uAOKcO5oFVmGa0vTnVf40R4s&amp;execution=4b7dffdf-880d-4f35-bd8e-fcecb8ec9a99&amp;client_id=morp&amp;tab_id=UZ8xNehEMSI
-        // input id/name = username
-        // input id/name = password
+        // extract the login form post target URL (that holds all the oidc state)
+        var url = Jsoup.parse(html)
+                .select("form#kc-form-login")
+                .attr("action");
 
-        // TODO provide user credentials and expect backend to be hit after redirects
+        // fill the login form with our known test user credentials
+        // TODO An expected CSRF token cannot be found
+        var cookies = keycloakResponse.getResponseCookies().toSingleValueMap();
+        client.post()
+                .uri(url)
+                .cookies(c -> cookies.entrySet().stream().forEach(e -> c.add(e.getKey(), e.getValue().getValue())))
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(BodyInserters.fromFormData("username", "test@jaconi.io")
+                        .with("password", "password")
+                        .with("credentialId", "")
+                        .with("login", "Sign In"))
+                .exchange()
+                .expectStatus().is3xxRedirection();
+
 
         // make sure the mock server got the request
-        /*
         mockServerClient.verify(request()
                 .withMethod("GET")
                 .withPath("/upstream/test"));
-
-         */
     }
 }

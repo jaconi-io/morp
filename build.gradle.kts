@@ -41,6 +41,7 @@ dependencies {
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.mock-server:mockserver-spring-test-listener:5.13.2")
+    testImplementation("org.jsoup:jsoup:1.15.2")
 }
 
 java {
@@ -49,7 +50,7 @@ java {
 
 dockerCompose {
 
-    isRequiredBy(project.tasks.test)
+    //isRequiredBy(project.tasks.test)
 
     // provides system properties '<service>.host' (and others)
     //exposeAsSystemProperties(project.tasks.test)
