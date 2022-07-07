@@ -1,11 +1,7 @@
 package io.jaconi.morp;
 
-import io.jaconi.morp.oauth.MorpOAuth2ClientProperties;
-import io.jaconi.morp.oauth.Oauth2ClientDiscoverer;
-import io.jaconi.morp.oauth.TenantAwareClientRegistrationRepository;
 import io.jaconi.morp.tenant.ClaimConstraintsMatcher;
 import io.jaconi.morp.tenant.TenantProperties;
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesRegistrationAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
@@ -14,7 +10,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcReactiveOAuth2UserService;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.userinfo.ReactiveOAuth2UserService;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -22,9 +17,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.ServerAuthenticationEntryPoint;
 import org.springframework.security.web.server.ui.LogoutPageGeneratingWebFilter;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Configuration
@@ -49,14 +42,6 @@ public class SecurityConfiguration {
                 .addFilterAt(new LogoutPageGeneratingWebFilter(),
                         SecurityWebFiltersOrder.LOGOUT_PAGE_GENERATING)
                 .build();
-    }
-
-    @Bean
-    TenantAwareClientRegistrationRepository clientRegistrationRepository(MorpOAuth2ClientProperties properties, TenantProperties tenantProperties, Oauth2ClientDiscoverer oauth2ClientDiscoverer) {
-        List<ClientRegistration> registrations = new ArrayList<>(
-                OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties).values());
-
-        return new TenantAwareClientRegistrationRepository(registrations, tenantProperties, oauth2ClientDiscoverer);
     }
 
     @Bean
