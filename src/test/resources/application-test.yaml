@@ -11,22 +11,21 @@ spring:
 morp:
   default-oauth2-client-registration: keycloak
   # Tenant identification
-  tenant-extractor:
-    extractors:
-      - host-pattern:
-          pattern: (\w+)-(dev|stg).example.com
-          capture-group: 1
-      - host-pattern:
-          pattern: ([a-z]+).localtest.me
-          capture-group: 1
-      - host-mapping:
-          special.example.com: foobar
-          another-special.example.com: foobaz
-      - path-pattern:
-          pattern: /([a-z]+)/tenant/([a-z]+)
-          capture-group: 2
-      - header:
-          name: X-Tenant-ID
+  tenant-extractors:
+    - host-pattern:
+        pattern: (\w+)-(dev|stg).example.com
+        capture-group: 1
+    - host-pattern:
+        pattern: ([a-z]+).localtest.me
+        capture-group: 1
+    - host-mapping:
+        special.example.com: foobar
+        another-special.example.com: foobaz
+    - path-pattern:
+        pattern: /([a-z]+)/tenant/([a-z]+)
+        capture-group: 2
+    - header:
+        name: X-Tenant-ID
 
   tenant:
     tenant1:
