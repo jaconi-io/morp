@@ -48,14 +48,6 @@ java {
     sourceCompatibility = JavaVersion.VERSION_17
 }
 
-dockerCompose {
-
-    //isRequiredBy(project.tasks.test)
-
-    // provides system properties '<service>.host' (and others)
-    //exposeAsSystemProperties(project.tasks.test)
-}
-
 tasks {
     bootBuildImage {
         // builder = "paketobuildpacks/builder:tiny"
@@ -65,7 +57,21 @@ tasks {
         )
     }
 
+    check {
+        dependsOn(named("integrationTest"))
+    }
+
     test {
-        useJUnitPlatform()
+        useJUnitPlatform {
+            excludeTags("integration")
+        }
+    }
+
+    create<Test>("integrationTest") {
+        useJUnitPlatform {
+            includeTags("integration")
+        }
+
+        dockerCompose.isRequiredBy(this)
     }
 }

@@ -3,6 +3,7 @@ package io.jaconi.morp;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jsoup.Jsoup;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.springtest.MockServerTest;
@@ -28,6 +29,7 @@ import static org.mockserver.model.HttpResponse.response;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"test", "wiretap"})
 @MockServerTest
+@Tag("integration")
 public class ProxyIT {
 
     @LocalServerPort
