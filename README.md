@@ -65,7 +65,22 @@ docker-compose down
 ./gradlew composeDown
 ```
 
-* Describe `application.properties` required to run proxy locally
+## Demo Profile
+
+This project contains a `demo` Spring profile that allows authentication using the Google and Okta cloud identity providers.
+The `demo` profile can be activated by setting the VM option `-Dspring.profiles.active=demo`.
+
+The credentials for the OAuth2 clients can be supplied by putting an `application-demo.properties` file next to the `application-demo.yaml` file in the folder `src/main/resources`.
+Its contents should have the following format:
+```properties
+# Google
+morp.oauth2-client.registration.google.client-id=...
+morp.oauth2-client.registration.google.client-secret=...
+
+# Okta
+morp.oauth2-client.registration.okta.client-id=...
+morp.oauth2-client.registration.okta.client-secret=...
+```
 
 # TODO
 
