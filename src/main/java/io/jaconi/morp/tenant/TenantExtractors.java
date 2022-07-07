@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @ConstructorBinding
-@ConfigurationProperties(prefix = "tenant-extractor")
+@ConfigurationProperties(prefix = "morp.tenant-extractor")
 public class TenantExtractors implements Function<ServerWebExchange, String> {
     private final List<Function<ServerWebExchange, String>> tenantExtractors;
 
