@@ -1,7 +1,7 @@
 package io.jaconi.morp;
 
-import io.jaconi.morp.idp.IDPMapper;
-import io.jaconi.morp.oauth.JaconiOAuth2ClientProperties;
+import io.jaconi.morp.oauth.MorpOAuth2ClientProperties;
+import io.jaconi.morp.oauth.Oauth2ClientDiscoverer;
 import io.jaconi.morp.oauth.TenantAwareClientRegistrationRepository;
 import io.jaconi.morp.tenant.ClaimConstraintsMatcher;
 import io.jaconi.morp.tenant.TenantProperties;
@@ -52,11 +52,11 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    TenantAwareClientRegistrationRepository clientRegistrationRepository(JaconiOAuth2ClientProperties properties, IDPMapper idpMapper, TenantProperties tenantCredentials) {
+    TenantAwareClientRegistrationRepository clientRegistrationRepository(MorpOAuth2ClientProperties properties, TenantProperties tenantProperties, Oauth2ClientDiscoverer oauth2ClientDiscoverer) {
         List<ClientRegistration> registrations = new ArrayList<>(
                 OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties).values());
 
-        return new TenantAwareClientRegistrationRepository(registrations, idpMapper, tenantCredentials);
+        return new TenantAwareClientRegistrationRepository(registrations, tenantProperties, oauth2ClientDiscoverer);
     }
 
     @Bean

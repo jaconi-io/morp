@@ -1,14 +1,14 @@
 package io.jaconi.morp.tenant;
 
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.Map;
 
-@ConfigurationProperties(prefix = "jaconi.oidc-proxy")
-public record TenantProperties(Map<String, TenantSettings> tenant) {
-    public record TenantSettings(ClientRegistration registration, Map<String, String> claimConstraints) {
-        public record ClientRegistration(String clientId, String clientSecret) {
-        }
+@ConfigurationProperties(prefix = "morp")
+public record TenantProperties(Map<String, TenantSettings> tenant, @NotEmpty String defaultOauth2ClientRegistration) {
+    public record TenantSettings(OAuth2ClientProperties.Registration registration, Map<String, String> claimConstraints,
+                                 String oauth2ClientRegistration) {
     }
 }

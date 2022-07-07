@@ -40,54 +40,46 @@ spring:
     # Local redis can be started like this: `docker run -p 6379:6379 redis`
     store-type: none
 
+morp:
 
-tenant-extractor:
-  extractors:
-    - host-pattern:
-        pattern: ([a-z]+)-(dev|stg).example.com
-        capture-group: 1
-    - host-pattern:
-        pattern: ([a-z]+).localtest.me
-        capture-group: 1
-    - host-mapping:
-        special.example.com: foobar
-        another-special.example.com: foobaz
-    - path-pattern:
-        pattern: /([a-z]+)/tenant/([a-z]+)
-        capture-group: 2
-    - header:
-        name: X-Tenant-ID
+  default-oauth2-client-registration: google
 
-idp:
-  from-tenant:
-    pattern: .*
-    capture-group: 0
-    mapping:
-      myfoo: google
-      mybar: google
-      mybaz: okta
+  tenant-extractor:
+    extractors:
+      - host-pattern:
+          pattern: ([a-z]+)-(dev|stg).example.com
+          capture-group: 1
+      - host-pattern:
+          pattern: ([a-z]+).localtest.me
+          capture-group: 1
+      - host-mapping:
+          special.example.com: foobar
+          another-special.example.com: foobaz
+      - path-pattern:
+          pattern: /([a-z]+)/tenant/([a-z]+)
+          capture-group: 2
+      - header:
+          name: X-Tenant-ID
 
-jaconi:
-  oidc-proxy:
-    oauth2:
-      client:
-        registration:
-          google:
-          okta:
-            client-name: Okta-Dev
-            scope: openid,profile,email
-        provider:
-          okta:
-            issuer-uri: https://dev-3715202.okta.com
+  tenant:
+    mybar:
+      registration:
+        client-id: foo
+        client-secret: bar
+    myfoo:
+      claim-constraints:
+        email_verified: "true"
 
-    tenant:
-      mybar:
-        registration:
-          client-id: foo
-          client-secret: bar
-      myfoo:
-        claim-constraints:
-          email_verified: "true"
+  oauth2-client:
+    registration:
+      google:
+      okta:
+        client-name: Okta-Dev
+        scope: openid,profile,email
+    provider:
+      okta:
+        issuer-uri: https://dev-3715202.okta.com
+
 
 ---
 spring.config.activate.on-profile:
