@@ -90,8 +90,6 @@ tasks.composeUp {
 tasks.jacocoTestReport {
     reports {
         xml.required.set(true)
-        csv.required.set(false)
-        html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
     }
 }
 

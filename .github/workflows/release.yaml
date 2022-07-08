@@ -1,7 +1,7 @@
-name: Continuous Integration
+name: Release
 
 on:
-  pull_request:
+  push:
     branches:
       - main
 
@@ -31,12 +31,6 @@ jobs:
           MORP_OAUTH2_CLIENT_REGISTRATION_OKTA_CLIENTSECRET: ${{ secrets.OKTA_CLIENT_SECRET }}
         with:
           arguments: clean check --continue
-
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
-        if: always()
-        with:
-          files: "build/test-results/**/*.xml"
 
       - uses: codecov/codecov-action@v3
         with:
