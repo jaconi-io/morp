@@ -87,3 +87,4 @@ morp.oauth2-client.registration.okta.client-secret=...
 * Consider Spring profiles for a better `local` developer experience
 * Move to Keycloak X distribution for improved startup time
 * Documentation of how to set gateway request and connection timeouts (per route)
+* Ability to statically restrict allowed tenants (literal list or regexp match)

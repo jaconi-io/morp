@@ -40,6 +40,7 @@ dependencies {
     runtimeOnly("io.netty:netty-resolver-dns-native-macos:4.1.77.Final:osx-aarch_64")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.mock-server:mockserver-spring-test-listener:5.13.2")
     testImplementation("org.jsoup:jsoup:1.15.2")
 }
