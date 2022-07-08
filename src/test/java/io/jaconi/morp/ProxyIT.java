@@ -1,42 +1,37 @@
 package io.jaconi.morp;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jsoup.Jsoup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.springtest.MockServerTest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.BodyInserters;
 import reactor.netty.http.client.HttpClient;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
+import static org.springframework.web.reactive.function.BodyInserters.fromFormData;
 
 
 /**
- * Integration test validating OICD roundtrips using Keycloak as IDP running in docker-compose.
+ * Integration test validating a complete OIDC (happy path) round trip using Keycloak as IDP running in docker-compose.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({"test", "wiretap"})
+@ActiveProfiles({"test"})
 @MockServerTest
 @Tag("integration")
 public class ProxyIT {
 
     @LocalServerPort
     private int port;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     private MockServerClient mockServerClient;
 
@@ -47,7 +42,6 @@ public class ProxyIT {
 
         // control the HTTP client to enable wiretap logs
         HttpClient httpClient = HttpClient.create()
-                .followRedirect(true) // follow OIDC redirects automatically
                 .wiretap(true) // hex dump wiretap
                 .compress(true);
 
@@ -57,7 +51,6 @@ public class ProxyIT {
 
         mockServerClient.reset();
     }
-
 
     @Test
     void testKeycloak() {
@@ -71,21 +64,42 @@ public class ProxyIT {
                         .withStatusCode(200)
                         .withBody("I am the backend"));
 
-        // run matching request via morp as 'tenant1' - 'test' profile has tenant1 authenticate via Keycloak
-        // we should see a login mask after following several redirects
-        var keycloakResponse = client.get()
+
+        // step 1 - run a request for our upstream (using a tenant that will be mapped to Keycloak)
+        // expect a 302 redirect into the Spring OAuth2 registry with the identified tenant
+        var step1 = client.get()
                 .uri("/upstream/test")
+                .accept(MediaType.TEXT_HTML)
                 .header("x-tenant-id", "tenant1")
                 .exchange()
-                .expectStatus().isOk()
-                .expectAll(
-                        spec -> spec.expectHeader().contentType("text/html;charset=utf-8"),
-                        spec -> spec.expectCookie().exists("AUTH_SESSION_ID"),
-                        spec -> spec.expectCookie().exists("KC_RESTART"))
+                .expectStatus().is3xxRedirection()
+                .expectHeader().location("/oauth2/authorization/tenant1")
+                .expectCookie().exists("SESSION")
                 .expectBody().returnResult();
 
-        // extract the Keycloak login form HTML
-        var html = new String(keycloakResponse.getResponseBody(), UTF_8);
+        // memorize the session with the gateway
+        var session = step1.getResponseCookies().getFirst("SESSION").getValue();
+
+        // step 2 - follow the Spring OAuth2 redirect
+        // expect the actual IDP redirect into the proper Keycloak realm
+        var step2 = client.get()
+                .uri(step1.getResponseHeaders().getLocation().getPath())
+                .cookie("SESSION", session)
+                .exchange()
+                .expectStatus().is3xxRedirection()
+                .expectHeader().valueMatches("location", ".*/realms/tenant1/protocol/openid-connect/.*")
+                .expectBody().returnResult();
+
+        // step 3 - follow the IDP redirect
+        // expect the Keycloak login mask
+        var step3 = client.get()
+                .uri(step2.getResponseHeaders().getLocation())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody().returnResult();
+
+        // extract the login form HTML
+        var html = new String(step3.getResponseBody(), UTF_8);
         assertThat(html).contains("kc-form-login");
 
         // extract the login form post target URL (that holds all the oidc state)
@@ -93,27 +107,46 @@ public class ProxyIT {
                 .select("form#kc-form-login")
                 .attr("action");
 
-        // fill the login form with our known test user credentials
-        // TODO An expected CSRF token cannot be found
-        var cookies = keycloakResponse.getResponseCookies().toSingleValueMap();
-        client.post()
+        // step 4 - fill the form with test user credentials
+        // expect redirection back to gateway into OAuth2 authorization code flow for correct tenant
+        var step4 = client.post()
                 .uri(url)
-                .cookies(c -> cookies.entrySet().stream().forEach(e -> c.add(e.getKey(), e.getValue().getValue())))
+                .cookies(c -> step3.getResponseCookies().toSingleValueMap().entrySet().stream().forEach(e -> c.add(e.getKey(), e.getValue().getValue())))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(BodyInserters.fromFormData("username", "test@jaconi.io")
-                        .with("password", "password")
-                        .with("credentialId", "")
-                        .with("login", "Sign In"))
+                .body(fromFormData("username", "test@jaconi.io").with("password", "password"))
                 .exchange()
-                // TODO this is not what we expect - need to solve the CSRF piece
-                .expectStatus().is4xxClientError();
+                .expectStatus().is3xxRedirection()
+                .expectHeader().valueMatches("location", ".*/login/oauth2/code/tenant1.*")
+                .expectCookie().exists("KEYCLOAK_IDENTITY")
+                .expectCookie().exists("KEYCLOAK_SESSION")
+                .expectBody().returnResult();
 
+        // step 5 - follow the authorization code flow redirect back to the gateway
+        // expect to be redirected to the upstream request url with a new SESSION cookie set
+        var step5 = client.get()
+                .uri(step4.getResponseHeaders().getLocation())
+                .cookie("SESSION", session)
+                .header("x-tenant-id", "tenant1")
+                .exchange()
+                .expectStatus().is3xxRedirection()
+                .expectHeader().location("/upstream/test")
+                .expectCookie().exists("SESSION")
+                .expectBody().returnResult();
 
-        // make sure the mock server got the request
-        /* TODO once we solve CSRF we want to validate we are getting to upstream eventually
-        mockServerClient.verify(request()
-                .withMethod("GET")
-                .withPath("/upstream/test"));
-        */
+        // extract the new session cookie (not the auth session anymore)
+        session = step5.getResponseCookies().getFirst("SESSION").getValue();
+
+        // step 6 - follow the upstream redirect to finally execute the request we started with
+        // expect our upstream response
+        var step6 = client.get()
+                .uri(step5.getResponseHeaders().getLocation().getPath())
+                .cookie("SESSION", session)
+                .header("x-tenant-id", "tenant1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody().returnResult();
+
+        var bodyString = new String(step6.getResponseBody(), UTF_8);
+        assertThat(bodyString).isEqualTo("I am the backend");
     }
 }
