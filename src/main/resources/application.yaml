@@ -83,5 +83,6 @@ logging.level:
   org.springframework.cloud.gateway: DEBUG
   org.springframework.http.server.reactive: DEBUG
   org.springframework.web.reactive: DEBUG
+  org.springframework.security: DEBUG
   reactor.netty.http.client.HttpClient: DEBUG
   reactor.netty.http.server.HttpServer: DEBUG
