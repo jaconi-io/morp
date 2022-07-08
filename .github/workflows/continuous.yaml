@@ -38,6 +38,14 @@ jobs:
         with:
           files: "build/test-results/**/*.xml"
 
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: JUnit Test Results
+          path: "build/test-results/**/*.xml"
+          reporter: java-junit
+
       - uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
