@@ -35,6 +35,8 @@ morp:
     myfoo:
       claim-constraints:
         email_verified: "true"
+    okta:
+      oauth2-client-registration: okta
 
   oauth2-client:
     registration:

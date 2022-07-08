@@ -35,12 +35,4 @@ public class TenantAwareClientRegistrationRepository implements ReactiveClientRe
             return clientRegistrations.get(tenant);
         }).cache(Duration.of(1, ChronoUnit.MINUTES)); // TODO: Make cache time configurable and increase default.
     }
-
-    private String replaceTenant(String templateString, String tenant) {
-        if (templateString == null) {
-            return null;
-        }
-        var uriVariables = Collections.singletonMap("tenant", tenant);
-        return UriComponentsBuilder.fromUriString(templateString).buildAndExpand(uriVariables).toUriString();
-    }
 }

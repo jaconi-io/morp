@@ -56,7 +56,9 @@ public class SecurityConfiguration {
 
                         String tenant = userRequest.getClientRegistration().getRegistrationId();
 
-                        if (!tenantProperties.tenant().containsKey(tenant) || tenantProperties.tenant().get(tenant).claimConstraints().isEmpty()
+                        if (!tenantProperties.tenant().containsKey(tenant) ||
+                                tenantProperties.tenant().get(tenant).claimConstraints() == null
+                                || tenantProperties.tenant().get(tenant).claimConstraints().isEmpty()
                                 || claimConstraintsMatcher.matches(oidcUser.getClaims(), tenantProperties.tenant().get(tenant).claimConstraints())) {
                             mappedAuthorities.add(new SimpleGrantedAuthority(ROLE_PROXY));
                         }
