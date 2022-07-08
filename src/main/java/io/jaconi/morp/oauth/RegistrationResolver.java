@@ -2,7 +2,9 @@ package io.jaconi.morp.oauth;
 
 import io.jaconi.morp.tenant.TenantProperties;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,63 +18,25 @@ class RegistrationResolver {
     private final TenantProperties tenantProperties;
 
     private static OAuth2ClientProperties.Registration merge(OAuth2ClientProperties.Registration global, OAuth2ClientProperties.Registration tenantSpecific) {
-        if (global == null) {
-            return tenantSpecific;
-        }
-
-        if (tenantSpecific == null) {
-            return global;
-        }
-
         var merged = new OAuth2ClientProperties.Registration();
-        if (tenantSpecific.getAuthorizationGrantType() == null) {
-            merged.setAuthorizationGrantType(global.getAuthorizationGrantType());
-        } else {
-            merged.setAuthorizationGrantType(tenantSpecific.getAuthorizationGrantType());
+
+        if (global == null) {
+            BeanUtils.copyProperties(tenantSpecific, merged);
+            return merged;
         }
 
-        if (tenantSpecific.getProvider() == null) {
-            merged.setProvider(global.getProvider());
-        } else {
-            merged.setProvider(tenantSpecific.getProvider());
+        BeanUtils.copyProperties(global, merged);
+        if (tenantSpecific != null) {
+            var map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+            map.from(tenantSpecific::getAuthorizationGrantType).to(merged::setAuthorizationGrantType);
+            map.from(tenantSpecific::getProvider).to(merged::setProvider);
+            map.from(tenantSpecific::getClientId).to(merged::setClientId);
+            map.from(tenantSpecific::getClientAuthenticationMethod).to(merged::setClientAuthenticationMethod);
+            map.from(tenantSpecific::getClientName).to(merged::setClientName);
+            map.from(tenantSpecific::getClientSecret).to(merged::setClientSecret);
+            map.from(tenantSpecific::getRedirectUri).to(merged::setRedirectUri);
+            map.from(tenantSpecific::getScope).to(merged::setScope);
         }
-
-        if (tenantSpecific.getClientId() == null) {
-            merged.setClientId(global.getClientId());
-        } else {
-            merged.setClientId(tenantSpecific.getClientId());
-        }
-
-        if (tenantSpecific.getClientAuthenticationMethod() == null) {
-            merged.setClientAuthenticationMethod(global.getClientAuthenticationMethod());
-        } else {
-            merged.setClientAuthenticationMethod(tenantSpecific.getClientAuthenticationMethod());
-        }
-
-        if (tenantSpecific.getClientName() == null) {
-            merged.setClientName(global.getClientName());
-        } else {
-            merged.setClientName(tenantSpecific.getClientName());
-        }
-
-        if (tenantSpecific.getClientSecret() == null) {
-            merged.setClientSecret(global.getClientSecret());
-        } else {
-            merged.setClientSecret(tenantSpecific.getClientSecret());
-        }
-
-        if (tenantSpecific.getRedirectUri() == null) {
-            merged.setRedirectUri(global.getRedirectUri());
-        } else {
-            merged.setRedirectUri(tenantSpecific.getRedirectUri());
-        }
-
-        if (tenantSpecific.getScope() == null) {
-            merged.setScope(global.getScope());
-        } else {
-            merged.setScope(tenantSpecific.getScope());
-        }
-
         return merged;
     }
 
