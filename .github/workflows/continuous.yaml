@@ -30,7 +30,7 @@ jobs:
           JACONI_OIDCPROXY_OAUTH2_CLIENT_REGISTRATION_OKTA_CLIENTID: ${{ secrets.OKTA_CLIENT_ID }}
           JACONI_OIDCPROXY_OAUTH2_CLIENT_REGISTRATION_OKTA_CLIENTSECRET: ${{ secrets.OKTA_CLIENT_SECRET }}
         with:
-          arguments: clean test
+          arguments: clean check
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
