@@ -4,6 +4,7 @@ services:
   # Run a vanilla Keycloak with some test realms
   keycloak:
     image: quay.io/keycloak/keycloak:18.0.1-legacy
+    user: root
     environment:
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin
