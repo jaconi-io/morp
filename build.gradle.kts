@@ -1,5 +1,6 @@
 plugins {
     java
+    jacoco
     id("org.springframework.boot") version "2.7.1"
     id("org.springframework.experimental.aot") version "0.12.0"
     id("com.avast.gradle.docker-compose") version "0.16.8"
@@ -48,31 +49,49 @@ java {
     sourceCompatibility = JavaVersion.VERSION_17
 }
 
-tasks {
-    bootBuildImage {
-        // builder = "paketobuildpacks/builder:tiny"
-        imageName = "docker.io/jaconi/${project.name}:${project.version}"
-        environment = mapOf(
+tasks.bootBuildImage {
+    // builder = "paketobuildpacks/builder:tiny"
+    imageName = "docker.io/jaconi/${project.name}:${project.version}"
+    environment = mapOf(
             "BP_NATIVE_IMAGE" to "true"
-        )
-    }
+    )
+}
 
-    check {
-        dependsOn(named("integrationTest"))
-    }
+tasks.check {
+    dependsOn("test")
+    dependsOn("integrationTest")
+    dependsOn("jacocoTestReport")
+}
 
-    test {
-        useJUnitPlatform {
-            excludeTags("integration")
-        }
-    }
-
-    create<Test>("integrationTest") {
-        useJUnitPlatform {
-            includeTags("integration")
-        }
-
-        dockerCompose.isRequiredBy(this)
-        dockerCompose.exposeAsSystemProperties(this)
+tasks.test {
+    useJUnitPlatform {
+        excludeTags("integration")
     }
 }
+
+val integrationTest = task<Test>("integrationTest"){
+    mustRunAfter("test")
+    useJUnitPlatform {
+        includeTags("integration")
+    }
+    dockerCompose.isRequiredBy(this)
+    dockerCompose.exposeAsSystemProperties(this)
+}
+
+tasks.jacocoTestReport {
+    mustRunAfter("test")
+    mustRunAfter("integrationTest")
+}
+
+tasks.composeUp {
+    mustRunAfter("test")
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.required.set(true)
+        csv.required.set(false)
+        html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+    }
+}
+
