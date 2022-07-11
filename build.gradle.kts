@@ -4,12 +4,13 @@ plugins {
     id("org.springframework.boot") version "2.7.1"
     id("org.springframework.experimental.aot") version "0.12.0"
     id("com.avast.gradle.docker-compose") version "0.16.8"
+    id("com.github.rising3.semver") version "0.8.1"
 }
 
 apply(plugin = "io.spring.dependency-management")
 
 group = "io.jaconi"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.1"
 
 repositories {
     mavenCentral()
@@ -55,7 +56,7 @@ tasks.bootBuildImage {
     environment = mapOf(
             "BP_NATIVE_IMAGE" to "true"
     )
-    isPublish = true
+    isPublish = false
     docker {
         publishRegistry {
             url = "ghcr.io"

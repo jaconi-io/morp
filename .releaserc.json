@@ -1,0 +1,34 @@
+{
+  "branches": [
+    "main"
+  ],
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "releaseRules": [
+          {
+            "type": "chore",
+            "scope": "deps",
+            "release": "patch"
+          }
+        ]
+      }
+    ],
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "sed -i 's/^version = \".*\"$/version = \"${nextRelease.version}\"/' build.gradle.kts && ./gradlew bootBuildImage --publishImage"
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": [
+          "build.gradle.kts"
+        ],
+        "message": "chore(release): ${nextRelease.version}\n\n${nextRelease.notes}"
+      }
+    ]
+  ]
+}
