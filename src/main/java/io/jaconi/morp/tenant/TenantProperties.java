@@ -8,7 +8,6 @@ import java.util.Map;
 
 @ConfigurationProperties(prefix = "morp")
 public record TenantProperties(Map<String, TenantSettings> tenant, @NotEmpty String defaultOauth2ClientRegistration) {
-    public record TenantSettings(OAuth2ClientProperties.Registration registration, Map<String, String> claimConstraints,
-                                 String oauth2ClientRegistration) {
+    public record TenantSettings(OAuth2ClientProperties.Registration registration, Map<String, String> claimConstraints) {
     }
 }

@@ -46,7 +46,7 @@ class RegistrationResolver {
         var globalRegistration = getGlobalRegistration(registrationId);
         var merged = merge(globalRegistration, tenantSpecificRegistration);
 
-        if (merged != null && merged.getProvider() == null) {
+        if (merged.getProvider() == null) {
             merged.setProvider(registrationId);
         }
 
@@ -70,11 +70,23 @@ class RegistrationResolver {
             return null;
         }
 
-        if (tenantProperties.tenant() == null || !tenantProperties.tenant().containsKey(tenant) || tenantProperties.tenant().get(tenant).oauth2ClientRegistration() == null) {
+        if (tenantProperties.tenant() == null) {
             return tenantProperties.defaultOauth2ClientRegistration();
         }
 
-        return tenantProperties.tenant().get(tenant).oauth2ClientRegistration();
+        if (!tenantProperties.tenant().containsKey(tenant)) {
+            return tenantProperties.defaultOauth2ClientRegistration();
+        }
+
+        if (tenantProperties.tenant().get(tenant).registration() == null) {
+            return tenantProperties.defaultOauth2ClientRegistration();
+        }
+
+        if(tenantProperties.tenant().get(tenant).registration().getProvider() == null) {
+            return tenantProperties.defaultOauth2ClientRegistration();
+        }
+
+        return tenantProperties.tenant().get(tenant).registration().getProvider();
     }
 
     private OAuth2ClientProperties.Registration getGlobalRegistration(String registrationId) {
