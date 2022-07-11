@@ -29,7 +29,7 @@ morp:
 
   tenant:
     tenant1:
-      # TODO set it here or at the provider level ?
+      # Configure tenant-specific credentials here.
       registration:
         client-id: morp
         client-secret: secret
@@ -45,5 +45,4 @@ morp:
           - email
     provider:
       keycloak:
-        # TODO demonstrate how realm can be a placeholder ?
-        issuer-uri: http://${keycloak.host:localhost}:9000/auth/realms/tenant1
+        issuer-uri: http://${keycloak.host:localhost}:9000/auth/realms/{tenant}
