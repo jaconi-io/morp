@@ -51,10 +51,17 @@ java {
 
 tasks.bootBuildImage {
     // builder = "paketobuildpacks/builder:tiny"
-    imageName = "docker.io/jaconi/${project.name}:${project.version}"
+    imageName = "ghcr.io/jaconi-io/${project.name}:${project.version}"
     environment = mapOf(
             "BP_NATIVE_IMAGE" to "true"
     )
+    isPublish = true
+    docker {
+        publishRegistry {
+            url = "ghcr.io"
+            token = System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 
 tasks.check {

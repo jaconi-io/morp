@@ -30,7 +30,7 @@ jobs:
           MORP_OAUTH2_CLIENT_REGISTRATION_OKTA_CLIENTID: ${{ secrets.OKTA_CLIENT_ID }}
           MORP_OAUTH2_CLIENT_REGISTRATION_OKTA_CLIENTSECRET: ${{ secrets.OKTA_CLIENT_SECRET }}
         with:
-          arguments: clean check --continue
+          arguments: clean check --continue --scan
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
