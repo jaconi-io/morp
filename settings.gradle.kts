@@ -20,9 +20,5 @@ gradleEnterprise {
             isBuildLogging = true
             isTestLogging = true
         }
-
-        buildScanPublished {
-            file("build/gradle-scan.md").appendText("${java.util.Date()} - ${this.buildScanId} - ${this.buildScanUri}\n")
-        }
     }
 }
