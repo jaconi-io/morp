@@ -92,6 +92,7 @@ jobs:
       - name: Release
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_USER: ${{ github.actor }}
         run: |
           yarn add semantic-release
           yarn add @semantic-release/exec
