@@ -59,7 +59,8 @@ tasks.bootBuildImage {
     docker {
         publishRegistry {
             url = "ghcr.io"
-            token = System.getenv("GITHUB_TOKEN")
+            username = System.getenv("GITHUB_USER")
+            password = System.getenv("GITHUB_TOKEN")
         }
     }
 }
