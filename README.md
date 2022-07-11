@@ -1,5 +1,7 @@
 ![MORP](morp.svg)
 
+# THIS REPO IS IN PRE-RELEASE, DO NOT USE IN PRODUCTION
+
 MORP is a multi-tenant OpenID Connect reverse proxy. With MORP you can protect web services and applications that do not
 support authentication on their own. MORP takes care of the OpenID Connect "dance" using common identity providers
 (e.g. Google, GitHub, Okta, and Keycloak).
