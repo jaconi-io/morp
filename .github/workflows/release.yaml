@@ -36,3 +36,10 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: build/reports/jacoco/test/jacocoTestReport.xml # optional
+
+      - name: Build image and push
+        uses: gradle/gradle-build-action@v1
+        env:
+          GITHUB_TOKEN = ${{ secrets.GITHUB_TOKEN }}
+        with:
+          arguments: bootBuildImage
