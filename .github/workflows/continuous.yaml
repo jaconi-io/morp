@@ -35,11 +35,25 @@ jobs:
         with:
           arguments: clean check --continue
 
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
-        if: always()
+      - name: Test Summary
+        uses: test-summary/action@v1
         with:
-          files: "build/test-results/**/*.xml"
+          paths: 'build/test-results/**/*.xml'
+        if: always()
+
+      - id: get-comment-body
+        run: |
+          body="$(cat test-summary.md)"
+          body="${body//'%'/'%25'}"
+          body="${body//$'\n'/'%0A'}"
+          body="${body//$'\r'/'%0D'}" 
+          echo "::set-output name=body::$body"
+
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: 1
+          body: ${{ steps.get-comment-body.outputs.body }}
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v3
