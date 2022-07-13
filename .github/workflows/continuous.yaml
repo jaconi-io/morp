@@ -73,7 +73,6 @@ jobs:
       - uses: phoenix-actions/test-reporting@v8
         if: always() # always run even if the previous step fails
         with:
-          artifact: test-results
           name: JUnit Tests
           path: 'build/test-results/**/*.xml'
           reporter: 'java-junit'
