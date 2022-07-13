@@ -40,11 +40,12 @@ jobs:
         uses: test-summary/action@v1
         with:
           paths: 'build/test-results/**/*.xml'
+          output: "build/test-results/summary.md"
 
       - id: get-comment-body
         if: always()
         run: |
-          body="$(cat test-summary.md)"
+          body="$(cat build/test-results/summary.md)"
           body="${body//'%'/'%25'}"
           body="${body//$'\n'/'%0A'}"
           body="${body//$'\r'/'%0D'}" 
