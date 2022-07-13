@@ -1,6 +1,6 @@
 package io.jaconi.morp.oauth;
 
-import io.jaconi.morp.tenant.TenantProperties;
+import io.jaconi.morp.tenant.TenantService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
@@ -14,13 +14,17 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 class RegistrationResolver {
-    private final MorpOAuth2ClientProperties properties;
-    private final TenantProperties tenantProperties;
+    private final OAuth2ClientProperties properties;
+
+    private final TenantService tenantService;
 
     private static OAuth2ClientProperties.Registration merge(OAuth2ClientProperties.Registration global, OAuth2ClientProperties.Registration tenantSpecific) {
         var merged = new OAuth2ClientProperties.Registration();
 
         if (global == null) {
+            if (tenantSpecific == null) {
+                return null;
+            }
             BeanUtils.copyProperties(tenantSpecific, merged);
             return merged;
         }
@@ -41,8 +45,8 @@ class RegistrationResolver {
     }
 
     public OAuth2ClientProperties.Registration getRegistration(String tenant) {
-        var tenantSpecificRegistration = getTenantSpecificRegistration(tenant);
-        var registrationId = getRegistrationId(tenant);
+        var tenantSpecificRegistration = tenantService.getRegistration(tenant);
+        var registrationId = tenantService.getRegistrationId(tenant);
         var globalRegistration = getGlobalRegistration(registrationId);
         var merged = merge(globalRegistration, tenantSpecificRegistration);
 
@@ -51,30 +55,6 @@ class RegistrationResolver {
         }
 
         return merged;
-    }
-
-    private OAuth2ClientProperties.Registration getTenantSpecificRegistration(String tenant) {
-        if (tenantProperties == null) {
-            return null;
-        }
-
-        if (tenantProperties.tenant() == null || !tenantProperties.tenant().containsKey(tenant)) {
-            return null;
-        }
-
-        return tenantProperties.tenant().get(tenant).registration();
-    }
-
-    private String getRegistrationId(String tenant) {
-        if (tenantProperties == null) {
-            return null;
-        }
-
-        if (tenantProperties.tenant() == null || !tenantProperties.tenant().containsKey(tenant) || tenantProperties.tenant().get(tenant).oauth2ClientRegistration() == null) {
-            return tenantProperties.defaultOauth2ClientRegistration();
-        }
-
-        return tenantProperties.tenant().get(tenant).oauth2ClientRegistration();
     }
 
     private OAuth2ClientProperties.Registration getGlobalRegistration(String registrationId) {

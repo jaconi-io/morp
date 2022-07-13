@@ -2,6 +2,7 @@ package io.jaconi.morp;
 
 import io.jaconi.morp.tenant.ClaimConstraintsMatcher;
 import io.jaconi.morp.tenant.TenantProperties;
+import io.jaconi.morp.tenant.TenantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class MorpReactiveUserService implements ReactiveOAuth2UserService<OidcUs
 
     final OidcReactiveOAuth2UserService delegate = new OidcReactiveOAuth2UserService();
 
-    final TenantProperties tenantProperties;
+    final TenantService tenantService;
 
     final ClaimConstraintsMatcher claimConstraintsMatcher;
 
@@ -45,14 +47,12 @@ public class MorpReactiveUserService implements ReactiveOAuth2UserService<OidcUs
                 });
     }
 
-    private boolean claimsMatch(OidcUser oidcUser, String tenant) {
-        TenantProperties.TenantSettings tenantSettings = tenantProperties.tenant().get(tenant);
-        if (tenantSettings == null
-                || tenantSettings.claimConstraints() == null
-                || tenantSettings.claimConstraints().isEmpty()) {
+    boolean claimsMatch(OidcUser oidcUser, String tenant) {
+        Map<String, String> claimConstraints = tenantService.getClaimConstraints(tenant);
+        if (claimConstraints.isEmpty()) {
             return true;
         }
-        return claimConstraintsMatcher.matches(oidcUser.getClaims(), tenantSettings.claimConstraints());
+        return claimConstraintsMatcher.matches(oidcUser.getClaims(), claimConstraints);
     }
 
 }

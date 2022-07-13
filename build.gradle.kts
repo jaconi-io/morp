@@ -5,6 +5,7 @@ plugins {
     id("org.springframework.experimental.aot") version "0.12.0"
     id("com.avast.gradle.docker-compose") version "0.16.8"
     id("com.github.rising3.semver") version "0.8.1"
+    id("org.barfuin.gradle.jacocolog") version "2.0.0"
 }
 
 apply(plugin = "io.spring.dependency-management")
@@ -44,6 +45,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.mock-server:mockserver-spring-test-listener:5.13.2")
     testImplementation("org.jsoup:jsoup:1.15.2")
+    testImplementation("io.projectreactor:reactor-test")
 }
 
 java {

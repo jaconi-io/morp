@@ -16,7 +16,7 @@ import java.util.Map;
 @Component
 @AllArgsConstructor
 public class ProviderResolver {
-    private final MorpOAuth2ClientProperties properties;
+    private final OAuth2ClientProperties properties;
 
     Map<String, OAuth2ClientProperties.Provider> getProviders(String tenant) {
         if (properties.getProvider() == null) {
