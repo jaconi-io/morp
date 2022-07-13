@@ -33,39 +33,29 @@ jobs:
           MORP_OAUTH2_CLIENT_REGISTRATION_OKTA_CLIENTID: ${{ secrets.OKTA_CLIENT_ID }}
           MORP_OAUTH2_CLIENT_REGISTRATION_OKTA_CLIENTSECRET: ${{ secrets.OKTA_CLIENT_SECRET }}
         with:
-          arguments: clean check --continue --scan
+          arguments: clean check --continue
 
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
-          files: "build/test-results/**/*.xml"
+          junit_files: 'build/test-results/**/*.xml'
+          comment_mode: off
+          check_name: publish-unit-test-result-action
+          check_run_annotations: 'none'
 
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()    # run this step even if previous step failed
+      - name: JUnit Report
+        if: always() # always run even if the previous step fails
+        uses: mikepenz/action-junit-report@v3
         with:
-          name: JUnit Test Results
-          path: "build/test-results/**/*.xml"
-          reporter: java-junit
+          report_paths: 'build/test-results/**/*.xml'
+          annotate_only: true
 
       - uses: codecov/codecov-action@v3
+        if: always() # always run even if the previous step fails
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: build/reports/jacoco/test/jacocoTestReport.xml
-
-      - name: "Add build scan URL as PR comment"
-        uses: actions/github-script@v5
-        if: github.event_name == 'pull_request'
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '${{ github.workflow }} gradle scan results: ${{ steps.gradle.outputs.build-scan-url }}'
-            })
 
   release:
     if: github.event_name == 'push'
