@@ -70,6 +70,37 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: build/reports/jacoco/test/jacocoTestReport.xml
 
+      - uses: phoenix-actions/test-reporting@v8
+        if: always() # always run even if the previous step fails
+        with:
+          artifact: test-results
+          name: JUnit Tests
+          path: 'build/test-results/**/*.xml'
+          reporter: 'java-junit'
+
+          # Allows you to generate only the summary.
+          # If enabled, the report will contain a table listing each test results file and the number of passed, failed, and skipped tests.
+          # Detailed listing of test suites and test cases will be skipped.
+          only-summary: 'false'
+
+          # Limits which test suites are listed:
+          #   all
+          #   failed
+          list-suites: 'all'
+
+          # Limits which test cases are listed:
+          #   all
+          #   failed
+          #   none
+          list-tests: 'all'
+
+          # Limits number of created annotations with error message and stack trace captured during test execution.
+          # Must be less or equal to 50.
+          max-annotations: '50'
+
+          # Set action as failed if test report contains any failed test
+          fail-on-error: 'true'
+
   release:
     if: github.event_name == 'push'
     needs:
