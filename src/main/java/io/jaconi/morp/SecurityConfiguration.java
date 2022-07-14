@@ -1,5 +1,6 @@
 package io.jaconi.morp;
 
+import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
@@ -17,6 +18,7 @@ public class SecurityConfiguration {
     SecurityWebFilterChain securityFilterChain(ServerAuthenticationEntryPoint serverAuthenticationEntryPoint, ServerHttpSecurity httpSecurity) {
         return httpSecurity.authorizeExchange()
                 .pathMatchers("/debug").authenticated()
+                .matchers(EndpointRequest.toAnyEndpoint()).permitAll()
                 .anyExchange().hasAuthority(ROLE_PROXY)
                 .and()
                 .oauth2Login()

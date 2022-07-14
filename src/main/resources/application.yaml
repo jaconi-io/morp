@@ -3,6 +3,14 @@ management:
     health:
       probes:
         enabled: true
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - prometheus
   metrics:
     distribution:
       percentiles-histogram:
