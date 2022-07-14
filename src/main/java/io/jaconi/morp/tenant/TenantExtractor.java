@@ -1,7 +1,9 @@
 package io.jaconi.morp.tenant;
 
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
 import org.springframework.util.Assert;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 import java.util.Map;
@@ -17,7 +19,7 @@ import java.util.regex.Pattern;
  * The tenant extractors are implemented in this enum, to simplify polymorph configuration with Spring.
  */
 @SuppressWarnings("unused")
-public enum TenantExtractor implements Function<Map<String, String>, Function<ServerWebExchange, String>> {
+public enum TenantExtractor implements Function<Map<String, String>, ServerWebExchangeMatcher> {
 
     /**
      * Extract the tenant ID from an HTTP header. The configuration is expected to look like this:
@@ -28,12 +30,12 @@ public enum TenantExtractor implements Function<Map<String, String>, Function<Se
      */
     HEADER {
         @Override
-        public Function<ServerWebExchange, String> apply(Map<String, String> config) {
+        public ServerWebExchangeMatcher apply(Map<String, String> config) {
             validate(config, Set.of("name"), Collections.emptySet())
                     .ifPresent(s -> {
                         throw new IllegalArgumentException("invalid configuration for header tenant extractor: " + s);
                     });
-            return exchange -> exchange.getRequest().getHeaders().getFirst(config.get("name"));
+            return exchange -> match(exchange.getRequest().getHeaders().getFirst(config.get("name")));
         }
     },
 
@@ -47,9 +49,9 @@ public enum TenantExtractor implements Function<Map<String, String>, Function<Se
      */
     HOST_MAPPING {
         @Override
-        public Function<ServerWebExchange, String> apply(Map<String, String> config) {
+        public ServerWebExchangeMatcher apply(Map<String, String> config) {
             Assert.notEmpty(config, "invalid configuration for host-mapping tenant extractors require at least one mapping");
-            return exchange -> config.get(exchange.getRequest().getURI().getHost());
+            return exchange -> match(config.get(exchange.getRequest().getURI().getHost()));
         }
     },
 
@@ -63,12 +65,12 @@ public enum TenantExtractor implements Function<Map<String, String>, Function<Se
      */
     HOST_PATTERN {
         @Override
-        public Function<ServerWebExchange, String> apply(Map<String, String> config) {
+        public ServerWebExchangeMatcher apply(Map<String, String> config) {
             validate(config, Set.of("pattern"), Set.of("capture-group"))
                     .ifPresent(s -> {
                         throw new IllegalArgumentException("invalid configuration for host-pattern tenant extractor: " + s);
                     });
-            return exchange -> pattern(config).apply(exchange.getRequest().getURI().getHost());
+            return exchange -> match(pattern(config).apply(exchange.getRequest().getURI().getHost()));
         }
     },
 
@@ -82,12 +84,12 @@ public enum TenantExtractor implements Function<Map<String, String>, Function<Se
      */
     PATH_PATTERN {
         @Override
-        public Function<ServerWebExchange, String> apply(Map<String, String> config) {
+        public ServerWebExchangeMatcher apply(Map<String, String> config) {
             validate(config, Set.of("pattern"), Set.of("capture-group"))
                     .ifPresent(s -> {
                         throw new IllegalArgumentException("invalid configuration for path-pattern tenant extractor: " + s);
                     });
-            return exchange -> pattern(config).apply(exchange.getRequest().getURI().getPath());
+            return exchange -> match(pattern(config).apply(exchange.getRequest().getURI().getPath()));
         }
     };
 
@@ -131,6 +133,14 @@ public enum TenantExtractor implements Function<Map<String, String>, Function<Se
         return Optional.empty();
     }
 
+    private static Mono<ServerWebExchangeMatcher.MatchResult> match(String tenant) {
+        if (tenant == null || tenant.isBlank()) {
+            return ServerWebExchangeMatcher.MatchResult.notMatch();
+        }
+
+        return ServerWebExchangeMatcher.MatchResult.match(Map.of("tenant", tenant));
+    }
+
     @Override
-    public abstract Function<ServerWebExchange, String> apply(Map<String, String> config);
+    public abstract ServerWebExchangeMatcher apply(Map<String, String> config);
 }
