@@ -40,9 +40,16 @@ spring:
     # To enable Redis set 'store-type' to 'redis'
     # Local redis can be started like this: `docker run -p 6379:6379 redis`
     store-type: none
+  cache:
+    type: ${morp.cache.type:caffeine}
 
 # Non-spring configuration goes here!
 morp:
+  # persistence type: Sets the spring.cache.type property and restricts its values to caffeine and redis
+  cache:
+    type: caffeine
+    duration-in-minutes: 0
+
   # The tenant extractors determine the tenant ID for each request. The first extractor returning a match will be used.
   tenant-extractors: []
     # Extract the tenant ID from the hostname:

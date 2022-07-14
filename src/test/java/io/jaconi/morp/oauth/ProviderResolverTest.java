@@ -13,17 +13,8 @@ class ProviderResolverTest {
     private static final String PREFIX = "http://example.com/";
 
     @Test
-    void testNull() {
-        OAuth2ClientProperties properties = new SimpleOAuth2Properties(null, null);
-        ProviderResolver providerResolver = new ProviderResolver(properties);
-
-        Map<String, OAuth2ClientProperties.Provider> result = providerResolver.getProviders("tenant1");
-        assertNull(result);
-    }
-
-    @Test
     void testEmpty() {
-        OAuth2ClientProperties properties = new SimpleOAuth2Properties(Map.of(), null);
+        OAuth2ClientProperties properties = new SimpleOAuth2Properties(Map.of(), Map.of());
         ProviderResolver providerResolver = new ProviderResolver(properties);
 
         Map<String, OAuth2ClientProperties.Provider> result = providerResolver.getProviders("tenant1");
@@ -32,7 +23,7 @@ class ProviderResolverTest {
 
     @Test
     void testReplace() {
-        OAuth2ClientProperties properties = new SimpleOAuth2Properties(Map.of("tenant1", buildProvider()), null);
+        OAuth2ClientProperties properties = new SimpleOAuth2Properties(Map.of("tenant1", buildProvider()), Map.of());
         ProviderResolver providerResolver = new ProviderResolver(properties);
 
         Map<String, OAuth2ClientProperties.Provider> result = providerResolver.getProviders("tenant1");

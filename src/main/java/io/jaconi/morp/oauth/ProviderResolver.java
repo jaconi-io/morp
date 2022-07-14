@@ -1,6 +1,6 @@
 package io.jaconi.morp.oauth;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -14,7 +14,7 @@ import java.util.Map;
  * actual tenant ID.
  */
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ProviderResolver {
     private final OAuth2ClientProperties properties;
 

@@ -16,7 +16,7 @@ morp:
         pattern: ([a-z]+)-(dev|stg).example.com
         capture-group: 1
     - host-pattern:
-        pattern: ([a-z]+).localtest.me
+        pattern: (\w+).localtest.me
         capture-group: 1
     - host-mapping:
         special.example.com: foobar
@@ -38,6 +38,11 @@ morp:
         hd:
           - jaconi.io
           - example.com
+    tenant1:
+      registration:
+        client-id: morp
+        client-secret: secret
+      oauth2-client-registration: keycloak
     okta:
       oauth2-client-registration: okta
 
@@ -47,7 +52,15 @@ morp:
       okta:
         client-name: Okta-Dev
         scope: openid,profile,email
+      keycloak:
+        client-id: morp
+        client-secret: secret
+        scope:
+          - openid
+          - profile
+          - email
     provider:
       okta:
         issuer-uri: https://dev-3715202.okta.com
-
+      keycloak:
+        issuer-uri: http://${keycloak.host:localhost}:9000/auth/realms/{tenant}

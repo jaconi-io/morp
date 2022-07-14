@@ -1,7 +1,7 @@
 package io.jaconi.morp.oauth;
 
 import io.jaconi.morp.tenant.TenantService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  * registration.
  */
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 class RegistrationResolver {
     private final OAuth2ClientProperties properties;
 
