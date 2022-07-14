@@ -17,6 +17,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 import static io.jaconi.morp.MorpReactiveUserService.ROLE_PROXY;
@@ -53,7 +54,7 @@ class MorpReactiveUserServiceTest {
 
     @Test
     void testClaimsMatch() {
-        doReturn(Map.of("sub", "match")).when(tenantService).getClaimConstraints(anyString());
+        doReturn(Map.of("sub", List.of("match"))).when(tenantService).getClaimConstraints(anyString());
 
         OidcUserRequest oidcUserRequest = getOidcUserRequest();
 
@@ -70,7 +71,7 @@ class MorpReactiveUserServiceTest {
 
     @Test
     void testClaimsDontMatch() {
-        doReturn(Map.of("sub", "nomatch")).when(tenantService).getClaimConstraints(anyString());
+        doReturn(Map.of("sub", List.of("nomatch"))).when(tenantService).getClaimConstraints(anyString());
 
         OidcUserRequest oidcUserRequest = getOidcUserRequest();
 

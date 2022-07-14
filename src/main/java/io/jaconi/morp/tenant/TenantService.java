@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -36,7 +37,7 @@ public class TenantService {
         return tenantProperties.tenant().get(tenant).oauth2ClientRegistration();
     }
 
-    public Map<String, String> getClaimConstraints(String tenant) {
+    public Map<String, List<String>> getClaimConstraints(String tenant) {
         Assert.notNull(tenant, "tenant cannot be null");
         TenantProperties.TenantSettings tenantSettings = tenantProperties.tenant().get(tenant);
         if (tenantSettings == null

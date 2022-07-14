@@ -2,23 +2,24 @@ package io.jaconi.morp.tenant;
 
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 @Component
 public class ClaimConstraintsMatcher {
 
-    public boolean matches(Map<String, Object> claims, Map<String, String> claimConstraints) {
+    public boolean matches(Map<String, Object> claims, Map<String, List<String>> claimConstraints) {
         return claimConstraints.entrySet()
                 .stream()
                 .allMatch(e -> claimMatch(e.getKey(), e.getValue(), claims));
     }
 
-    private boolean claimMatch(String constraintKey, String constraintValue, Map<String, Object> claims) {
-        Object value = claims.get(constraintKey);
+    private boolean claimMatch(String constraintKey, List<String> constraintValue, Map<String, Object> claims) {
+        var value = claims.get(constraintKey);
         if (value == null) {
             return false;
         }
-        return (value.toString()).matches(constraintValue);
-    }
 
+        return constraintValue.stream().anyMatch(value.toString()::matches);
+    }
 }

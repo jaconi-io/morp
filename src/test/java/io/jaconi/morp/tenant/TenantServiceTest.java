@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -25,9 +26,7 @@ class TenantServiceTest {
     @Test
     void testGetRegistrationTenantNull() {
         TenantService tenantService = new TenantService(new TenantProperties(Map.of(), "default"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            tenantService.getRegistration(null);
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> tenantService.getRegistration(null));
     }
 
     @Test
@@ -52,9 +51,7 @@ class TenantServiceTest {
     @Test
     void testGetRegistrationIdTenantNull() {
         TenantService tenantService = new TenantService(new TenantProperties(Map.of(), "default"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            tenantService.getRegistrationId(null);
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> tenantService.getRegistrationId(null));
     }
 
     @Test
@@ -78,15 +75,13 @@ class TenantServiceTest {
     @Test
     void testGetClaimConstraintsTenantNull() {
         TenantService tenantService = new TenantService(new TenantProperties(Map.of(), "default"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            tenantService.getClaimConstraints(null);
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> tenantService.getClaimConstraints(null));
     }
 
     @Test
     void testGetClaimConstraintsNoMatchingTenant() {
         TenantService tenantService = new TenantService(new TenantProperties(Map.of(), "default"));
-        Map<String, String> constraints = tenantService.getClaimConstraints("tenant1");
+        var constraints = tenantService.getClaimConstraints("tenant1");
         assertThat(constraints, anEmptyMap());
     }
 
@@ -94,11 +89,10 @@ class TenantServiceTest {
     void testGetClaimConstraints() {
         TenantService tenantService = new TenantService(
                 new TenantProperties(Map.of("tenant1",
-                        new TenantProperties.TenantSettings(null, Map.of("sub", "whatever"), "tenantRegistration")), "default"));
+                        new TenantProperties.TenantSettings(null, Map.of("sub", List.of("whatever")), "tenantRegistration")), "default"));
 
-        Map<String, String> constraints = tenantService.getClaimConstraints("tenant1");
-        assertThat(constraints, hasEntry("sub", "whatever"));
+        var constraints = tenantService.getClaimConstraints("tenant1");
+        assertThat(constraints, hasEntry("sub", List.of("whatever")));
         assertThat(constraints, aMapWithSize(1));
     }
-
 }

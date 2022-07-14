@@ -1,7 +1,6 @@
 package io.jaconi.morp;
 
 import io.jaconi.morp.tenant.ClaimConstraintsMatcher;
-import io.jaconi.morp.tenant.TenantProperties;
 import io.jaconi.morp.tenant.TenantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -48,11 +46,10 @@ public class MorpReactiveUserService implements ReactiveOAuth2UserService<OidcUs
     }
 
     boolean claimsMatch(OidcUser oidcUser, String tenant) {
-        Map<String, String> claimConstraints = tenantService.getClaimConstraints(tenant);
+        var claimConstraints = tenantService.getClaimConstraints(tenant);
         if (claimConstraints.isEmpty()) {
             return true;
         }
         return claimConstraintsMatcher.matches(oidcUser.getClaims(), claimConstraints);
     }
-
 }
