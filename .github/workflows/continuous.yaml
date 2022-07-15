@@ -75,7 +75,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: build/reports/jacoco/test/jacocoTestReport.xml
 
-  release:
+  prepare-release:
     if: github.event_name == 'push'
     needs:
       - test
@@ -83,31 +83,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Install Java
-        uses: actions/setup-java@v3
         with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
+          persist-credentials: false
 
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
 
-      - name: Generate App token
-        id: generate_token
-        uses: tibdex/github-app-token@v1
-        with:
-          app_id: ${{ secrets.APP_ID }}
-          private_key: ${{ secrets.APP_KEY }}
-
-      - name: Release
+      - name: Prepare release branch
         env:
-          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
-          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+          GITHUB_TOKEN: ${{ secrets.JACONI_BOT_GITHUB_TOKEN }}
+          GITHUB_USER: ${{ github.actor }}
         run: |
           yarn add semantic-release
           yarn add @semantic-release/exec

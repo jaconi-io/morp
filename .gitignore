@@ -1,3 +1,5 @@
 .gradle/
 .idea/
 build/
+package.json
+yarn.lock
