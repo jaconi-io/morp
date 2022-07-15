@@ -103,13 +103,29 @@ tasks.jacocoTestReport {
     mustRunAfter("integrationTest")
 }
 
-tasks.composeUp {
-    mustRunAfter("test")
-}
-
 tasks.jacocoTestReport {
     reports {
         xml.required.set(true)
     }
+}
+
+subprojects {
+    if (File(projectDir, "src/main").exists()) {
+        apply(plugin = "org.sonarqube")
+        sonarqube {
+            properties {
+                property("sonar.coverage.jacoco.xmlReportPaths", tasks.jacocoTestReport.get().reports.xml.outputLocation.toString())
+            }
+        }
+    }
+}
+
+tasks.sonarqube {
+    dependsOn(tasks.jacocoTestReport)
+}
+
+
+tasks.composeUp {
+    mustRunAfter("test")
 }
 
