@@ -15,3 +15,11 @@ plugins:
 
 - - "@semantic-release/exec"
   - prepareCmd: sed -i 's/^version = ".*"$/version = "${nextRelease.version}"/' build.gradle.kts && ./gradlew bootBuildImage --publishImage
+
+
+- - "@semantic-release/git"
+  - message: "chore(release): ${nextRelease.version}\n\n${nextRelease.notes}"
+    assets:
+    - "build.gradle.kts"
+      "CHANGELOG.md"
+
