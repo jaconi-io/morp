@@ -6,6 +6,7 @@ plugins {
     id("com.avast.gradle.docker-compose") version "0.16.8"
     id("com.github.rising3.semver") version "0.8.1"
     id("org.barfuin.gradle.jacocolog") version "2.0.0"
+    id ("org.sonarqube") version "3.4.0.2513"
 }
 
 apply(plugin = "io.spring.dependency-management")
@@ -50,6 +51,14 @@ dependencies {
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
+}
+
+sonarqube {
+    properties {
+        property("sonar.projectKey", "jaconi-io_morp")
+        property("sonar.organization", "jaconi-io")
+        property("sonar.host.url", "https://sonarcloud.io")
+    }
 }
 
 tasks.bootBuildImage {

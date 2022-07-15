@@ -35,6 +35,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Install Java
         uses: actions/setup-java@v3
@@ -52,8 +54,10 @@ jobs:
           MORP_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENTSECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           MORP_OAUTH2_CLIENT_REGISTRATION_OKTA_CLIENTID: ${{ secrets.OKTA_CLIENT_ID }}
           MORP_OAUTH2_CLIENT_REGISTRATION_OKTA_CLIENTSECRET: ${{ secrets.OKTA_CLIENT_SECRET }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          arguments: clean check --continue
+          arguments: clean check sonarqube --continue
 
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
