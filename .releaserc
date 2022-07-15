@@ -15,6 +15,7 @@
         ]
       }
     ],
+    "@semantic-release/release-notes-generator",
     [
       "@semantic-release/exec",
       {
@@ -22,12 +23,10 @@
       }
     ],
     [
-      "@semantic-release/git",
+      "semantic-release-github-pullrequest",
       {
-        "assets": [
-          "build.gradle.kts"
-        ],
-        "message": "chore(release): ${nextRelease.version}\n\n${nextRelease.notes}"
+        "assets": ["CHANGELOG.md","build.gradle.kts],
+        "baseRef": "main"
       }
     ]
   ]

@@ -107,8 +107,11 @@ jobs:
       - name: Release
         env:
           GH_TOKEN: ${{ steps.generate_token.outputs.token }}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
         run: |
           yarn add semantic-release
           yarn add @semantic-release/exec
           yarn add @semantic-release/git
+          yarn add @semantic-release/release-notes-generator
+          yarn add semantic-release-github-pullrequest
           yarn run semantic-release
