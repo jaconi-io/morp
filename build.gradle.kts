@@ -6,6 +6,7 @@ plugins {
     id("com.avast.gradle.docker-compose") version "0.16.8"
     id("com.github.rising3.semver") version "0.8.1"
     id("org.barfuin.gradle.jacocolog") version "2.0.0"
+    id ("org.sonarqube") version "3.4.0.2513"
 }
 
 apply(plugin = "io.spring.dependency-management")
@@ -52,6 +53,14 @@ java {
     sourceCompatibility = JavaVersion.VERSION_17
 }
 
+sonarqube {
+    properties {
+        property("sonar.projectKey", "jaconi-io_morp")
+        property("sonar.organization", "jaconi-io")
+        property("sonar.host.url", "https://sonarcloud.io")
+    }
+}
+
 tasks.bootBuildImage {
     // builder = "paketobuildpacks/builder:tiny"
     imageName = "ghcr.io/jaconi-io/${project.name}:${project.version}"
@@ -94,13 +103,29 @@ tasks.jacocoTestReport {
     mustRunAfter("integrationTest")
 }
 
-tasks.composeUp {
-    mustRunAfter("test")
-}
-
 tasks.jacocoTestReport {
     reports {
         xml.required.set(true)
     }
+}
+
+subprojects {
+    if (File(projectDir, "src/main").exists()) {
+        apply(plugin = "org.sonarqube")
+        sonarqube {
+            properties {
+                property("sonar.coverage.jacoco.xmlReportPaths", tasks.jacocoTestReport.get().reports.xml.outputLocation.toString())
+            }
+        }
+    }
+}
+
+tasks.sonarqube {
+    dependsOn(tasks.jacocoTestReport)
+}
+
+
+tasks.composeUp {
+    mustRunAfter("test")
 }
 
