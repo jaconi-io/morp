@@ -6,7 +6,7 @@
 [![Codecov](https://img.shields.io/codecov/c/github/jaconi-io/morp?style=for-the-badge)](https://codecov.io/gh/jaconi-io/morp)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/jaconi-io/morp?label=Image&style=for-the-badge)](https://github.com/jaconi-io/morp/pkgs/container/morp)
 
-[![GitHub license](https://img.shields.io/github/license/jaconi-io/morp?style=for-the-badge)](https://github.com/jaconi-io/morp/LICENSE.md)
+[![GitHub license](https://img.shields.io/github/license/jaconi-io/morp?style=for-the-badge)](https://github.com/jaconi-io/morp/blob/main/LICENSE.md)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white&style=for-the-badge)](https://conventionalcommits.org)
 [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release&style=for-the-badge)](https://github.com/semantic-release/semantic-release)
 
