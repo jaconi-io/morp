@@ -1,0 +1,26 @@
+name: Continuous Integration
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.JACONI_BOT_GITHUB_TOKEN }}
+          GITHUB_USER: ${{ secrets.JACONI_BOT_USERNAME }}
+        run: |
+          yarn add semantic-release
+          yarn add @semantic-release/exec
+          yarn add @semantic-release/release-notes-generator
+          yarn add @semantic-release/changelog
+          yarn run semantic-release
