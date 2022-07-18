@@ -1,6 +1,6 @@
 package io.jaconi.morp.oauth;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -14,32 +14,29 @@ import java.util.Map;
  * actual tenant ID.
  */
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ProviderResolver {
     private final OAuth2ClientProperties properties;
 
-    Map<String, OAuth2ClientProperties.Provider> getProviders(String tenant) {
+    OAuth2ClientProperties.Provider getProvider(String tenant, String providerId) {
         if (properties.getProvider() == null) {
             return null;
         }
 
-        var result = new HashMap<String, OAuth2ClientProperties.Provider>();
-        for (var entry : properties.getProvider().entrySet()) {
-            var key = entry.getKey();
-            var template = entry.getValue();
-
-            var provider = new OAuth2ClientProperties.Provider();
-            provider.setAuthorizationUri(replaceTenant(template.getAuthorizationUri(), tenant));
-            provider.setIssuerUri(replaceTenant(template.getIssuerUri(), tenant));
-            provider.setJwkSetUri(replaceTenant(template.getJwkSetUri(), tenant));
-            provider.setTokenUri(replaceTenant(template.getTokenUri(), tenant));
-            provider.setUserInfoUri(replaceTenant(template.getUserInfoUri(), tenant));
-            provider.setUserInfoAuthenticationMethod(replaceTenant(template.getUserInfoAuthenticationMethod(), tenant));
-            provider.setUserNameAttribute(replaceTenant(template.getUserNameAttribute(), tenant));
-            result.put(key, provider);
+        if (!properties.getProvider().containsKey(providerId)) {
+            return null;
         }
+        var template = properties.getProvider().get(providerId);
+        var provider = new OAuth2ClientProperties.Provider();
+        provider.setAuthorizationUri(replaceTenant(template.getAuthorizationUri(), tenant));
+        provider.setIssuerUri(replaceTenant(template.getIssuerUri(), tenant));
+        provider.setJwkSetUri(replaceTenant(template.getJwkSetUri(), tenant));
+        provider.setTokenUri(replaceTenant(template.getTokenUri(), tenant));
+        provider.setUserInfoUri(replaceTenant(template.getUserInfoUri(), tenant));
+        provider.setUserInfoAuthenticationMethod(replaceTenant(template.getUserInfoAuthenticationMethod(), tenant));
+        provider.setUserNameAttribute(replaceTenant(template.getUserNameAttribute(), tenant));
 
-        return result;
+        return provider;
     }
 
     private String replaceTenant(String templateString, String tenant) {
@@ -49,4 +46,5 @@ public class ProviderResolver {
         var uriVariables = Collections.singletonMap("tenant", tenant);
         return UriComponentsBuilder.fromUriString(templateString).buildAndExpand(uriVariables).toUriString();
     }
+
 }
