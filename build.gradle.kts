@@ -24,6 +24,8 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     compileOnly("org.projectlombok:lombok")
+    compileOnly("org.springframework.experimental:spring-aot:0.12.0")
+    implementation("org.reflections:reflections:0.10.2")
 
     implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2021.0.3"))
 
