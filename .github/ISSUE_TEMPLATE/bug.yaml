@@ -1,0 +1,74 @@
+name: Bug Report
+description: File a bug report
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Prerequisites
+      description: Please answer the following questions for yourself before submitting an issue.
+      options:
+        - label: I am running the most recent stable version.
+          required: true
+        - label: I checked the documentation and found no answer.
+          required: true
+        - label: I checked to make sure that this issue has not already been filed.
+          required: true
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: Please describe the behavior you are expecting.
+      placeholder: Tell us what you expected to see!
+    validations:
+      required: true
+  - type: textarea
+    id: observed-behavior
+    attributes:
+      label: Observed Behavior
+      description: Please describe the behavior you are observing.
+      placeholder: Tell us what you actually see!
+    validations:
+      required: true
+  - type: textarea
+    id: steps-to-repeat
+    attributes:
+      label: Steps to Repeat
+      description: Please provide detailed steps for reproducing the issue.
+      placeholder: |
+        1. step 1
+        2. step 2
+        3. you get it...
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Please provide any relevant information about your setup. This is important in case the issue is not reproducible except for under certain conditions.
+      placeholder: |
+        * Morp version:
+        * Environment details:
+          * Kubernetes? Version?
+        * IDP details:
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: text
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/jaconi-io/morp/blob/main/CODE_OF_CONDUCT.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct.
+          required: true
