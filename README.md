@@ -45,24 +45,21 @@ MORP "glue".
 * **Spring Security** - for flexible request authentication and authorization
 * **Spring Native** - for producing native Docker images with a small resource footprint and fast startup times
 
-# Demo
+# Example
 
-This project contains a `demo` Spring profile that allows authentication using the Google and Okta cloud identity
-providers.
-The `demo` profile can be activated by setting the VM option `-Dspring.profiles.active=demo`.
+This project contains an example showing how to protect a httpbin instance using authentication with Keycloak. Run the
+example by switching to the example folder and using `docker compose`:
 
-The credentials for the OAuth2 clients can be supplied by putting an `application-demo.properties` file next to
-the `application-demo.yaml` file in the folder `src/main/resources`.
-Its contents should have the following format:
-
-```properties
-# Google
-morp.oauth2-client.registration.google.client-id=...
-morp.oauth2-client.registration.google.client-secret=...
-# Okta
-morp.oauth2-client.registration.okta.client-id=...
-morp.oauth2-client.registration.okta.client-secret=...
+```shell
+cd example
+docker compose up
 ```
+
+Open [http://foo.localtest.me:8080](http://foo.localtest.me:8080) in your browser and log in with the username
+`test.user@jaconi.io` and the password `user`.
+
+To use a different tenant, open [http://bar.localtest.me:8080](http://bar.localtest.me:8080) in your browser and
+log in with username `test.user@example.com` and the password `user`.
 
 # Deployment
 
