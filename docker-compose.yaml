@@ -3,25 +3,27 @@ services:
 
   # Run a vanilla Keycloak with some test realms
   keycloak:
-    image: quay.io/keycloak/keycloak:18.0.1-legacy
-    user: root
+    image: quay.io/keycloak/keycloak:18.0.2
+    command:
+    - start
+    - --import-realm
     environment:
-      - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=admin
-      - KEYCLOAK_LOGLEVEL=INFO
-      # note: supports comma-separate list of files
-      - KEYCLOAK_IMPORT=/data/realm-1.json
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_HOSTNAME_STRICT=false
+      - KC_HOSTNAME_STRICT_HTTPS=false
+      - KC_PROXY=edge
     ports:
       - "9000:8080"
     volumes:
-      - ./src/test/resources/keycloak:/data
+      - ./src/test/resources/keycloak:/opt/keycloak/data/import
     healthcheck:
       test:
         [
           "CMD",
           "curl",
-          "-f",
-          "http://localhost:8080/auth/realms/tenant1/.well-known/openid-configuration",
+          "--fail",
+          "http://localhost:8080/realms/tenant1/.well-known/openid-configuration",
         ]
 
   # use httpbin as OAuth2 protected backend (so we can easily inspect the results of the OAuth2 dance)

@@ -45,6 +45,25 @@ MORP "glue".
 * **Spring Security** - for flexible request authentication and authorization
 * **Spring Native** - for producing native Docker images with a small resource footprint and fast startup times
 
+# Demo
+
+This project contains a `demo` Spring profile that allows authentication using the Google and Okta cloud identity
+providers.
+The `demo` profile can be activated by setting the VM option `-Dspring.profiles.active=demo`.
+
+The credentials for the OAuth2 clients can be supplied by putting an `application-demo.properties` file next to
+the `application-demo.yaml` file in the folder `src/main/resources`.
+Its contents should have the following format:
+
+```properties
+# Google
+morp.oauth2-client.registration.google.client-id=...
+morp.oauth2-client.registration.google.client-secret=...
+# Okta
+morp.oauth2-client.registration.okta.client-id=...
+morp.oauth2-client.registration.okta.client-secret=...
+```
+
 # Deployment
 
 TODO
@@ -65,7 +84,7 @@ morp:
   oauth2-client:
     provider:
       keycloak:
-        issuer-uri: https://keycloak.example.com/auth/realms/example
+        issuer-uri: https://keycloak.example.com/realms/example
 ```
 
 The providers name (`keycloak`, in the example above) can be any identifier. Every provider can have the following
@@ -91,7 +110,7 @@ morp:
   oauth2-client:
     provider:
       keycloak:
-        issuer-uri: https://keycloak.example.com/auth/realms/{tenant}
+        issuer-uri: https://keycloak.example.com/realms/{tenant}
 ```
 
 ## Registration
@@ -148,13 +167,13 @@ first non-empty match will be used. When no tenant match, the request will be de
 
 # Development
 
-The project comes with a `docker-compose` setup that runs Keycloak with a couple of test realms for an interactive
+The project comes with a `docker compose` setup that runs Keycloak with a couple of test realms for an interactive
 developer experience. This setup is also used for running automated integration test.
 Bring up the setup either via CLI or via `gradle`.
 
 ```shell
 # via CLI
-docker-compose up -d 
+docker compose up -d 
 
 # via gradle
 ./gradlew composeUp
@@ -164,36 +183,17 @@ Once this is up you will have a Keycloak running. You can access the UI via port
 admin user are `admin/admin`.
 
 ```shell
-open http://localhost:9000/auth
+open http://localhost:9000/admin/master/console
 ```
 
-To shut down the `docker-compose` backend run the following:
+To shut down the `docker compose` backend run the following:
 
 ```shell
 # via CLI
-docker-compose down
+docker compose down
 
 # via gradle
 ./gradlew composeDown
-```
-
-## Demo Profile
-
-This project contains a `demo` Spring profile that allows authentication using the Google and Okta cloud identity
-providers.
-The `demo` profile can be activated by setting the VM option `-Dspring.profiles.active=demo`.
-
-The credentials for the OAuth2 clients can be supplied by putting an `application-demo.properties` file next to
-the `application-demo.yaml` file in the folder `src/main/resources`.
-Its contents should have the following format:
-
-```properties
-# Google
-morp.oauth2-client.registration.google.client-id=...
-morp.oauth2-client.registration.google.client-secret=...
-# Okta
-morp.oauth2-client.registration.okta.client-id=...
-morp.oauth2-client.registration.okta.client-secret=...
 ```
 
 # Metrics
@@ -204,5 +204,4 @@ By default, MORP exposes [Prometheus](https://prometheus.io) metrics at
 # TODO
 
 * Consider Spring profiles for a better `local` developer experience
-* Move to Keycloak X distribution for improved startup time
 * Documentation of how to set gateway request and connection timeouts (per route)
