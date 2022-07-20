@@ -1,6 +1,7 @@
 plugins {
     java
     jacoco
+    `jvm-test-suite`
     id("org.springframework.boot") version "2.7.1"
     id("org.springframework.experimental.aot") version "0.12.0"
     id("com.avast.gradle.docker-compose") version "0.16.8"
@@ -63,6 +64,40 @@ sonarqube {
     }
 }
 
+// setup separate test suites for unit and integration tests
+testing {
+    suites {
+
+        // the default 'test' suite running unit tests via junit 5
+        val test by getting(JvmTestSuite::class) {
+            useJUnitJupiter()
+        }
+
+        val integrationTest by registering(JvmTestSuite::class) {
+            sources {
+                java {
+                    setSrcDirs(listOf("src/integrationTest/java"))
+                }
+            }
+            dependencies {
+                implementation(project)
+                implementation("org.jsoup:jsoup:1.15.2")
+            }
+            targets {
+                all {
+                    testTask.configure {
+                        mustRunAfter(tasks.test)
+                    }
+
+                    dockerCompose.isRequiredBy(testTask)
+                    dockerCompose.exposeAsSystemProperties(testTask.get())
+                    dockerCompose.useComposeFiles.add("src/integrationTest/resources/docker-compose.yaml")
+                }
+            }
+        }
+    }
+}
+
 tasks.bootBuildImage {
     // builder = "paketobuildpacks/builder:tiny"
     imageName = "ghcr.io/jaconi-io/${project.name}:${project.version}"
@@ -80,29 +115,18 @@ tasks.bootBuildImage {
 }
 
 tasks.check {
-    dependsOn("test")
-    dependsOn("integrationTest")
-    dependsOn("jacocoTestReport")
+    dependsOn(tasks.test)
+    dependsOn(testing.suites.named("integrationTest"))
+    dependsOn(tasks.jacocoTestReport)
 }
 
 tasks.test {
-    useJUnitPlatform {
-        excludeTags("integration")
-    }
-}
-
-val integrationTest = task<Test>("integrationTest"){
-    mustRunAfter("test")
-    useJUnitPlatform {
-        includeTags("integration")
-    }
-    dockerCompose.isRequiredBy(this)
-    dockerCompose.exposeAsSystemProperties(this)
+    useJUnitPlatform()
 }
 
 tasks.jacocoTestReport {
-    mustRunAfter("test")
-    mustRunAfter("integrationTest")
+    mustRunAfter(tasks.test)
+    mustRunAfter(testing.suites.named("integrationTest"))
 }
 
 tasks.jacocoTestReport {
@@ -128,6 +152,11 @@ tasks.sonarqube {
 
 
 tasks.composeUp {
-    mustRunAfter("test")
+    mustRunAfter(tasks.test)
 }
 
+configurations {
+    get("integrationTestImplementation").apply {
+        extendsFrom(configurations.implementation.get(), configurations.testImplementation.get())
+    }
+}

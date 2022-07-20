@@ -16,7 +16,7 @@ services:
     ports:
       - "9000:8080"
     volumes:
-      - ./src/test/resources/keycloak:/opt/keycloak/data/import
+      - ./keycloak:/opt/keycloak/data/import
     healthcheck:
       test:
         [

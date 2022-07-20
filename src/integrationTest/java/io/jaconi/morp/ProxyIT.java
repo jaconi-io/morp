@@ -2,7 +2,6 @@ package io.jaconi.morp;
 
 import org.jsoup.Jsoup;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.springtest.MockServerTest;
@@ -27,7 +26,6 @@ import static org.springframework.web.reactive.function.BodyInserters.fromFormDa
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"test"})
 @MockServerTest
-@Tag("integration")
 public class ProxyIT {
 
     @LocalServerPort
