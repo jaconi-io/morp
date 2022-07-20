@@ -1,3 +1,10 @@
+## [0.2.3](https://github.com/jaconi-io/morp/compare/v0.2.2...v0.2.3) (2022-07-20)
+
+
+### Bug Fixes
+
+* user name attribute templating ([d28f15f](https://github.com/jaconi-io/morp/commit/d28f15f3406ca507ee01d69602dc67a5179f77d6))
+
 ## [0.2.2](https://github.com/jaconi-io/morp/compare/v0.2.1...v0.2.2) (2022-07-20)
 
 
