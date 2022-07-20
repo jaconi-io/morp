@@ -14,7 +14,7 @@ plugins:
   - changelogFile: "CHANGELOG.md"
 
 - - "@semantic-release/exec"
-  - prepareCmd: sed -i 's/^version = ".*"$/version = "${nextRelease.version}"/' build.gradle.kts && ./gradlew bootBuildImage --publishImage
+  - prepareCmd: sed -i 's/^version = ".*"$/version = "${nextRelease.version}"/' build.gradle.kts && sed -i 's/ghcr.io\/jaconi-io\/morp:.*$/ghcr.io\/jaconi-io\/morp:${nextRelease.version}/' example/docker-compose.yaml && ./gradlew bootBuildImage --publishImage
 
 - - "@semantic-release/git"
   - message: "chore(release): ${nextRelease.version}\n\n${nextRelease.notes}"

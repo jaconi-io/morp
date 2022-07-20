@@ -1,0 +1,38 @@
+version: "3.9"
+services:
+  morp:
+    image: ghcr.io/jaconi-io/morp:0.2.3
+    ports:
+      - "8080:8080"
+    volumes:
+      - type: bind
+        source: ./application-example.yaml
+        target: /workspace/application.yaml
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:18.0.2
+    command:
+      - start
+      - --import-realm
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_HOSTNAME_STRICT=false
+      - KC_HOSTNAME_STRICT_HTTPS=false
+      - KC_HTTP_PORT=9000
+      - KC_PROXY=edge
+    ports:
+      - "9000:9000"
+    volumes:
+      - type: bind
+        source: ./realms
+        target: /opt/keycloak/data/import
+    networks:
+      default:
+        aliases:
+          - keycloak.localtest.me
+
+  httpbin:
+    image: kennethreitz/httpbin:latest
+    ports:
+      - "80"

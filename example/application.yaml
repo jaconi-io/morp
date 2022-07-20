@@ -1,0 +1,36 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: httpbin
+          uri: http://httpbin
+          predicates:
+            - Path=/**
+
+morp:
+  default-oauth2-client-registration: keycloak
+
+  tenant-extractors:
+    - host-pattern:
+        pattern: ([a-z]+).localtest.me
+        capture-group: 1
+
+  tenant:
+    foo:
+      registration:
+        client-secret: secret
+    bar:
+      registration:
+        client-secret: another-secret
+
+  oauth2-client:
+    registration:
+      keycloak:
+        client-id: morp
+        scope:
+          - openid
+          - profile
+          - email
+    provider:
+      keycloak:
+        issuer-uri: http://keycloak.localtest.me:9000/realms/{tenant}
