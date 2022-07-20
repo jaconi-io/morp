@@ -83,8 +83,8 @@ For instructions see your router vendors documentation. For example:
 
 Use an external DNS service. For example:
 
-[Cloudflare](https://1.1.1.1)
-[Google](https://developers.google.com/speed/public-dns/docs/using)
+* [Cloudflare](https://1.1.1.1)
+* [Google](https://developers.google.com/speed/public-dns/docs/using)
 
 ### Add to `/etc/hosts`
 
