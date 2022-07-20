@@ -4,5 +4,5 @@ contact_links:
     url: https://github.com/jaconi-io/morp/discussions
     about: Please ask and answer questions here.
   - name: Security Vulnerabilities
-    url: "mailto:security@jaconi.io"
-    about: Please report security vulnerabilities here.
+    url: "https://jaconi.io/.well-known/security.txt"
+    about: Please report security vulnerabilities with the information found here.
