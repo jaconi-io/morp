@@ -35,7 +35,7 @@ public class ProviderResolver {
             provider.setTokenUri(replaceTenant(template.getTokenUri(), tenant));
             provider.setUserInfoUri(replaceTenant(template.getUserInfoUri(), tenant));
             provider.setUserInfoAuthenticationMethod(replaceTenant(template.getUserInfoAuthenticationMethod(), tenant));
-            provider.setUserNameAttribute(replaceTenant(template.getUserInfoAuthenticationMethod(), tenant));
+            provider.setUserNameAttribute(replaceTenant(template.getUserNameAttribute(), tenant));
             result.put(key, provider);
         }
 
