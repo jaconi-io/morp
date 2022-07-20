@@ -1,3 +1,11 @@
+## [0.2.2](https://github.com/jaconi-io/morp/compare/v0.2.1...v0.2.2) (2022-07-20)
+
+
+### Bug Fixes
+
+* add more generic Spring Cloud Gateway support ([e7b77d1](https://github.com/jaconi-io/morp/commit/e7b77d11706d771c9fec4e378e33f291a4437120))
+* add more native type hints ([323e19c](https://github.com/jaconi-io/morp/commit/323e19c19d87d3a3234d4ac6a7facee9fb1cf55e))
+
 ## [0.2.1](https://github.com/jaconi-io/morp/compare/v0.2.0...v0.2.1) (2022-07-15)
 
 
