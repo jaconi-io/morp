@@ -1,0 +1,64 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: httpbin
+          uri: https://httpbin.org
+          predicates:
+            - Path=/**
+
+morp:
+
+  default-oauth2-client-registration: google
+
+  tenant-extractors:
+    - host-pattern:
+        pattern: (\w+)-(dev|stg).example.com
+        capture-group: 1
+    - host-pattern:
+        pattern: (\w+).localtest.me
+        capture-group: 1
+    - host-mapping:
+        special.example.com: foobar
+        another-special.example.com: foobaz
+    - path-pattern:
+        pattern: /(\w+)/tenant/([a-z]+)
+        capture-group: 2
+    - header:
+        name: X-Tenant-ID
+
+  tenant:
+    mybar:
+      registration:
+        client-id: foo
+        client-secret: bar
+    myfoo:
+      claim-constraints:
+        email_verified: "true"
+        hd:
+          - jaconi.io
+          - example.com
+    okta:
+      oauth2-client-registration: okta
+    tenant1:
+      oauth2-client-registration: keycloak
+
+  oauth2-client:
+    registration:
+      google:
+      okta:
+        client-name: Okta-Dev
+        scope: openid,profile,email
+      keycloak:
+        client-id: morp
+        client-secret: secret
+        scope:
+          - openid
+          - profile
+          - email
+    provider:
+      okta:
+        issuer-uri: https://dev-3715202.okta.com
+      keycloak:
+        issuer-uri: http://${keycloak.host:localhost}:9000/realms/{tenant}
+

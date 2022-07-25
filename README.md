@@ -199,6 +199,8 @@ first non-empty match will be used. When no tenant match, the request will be de
 
 # Development
 
+## Startup
+
 The project comes with a `docker compose` setup that runs Keycloak with a couple of test realms for an interactive
 developer experience. This setup is also used for running automated integration test.
 Bring up the setup either via CLI or via `gradle`.
@@ -211,12 +213,35 @@ docker compose up -d
 ./gradlew composeUp
 ```
 
+## Keycloak
+
 Once this is up you will have a Keycloak running. You can access the UI via port `9000`. Test credentials for the
 admin user are `admin/admin`.
 
 ```shell
 open http://localhost:9000/admin/master/console
 ```
+
+## Run MORP
+
+You can then start MORP with a dedicated `dev` profile which allows logging in via the Keycloak as well as via Google or Okta:
+```shell
+./gradlew bootRun --args='--spring.profiles.active=dev'
+```
+You can also start MORP from your favorite IDE.
+
+For Google and Okta we need additional credentials that can be put into an `application-dev.properties` file:
+```properties
+# Google
+morp.oauth2-client.registration.google.client-id=...
+morp.oauth2-client.registration.google.client-secret=...
+
+# Okta
+morp.oauth2-client.registration.okta.client-id=...
+morp.oauth2-client.registration.okta.client-secret=...
+```
+
+## Shutdown
 
 To shut down the `docker compose` backend run the following:
 
