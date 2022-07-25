@@ -40,7 +40,7 @@ public class ClientRegistrationSource implements Serializable {
                 + ")";
     }
 
-    public String sha1() {
-        return DigestUtils.sha1Hex(toString());
+    public String sha256() {
+        return DigestUtils.sha256Hex(toString());
     }
 }

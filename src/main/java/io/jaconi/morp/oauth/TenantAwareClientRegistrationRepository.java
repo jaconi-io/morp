@@ -39,7 +39,7 @@ public class TenantAwareClientRegistrationRepository implements ReactiveClientRe
 
         // Look up source in cache
         var cachedSourceHash = getCachedSourceHash(tenant);
-        if (cachedSourceHash != null && cachedSourceHash.equals(clientRegistrationSource.sha1())) {
+        if (cachedSourceHash != null && cachedSourceHash.equals(clientRegistrationSource.sha256())) {
             // Nothing changed, return cached registration
             return getCachedRegistration(tenant);
         }
@@ -48,7 +48,7 @@ public class TenantAwareClientRegistrationRepository implements ReactiveClientRe
             var clientRegistration = clientRegistrationFetcher.getRegistration(tenant, clientRegistrationSource);
             if (clientRegistration != null) {
                 log.debug("Putting Client Registration for tenant '{}' in cache.", tenant);
-                putInCache(tenant, clientRegistrationSource.sha1(), clientRegistration);
+                putInCache(tenant, clientRegistrationSource.sha256(), clientRegistration);
                 return clientRegistration;
             }
         } catch (RuntimeException e) {
