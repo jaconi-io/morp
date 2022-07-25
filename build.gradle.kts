@@ -52,8 +52,12 @@ dependencies {
     // workaround to be able to develop on ARM Mac :-(
     runtimeOnly("io.netty:netty-resolver-dns-native-macos:4.1.77.Final:osx-aarch_64")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.mock-server:mockserver-spring-test-listener:5.13.2")
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude("org.hamcrest", "hamcrest")
+    }
+    testImplementation("org.mock-server:mockserver-spring-test-listener:5.13.2") {
+        exclude("org.hamcrest", "hamcrest")
+    }
     testImplementation("org.jsoup:jsoup:1.15.2")
     testImplementation("io.projectreactor:reactor-test")
 }

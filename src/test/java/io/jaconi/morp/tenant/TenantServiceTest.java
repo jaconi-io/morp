@@ -7,8 +7,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2Clien
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TenantServiceTest {
@@ -82,7 +81,7 @@ class TenantServiceTest {
     void testGetClaimConstraintsNoMatchingTenant() {
         TenantService tenantService = new TenantService(new TenantProperties(Map.of(), "default"));
         var constraints = tenantService.getClaimConstraints("tenant1");
-        assertThat(constraints, anEmptyMap());
+        assertThat(constraints).isEmpty();
     }
 
     @Test
@@ -92,7 +91,7 @@ class TenantServiceTest {
                         new TenantProperties.TenantSettings(null, Map.of("sub", List.of("whatever")), "tenantRegistration")), "default"));
 
         var constraints = tenantService.getClaimConstraints("tenant1");
-        assertThat(constraints, hasEntry("sub", List.of("whatever")));
-        assertThat(constraints, aMapWithSize(1));
+        assertThat(constraints).containsEntry("sub", List.of("whatever"));
+        assertThat(constraints).hasSize(1);
     }
 }

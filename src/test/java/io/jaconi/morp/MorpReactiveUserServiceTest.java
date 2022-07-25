@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -17,17 +18,17 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import static io.jaconi.morp.MorpReactiveUserService.ROLE_PROXY;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.empty;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+@SuppressWarnings("unchecked")
 @SpringBootTest
 class MorpReactiveUserServiceTest {
 
@@ -46,7 +47,7 @@ class MorpReactiveUserServiceTest {
                 .assertNext(o ->
                 {
                     DefaultOidcUser defaultOidcUser = (DefaultOidcUser) o;
-                    assertThat(defaultOidcUser.getAuthorities(), containsInAnyOrder(new SimpleGrantedAuthority(ROLE_PROXY)));
+                    assertThat((Collection<GrantedAuthority>)defaultOidcUser.getAuthorities()).containsOnly(new SimpleGrantedAuthority(ROLE_PROXY));
                 })
                 .verifyComplete();
 
@@ -63,7 +64,7 @@ class MorpReactiveUserServiceTest {
                 .assertNext(o ->
                 {
                     DefaultOidcUser defaultOidcUser = (DefaultOidcUser) o;
-                    assertThat(defaultOidcUser.getAuthorities(), containsInAnyOrder(new SimpleGrantedAuthority(ROLE_PROXY)));
+                    assertThat((Collection<GrantedAuthority>)defaultOidcUser.getAuthorities()).containsOnly(new SimpleGrantedAuthority(ROLE_PROXY));
                 })
                 .verifyComplete();
 
@@ -80,10 +81,9 @@ class MorpReactiveUserServiceTest {
                 .assertNext(o ->
                 {
                     DefaultOidcUser defaultOidcUser = (DefaultOidcUser) o;
-                    assertThat(defaultOidcUser.getAuthorities(), empty());
+                    assertThat(defaultOidcUser.getAuthorities()).isEmpty();
                 })
                 .verifyComplete();
-
     }
 
     private OidcUserRequest getOidcUserRequest() {
@@ -98,4 +98,5 @@ class MorpReactiveUserServiceTest {
         OidcIdToken idToken = new OidcIdToken("token", Instant.now(), Instant.MAX, Map.of("sub", "match"));
         return new OidcUserRequest(clientRegistration, mock(OAuth2AccessToken.class), idToken);
     }
+
 }

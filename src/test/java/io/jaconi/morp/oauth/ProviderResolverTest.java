@@ -37,7 +37,7 @@ class ProviderResolverTest {
 
     @Test
     void testReplaceWithProvider() {
-        OAuth2ClientProperties properties = new SimpleOAuth2Properties(Map.of("google", buildProvider()), Map.of("tenant1", buildRegistration("google")));
+        OAuth2ClientProperties properties = new SimpleOAuth2Properties(Map.of("google", buildProvider()), Map.of("tenant1", buildRegistration()));
         ProviderResolver providerResolver = new ProviderResolver(properties);
 
         OAuth2ClientProperties.Provider provider = providerResolver.getProvider("tenant1", "google");
@@ -60,9 +60,9 @@ class ProviderResolverTest {
         return provider;
     }
 
-    private static OAuth2ClientProperties.Registration buildRegistration(String provider) {
+    private static OAuth2ClientProperties.Registration buildRegistration() {
         OAuth2ClientProperties.Registration registration = new OAuth2ClientProperties.Registration();
-        registration.setProvider(provider);
+        registration.setProvider("google");
         return registration;
     }
 
