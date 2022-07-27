@@ -6,8 +6,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Get all configured {@link OAuth2ClientProperties.Provider} instances. Replace all occurrences of "{tenant}" by the

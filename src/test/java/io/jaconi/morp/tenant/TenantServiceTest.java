@@ -91,7 +91,6 @@ class TenantServiceTest {
                         new TenantProperties.TenantSettings(null, Map.of("sub", List.of("whatever")), "tenantRegistration")), "default"));
 
         var constraints = tenantService.getClaimConstraints("tenant1");
-        assertThat(constraints).containsEntry("sub", List.of("whatever"));
-        assertThat(constraints).hasSize(1);
+        assertThat(constraints).containsExactly(Map.entry("sub", List.of("whatever")));
     }
 }
