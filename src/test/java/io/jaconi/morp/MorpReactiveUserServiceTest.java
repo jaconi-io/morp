@@ -25,8 +25,7 @@ import java.util.Map;
 import static io.jaconi.morp.MorpReactiveUserService.ROLE_PROXY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 @SuppressWarnings("unchecked")
 @SpringBootTest
@@ -55,7 +54,7 @@ class MorpReactiveUserServiceTest {
 
     @Test
     void testClaimsMatch() {
-        doReturn(Map.of("sub", List.of("match"))).when(tenantService).getClaimConstraints(anyString());
+        when(tenantService.getClaimConstraints(anyString())).thenReturn(Map.of("sub", List.of("match")));
 
         OidcUserRequest oidcUserRequest = getOidcUserRequest();
 
@@ -72,7 +71,7 @@ class MorpReactiveUserServiceTest {
 
     @Test
     void testClaimsDontMatch() {
-        doReturn(Map.of("sub", List.of("nomatch"))).when(tenantService).getClaimConstraints(anyString());
+        when(tenantService.getClaimConstraints(anyString())).thenReturn(Map.of("sub", List.of("nomatch")));
 
         OidcUserRequest oidcUserRequest = getOidcUserRequest();
 

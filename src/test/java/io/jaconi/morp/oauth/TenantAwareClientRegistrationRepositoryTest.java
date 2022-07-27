@@ -48,13 +48,13 @@ class TenantAwareClientRegistrationRepositoryTest {
     private void clearCaches() {
         cacheManager.getCache(TenantAwareClientRegistrationRepository.REGISTRATIONS).clear();
         cacheManager.getCache(TenantAwareClientRegistrationRepository.SOURCE_HASHES).clear();
+        when(providerResolver.getProvider(anyString(), anyString())).thenReturn(buildProvider("i"));
+        when(registrationResolver.getRegistration(anyString())).thenReturn(buildRegistration(TENANT));
+        when(clientRegistrationFetcher.getRegistration(eq(TENANT), any())).thenReturn(clientRegistration);
     }
 
     @Test
     void testFresh() {
-        doReturn(buildProvider("i")).when(providerResolver).getProvider(anyString(), anyString());
-        doReturn(buildRegistration(TENANT)).when(registrationResolver).getRegistration(anyString());
-        doReturn(clientRegistration).when(clientRegistrationFetcher).getRegistration(eq(TENANT), any());
         StepVerifier.create(tenantAwareClientRegistrationRepository.findByRegistrationId(TENANT))
                 .assertNext(r -> {
                     assertNotNull(r);
@@ -68,9 +68,6 @@ class TenantAwareClientRegistrationRepositoryTest {
 
     @Test
     void testCached() {
-        doReturn(buildProvider("i")).when(providerResolver).getProvider(anyString(), anyString());
-        doReturn(buildRegistration(TENANT)).when(registrationResolver).getRegistration(anyString());
-        doReturn(clientRegistration).when(clientRegistrationFetcher).getRegistration(eq(TENANT), any());
         StepVerifier.create(tenantAwareClientRegistrationRepository.findByRegistrationId(TENANT))
                 .assertNext(r -> {
                     assertNotNull(r);
@@ -81,7 +78,7 @@ class TenantAwareClientRegistrationRepositoryTest {
 
         verify(clientRegistrationFetcher, times(1)).getRegistration(eq(TENANT), any());
 
-        doThrow(RuntimeException.class).when(clientRegistrationFetcher).getRegistration(eq(TENANT), any());
+        when(clientRegistrationFetcher.getRegistration(eq(TENANT), any())).thenThrow(RuntimeException.class);
         StepVerifier.create(tenantAwareClientRegistrationRepository.findByRegistrationId(TENANT))
                 .assertNext(Assertions::assertNotNull)
                 .verifyComplete();
@@ -92,9 +89,6 @@ class TenantAwareClientRegistrationRepositoryTest {
 
     @Test
     void testChange() {
-        doReturn(buildProvider("i")).when(providerResolver).getProvider(anyString(), anyString());
-        doReturn(buildRegistration(TENANT)).when(registrationResolver).getRegistration(anyString());
-        doReturn(clientRegistration).when(clientRegistrationFetcher).getRegistration(eq(TENANT), any());
         StepVerifier.create(tenantAwareClientRegistrationRepository.findByRegistrationId(TENANT))
                 .assertNext(r -> {
                     assertNotNull(r);
@@ -106,7 +100,7 @@ class TenantAwareClientRegistrationRepositoryTest {
         verify(clientRegistrationFetcher, times(1)).getRegistration(eq(TENANT), any());
 
         // Provider changes
-        doReturn(buildProvider("newIssuer")).when(providerResolver).getProvider(anyString(), anyString());
+        when(providerResolver.getProvider(anyString(), anyString())).thenReturn(buildProvider("newIssuer"));
 
         // Client rebuilt
         StepVerifier.create(tenantAwareClientRegistrationRepository.findByRegistrationId(TENANT))
@@ -119,9 +113,6 @@ class TenantAwareClientRegistrationRepositoryTest {
 
     @Test
     void testChangeButError() {
-        doReturn(buildProvider("i")).when(providerResolver).getProvider(anyString(), anyString());
-        doReturn(buildRegistration(TENANT)).when(registrationResolver).getRegistration(anyString());
-        doReturn(clientRegistration).when(clientRegistrationFetcher).getRegistration(eq(TENANT), any());
         StepVerifier.create(tenantAwareClientRegistrationRepository.findByRegistrationId(TENANT))
                 .assertNext(r -> {
                     assertNotNull(r);
@@ -133,9 +124,9 @@ class TenantAwareClientRegistrationRepositoryTest {
         verify(clientRegistrationFetcher, times(1)).getRegistration(eq(TENANT), any());
 
         // Provider changes
-        doReturn(buildProvider("newIssuer")).when(providerResolver).getProvider(anyString(), anyString());
+        when(providerResolver.getProvider(anyString(), anyString())).thenReturn(buildProvider("newIssuer"));
         // But method returns error
-        doThrow(RuntimeException.class).when(clientRegistrationFetcher).getRegistration(eq(TENANT), any());
+        when(clientRegistrationFetcher.getRegistration(eq(TENANT), any())).thenThrow(RuntimeException.class);
 
         // Client returned from cache
         StepVerifier.create(tenantAwareClientRegistrationRepository.findByRegistrationId(TENANT))
@@ -148,9 +139,7 @@ class TenantAwareClientRegistrationRepositoryTest {
 
     @Test
     void testErrorNoCache() {
-        doReturn(buildProvider("i")).when(providerResolver).getProvider(anyString(), anyString());
-        doReturn(buildRegistration(TENANT)).when(registrationResolver).getRegistration(anyString());
-        doThrow(RuntimeException.class).when(clientRegistrationFetcher).getRegistration(eq(TENANT), any());
+        when(clientRegistrationFetcher.getRegistration(eq(TENANT), any())).thenThrow(RuntimeException.class);
         // Method throws error and nothing in cache -> No registration returned
         StepVerifier.create(tenantAwareClientRegistrationRepository.findByRegistrationId(TENANT))
                 .verifyComplete();

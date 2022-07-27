@@ -11,7 +11,8 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class RegistrationResolverTest {
@@ -57,7 +58,7 @@ class RegistrationResolverTest {
     @Test
     void testTenantOnly() {
         OAuth2ClientProperties.Registration tenant1 = tenantRegistration();
-        doReturn(tenant1).when(tenantService).getRegistration(anyString());
+        when(tenantService.getRegistration(anyString())).thenReturn(tenant1);
 
         OAuth2ClientProperties.Registration registration = registrationResolver.getRegistration("tenant1");
 
@@ -75,8 +76,8 @@ class RegistrationResolverTest {
     @Test
     void testOnlyGlobal() {
         OAuth2ClientProperties.Registration global = globalRegistration();
-        doReturn("default").when(tenantService).getRegistrationId(anyString());
-        doReturn(Map.of("default", global)).when(properties).getRegistration();
+        when(tenantService.getRegistrationId(anyString())).thenReturn("default");
+        when(properties.getRegistration()).thenReturn(Map.of("default", global));
 
         OAuth2ClientProperties.Registration registration = registrationResolver.getRegistration("tenant1");
 
@@ -95,9 +96,9 @@ class RegistrationResolverTest {
     void testMerge() {
         OAuth2ClientProperties.Registration global = globalRegistration();
         OAuth2ClientProperties.Registration tenant1 = tenantRegistration();
-        doReturn(tenant1).when(tenantService).getRegistration(anyString());
-        doReturn("tenant1").when(tenantService).getRegistrationId(anyString());
-        doReturn(Map.of("tenant1", global)).when(properties).getRegistration();
+        when(tenantService.getRegistration(anyString())).thenReturn(tenant1);
+        when(tenantService.getRegistrationId(anyString())).thenReturn("tenant1");
+        when(properties.getRegistration()).thenReturn(Map.of("tenant1", global));
 
         OAuth2ClientProperties.Registration registration = registrationResolver.getRegistration("tenant1");
 
