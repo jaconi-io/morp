@@ -2,11 +2,14 @@ package io.jaconi.morp.oauth;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -59,16 +62,20 @@ public class TenantAwareClientRegistrationRepository implements ReactiveClientRe
     }
 
     private void putInCache(String tenant, String registrationSourceHash, ClientRegistration registration) {
-        cacheManager.getCache(SOURCE_HASHES).put(tenant, registrationSourceHash);
-        cacheManager.getCache(REGISTRATIONS).put(tenant, registration);
+        getCache(SOURCE_HASHES).put(tenant, registrationSourceHash);
+        getCache(REGISTRATIONS).put(tenant, registration);
     }
 
     private ClientRegistration getCachedRegistration(String tenant) {
-        return cacheManager.getCache(REGISTRATIONS).get(tenant, ClientRegistration.class);
+        return getCache(REGISTRATIONS).get(tenant, ClientRegistration.class);
     }
 
     private String getCachedSourceHash(String tenant) {
-        return cacheManager.getCache(SOURCE_HASHES).get(tenant, String.class);
+        return getCache(SOURCE_HASHES).get(tenant, String.class);
+    }
+
+    private Cache getCache(String name) {
+        return Objects.requireNonNull(cacheManager.getCache(name));
     }
 
 }
