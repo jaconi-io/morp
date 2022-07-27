@@ -1,38 +1,81 @@
 package io.jaconi.morp.oauth;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesRegistrationAdapter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class TenantAwareClientRegistrationRepository implements ReactiveClientRegistrationRepository {
-    private final Map<String, Mono<ClientRegistration>> clientCache = new ConcurrentHashMap<>();
+
+    public static final String REGISTRATIONS = "registrations";
+
+    public static final String SOURCE_HASHES = "sources-hashes";
+
+    private final CacheManager cacheManager;
+
     private final RegistrationResolver registrationResolver;
+
     private final ProviderResolver providerResolver;
+
+    private final ClientRegistrationFetcher clientRegistrationFetcher;
 
     @Override
     public Mono<ClientRegistration> findByRegistrationId(String tenant) {
-        return clientCache.computeIfAbsent(tenant, this::getClientRegistration);
+        return Mono.fromSupplier(() -> this.getRegistration(tenant));
     }
 
-    private Mono<ClientRegistration> getClientRegistration(String tenant) {
-        return Mono.fromSupplier(() -> {
-            var provider = providerResolver.getProviders(tenant);
-            var registration = registrationResolver.getRegistration(tenant);
-            var properties = new SimpleOAuth2Properties(provider, Collections.singletonMap(tenant, registration));
-            var clientRegistrations = OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties);
-            return clientRegistrations.get(tenant);
-        }).cache(Duration.of(1, ChronoUnit.MINUTES)); // TODO: Make cache time configurable and increase default.
+    private ClientRegistration getRegistration(String tenant) {
+        log.debug("Creating Client Registration for tenant '{}'.", tenant);
+
+        var registration = registrationResolver.getRegistration(tenant);
+        var provider = providerResolver.getProvider(tenant, registration.getProvider());
+        var clientRegistrationSource = new ClientRegistrationSource(provider, registration);
+
+        // Look up source in cache
+        var cachedSourceHash = getCachedSourceHash(tenant);
+        if (cachedSourceHash != null && cachedSourceHash.equals(clientRegistrationSource.sha256())) {
+            // Nothing changed, return cached registration
+            return getCachedRegistration(tenant);
+        }
+
+        try {
+            var clientRegistration = clientRegistrationFetcher.getRegistration(tenant, clientRegistrationSource);
+            if (clientRegistration != null) {
+                log.debug("Putting Client Registration for tenant '{}' in cache.", tenant);
+                putInCache(tenant, clientRegistrationSource.sha256(), clientRegistration);
+                return clientRegistration;
+            }
+        } catch (RuntimeException e) {
+            log.error(String.format("Error creating client registration for tenant '%s'.", tenant), e);
+        }
+        log.debug("Try getting Client Registration for tenant '{}' from cache after error.", tenant);
+        return getCachedRegistration(tenant);
     }
+
+    private void putInCache(String tenant, String registrationSourceHash, ClientRegistration registration) {
+        getCache(SOURCE_HASHES).put(tenant, registrationSourceHash);
+        getCache(REGISTRATIONS).put(tenant, registration);
+    }
+
+    private ClientRegistration getCachedRegistration(String tenant) {
+        return getCache(REGISTRATIONS).get(tenant, ClientRegistration.class);
+    }
+
+    private String getCachedSourceHash(String tenant) {
+        return getCache(SOURCE_HASHES).get(tenant, String.class);
+    }
+
+    private Cache getCache(String name) {
+        return Objects.requireNonNull(cacheManager.getCache(name));
+    }
+
 }

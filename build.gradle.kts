@@ -3,7 +3,7 @@ plugins {
     jacoco
     `jvm-test-suite`
     id("org.springframework.boot") version "2.7.1"
-    id("org.springframework.experimental.aot") version "0.12.0"
+    id("org.springframework.experimental.aot") version "0.12.1"
     id("com.avast.gradle.docker-compose") version "0.16.8"
     id("com.github.rising3.semver") version "0.8.1"
     id("org.barfuin.gradle.jacocolog") version "2.0.0"
@@ -25,7 +25,7 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     compileOnly("org.projectlombok:lombok")
-    compileOnly("org.springframework.experimental:spring-aot:0.12.0")
+    compileOnly("org.springframework.experimental:spring-aot:0.12.1")
     implementation("org.reflections:reflections:0.10.2")
 
     implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2021.0.3"))
@@ -41,13 +41,23 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.session:spring-session-data-redis")
 
+    implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("com.github.ben-manes.caffeine:caffeine")
+    
+    implementation("org.apache.commons:commons-lang3")
+    implementation("commons-codec:commons-codec:1.15")
+
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
     // workaround to be able to develop on ARM Mac :-(
     runtimeOnly("io.netty:netty-resolver-dns-native-macos:4.1.77.Final:osx-aarch_64")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.mock-server:mockserver-spring-test-listener:5.13.2")
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude("org.hamcrest", "hamcrest")
+    }
+    testImplementation("org.mock-server:mockserver-spring-test-listener:5.13.2") {
+        exclude("org.hamcrest", "hamcrest")
+    }
     testImplementation("org.jsoup:jsoup:1.15.2")
     testImplementation("io.projectreactor:reactor-test")
 }

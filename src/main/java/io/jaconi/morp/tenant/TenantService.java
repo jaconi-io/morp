@@ -1,7 +1,7 @@
 package io.jaconi.morp.tenant;
 
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TenantService {
 
     @NonNull
