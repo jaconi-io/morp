@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.stereotype.Component;
 
 /**
@@ -50,10 +51,23 @@ class RegistrationResolver {
         var globalRegistration = getGlobalRegistration(registrationId);
         var merged = merge(globalRegistration, tenantSpecificRegistration);
 
-        if (merged != null && merged.getProvider() == null) {
-            merged.setProvider(registrationId);
-        }
+        if (merged != null) {
+            if (merged.getProvider() == null) {
+                merged.setProvider(registrationId);
+            }
 
+            if (merged.getAuthorizationGrantType() == null) {
+                merged.setAuthorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE.getValue());
+            }
+
+            if (merged.getRedirectUri() == null) {
+                merged.setRedirectUri("{baseUrl}/{action}/oauth2/code/{registrationId}");
+            }
+
+            if (merged.getClientId() == null) {
+                throw new IllegalStateException(String.format("Client ID for tenant %s cannot be null.", tenant));
+            }
+        }
         return merged;
     }
 

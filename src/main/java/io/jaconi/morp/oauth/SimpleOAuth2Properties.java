@@ -32,4 +32,9 @@ class SimpleOAuth2Properties extends OAuth2ClientProperties {
                 Map.of(tenant, clientRegistrationSource.getRegistration()));
     }
 
+    @Override
+    public void afterPropertiesSet() {
+        // Skip client ID validation here
+    }
+
 }
