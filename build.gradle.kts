@@ -125,7 +125,7 @@ tasks.bootBuildImage {
     builder = "paketobuildpacks/builder:tiny"
     imageName = "ghcr.io/jaconi-io/${project.name}:${project.version}"
     environment = mapOf(
-            "BP_NATIVE_IMAGE" to "true"
+            "BP_NATIVE_IMAGE" to "false"
     )
     isPublish = false
     tag("ghcr.io/jaconi-io/${project.name}:latest")
