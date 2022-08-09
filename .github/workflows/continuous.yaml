@@ -57,7 +57,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          arguments: clean check sonarqube
+          arguments: clean check sonarqube -i
 
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
