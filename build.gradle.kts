@@ -140,6 +140,7 @@ tasks.bootBuildImage {
 
 tasks.check {
     dependsOn(tasks.test)
+    dependsOn(tasks.bootBuildImage)
     dependsOn(testing.suites.named("integrationTest"))
     dependsOn(tasks.jacocoTestReport)
 }
