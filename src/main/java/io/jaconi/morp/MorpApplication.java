@@ -17,7 +17,8 @@ import java.util.Collections;
 @NativeHint(types = {
         @TypeHint(types = OptionalValidatorFactoryBean.class),
         @TypeHint(types = Collections.class, typeNames = "java.util.Collections$UnmodifiableMap", access = TypeAccess.PUBLIC_METHODS),
-        @TypeHint(types = SimpleGrantedAuthority.class, access = TypeAccess.PUBLIC_METHODS)
+        @TypeHint(types = SimpleGrantedAuthority.class, access = TypeAccess.PUBLIC_METHODS),
+        @TypeHint(typeNames = "org.springframework.core.annotation.TypeMappedAnnotation[]")
 })
 @EnableCaching
 public class MorpApplication {
