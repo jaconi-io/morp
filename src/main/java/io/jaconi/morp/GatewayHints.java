@@ -3,6 +3,7 @@ package io.jaconi.morp;
 import org.reflections.Reflections;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.cloud.gateway.config.GatewayAutoConfiguration;
+import org.springframework.cloud.gateway.filter.FilterDefinition;
 import org.springframework.cloud.gateway.handler.predicate.PredicateDefinition;
 import org.springframework.cloud.gateway.route.CachingRouteLocator;
 import org.springframework.cloud.gateway.route.RouteRefreshListener;
@@ -20,7 +21,7 @@ import static org.reflections.scanners.Scanners.SubTypes;
 @NativeHint(trigger = GatewayAutoConfiguration.class, types =
         {
                 @TypeHint(types = PredicateDefinition.class, access = TypeAccess.PUBLIC_CONSTRUCTORS),
-                @TypeHint(types = PredicateDefinition.class, access = TypeAccess.PUBLIC_CONSTRUCTORS),
+                @TypeHint(types = FilterDefinition.class, access = TypeAccess.PUBLIC_CONSTRUCTORS),
                 @TypeHint(types = RouteRefreshListener.class, access = TypeAccess.PUBLIC_CONSTRUCTORS),
                 @TypeHint(types = CachingRouteLocator.class, access = TypeAccess.PUBLIC_CONSTRUCTORS)
         }
