@@ -43,7 +43,7 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("com.github.ben-manes.caffeine:caffeine")
-    
+
     implementation("org.apache.commons:commons-lang3")
     implementation("commons-codec:commons-codec:1.15")
 
@@ -92,6 +92,17 @@ testing {
             dependencies {
                 implementation(project)
                 implementation("org.jsoup:jsoup:1.15.2")
+                // testcontainers core
+                implementation("org.testcontainers:junit-jupiter:1.17.3")
+                implementation("org.testcontainers:testcontainers:1.17.3")
+                // testcontainers containers
+                implementation("org.testcontainers:selenium:1.17.3")
+                implementation("com.github.dasniko:testcontainers-keycloak:2.2.2")
+                implementation("org.testcontainers:mockserver:1.17.3")
+                // selenium itself
+                implementation("org.seleniumhq.selenium:selenium-api:4.3.0")
+                implementation("org.seleniumhq.selenium:selenium-chrome-driver:4.3.0")
+                implementation("org.seleniumhq.selenium:selenium-remote-driver:4.3.0")
             }
             targets {
                 all {
@@ -99,6 +110,7 @@ testing {
                         mustRunAfter(tasks.test)
                     }
 
+                    // we can drop this (entire compose setup) if we run all IT with TestContainers against the Morp image
                     dockerCompose.isRequiredBy(testTask)
                     dockerCompose.exposeAsSystemProperties(testTask.get())
                     dockerCompose.useComposeFiles.add("src/integrationTest/resources/docker-compose.yaml")
@@ -109,23 +121,26 @@ testing {
 }
 
 tasks.bootBuildImage {
-    // builder = "paketobuildpacks/builder:tiny"
+    mustRunAfter(tasks.test)
+    builder = "paketobuildpacks/builder:tiny"
     imageName = "ghcr.io/jaconi-io/${project.name}:${project.version}"
     environment = mapOf(
-            "BP_NATIVE_IMAGE" to "true"
+            "BP_NATIVE_IMAGE" to "false"
     )
     isPublish = false
+    tag("ghcr.io/jaconi-io/${project.name}:latest")
     docker {
         publishRegistry {
             url = "ghcr.io"
-            username = System.getenv("GITHUB_USER")
-            password = System.getenv("GITHUB_TOKEN")
+            username = "${System.getenv("GITHUB_USER")}"
+            password = "${System.getenv("GITHUB_TOKEN")}"
         }
     }
 }
 
 tasks.check {
     dependsOn(tasks.test)
+    dependsOn(tasks.bootBuildImage)
     dependsOn(testing.suites.named("integrationTest"))
     dependsOn(tasks.jacocoTestReport)
 }

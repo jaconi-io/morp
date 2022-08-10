@@ -1,0 +1,47 @@
+# keycloak is running on 8080 so we need different ports for Morp here
+server:
+  port: 8081
+management:
+  server:
+    port: 8082
+
+# Routing config
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: mockserver
+          uri: http://upstream:1080
+          predicates:
+            - Path=/upstream/{tenant}/{path}
+          filters:
+            - SetPath=/{path}
+          # consider header manipulation (i.e. setting tenant has custom header for upstream)
+
+morp:
+  default-oauth2-client-registration: keycloak
+  # Tenant identification
+  tenant-extractors:
+    - path-pattern:
+        pattern: /upstream/(\w+)/.*
+        capture-group: 1
+
+  tenant:
+    tenant1:
+      # Configure tenant-specific credentials here.
+      registration:
+        client-id: morp
+        client-secret: secret
+
+  oauth2-client:
+    registration:
+      keycloak:
+        client-id: morp
+        client-secret: secret
+        scope:
+          - openid
+          - profile
+          - email
+    provider:
+      keycloak:
+        issuer-uri: http://keycloak:8080/realms/{tenant}
