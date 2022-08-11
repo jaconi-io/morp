@@ -1,0 +1,12 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: routed-with-backend
+          uri: http://localhost:${mockServerPort}
+          predicates:
+            - Path=/routed-with-backend
+        - id: routed-without-backend
+          uri: http://localhost:${mockServerPort}
+          predicates:
+            - Path=/routed-without-backend
