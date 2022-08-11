@@ -10,18 +10,30 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: mockserver
+        - id: upstream-tenant-path
           uri: http://upstream:1080
           predicates:
+            - Host=morp:8081
             - Path=/upstream/{tenant}/{path}
           filters:
             - SetPath=/{path}
-          # consider header manipulation (i.e. setting tenant has custom header for upstream)
+            - SetRequestHeader=x-tenant-id, {tenant}
+        - id: upstream-tenant-host
+          uri: http://upstream:1080
+          predicates:
+            - Host={tenant}-morp:8081
+            - Path=/upstream/{path}
+          filters:
+            - SetPath=/{path}
+            - SetRequestHeader=x-tenant-id, {tenant}
 
 morp:
   default-oauth2-client-registration: keycloak
   # Tenant identification
   tenant-extractors:
+    - host-pattern:
+        pattern: (\w+)-morp
+        capture-group: 1
     - path-pattern:
         pattern: /upstream/(\w+)/.*
         capture-group: 1
