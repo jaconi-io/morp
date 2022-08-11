@@ -67,13 +67,13 @@ public class RoutingTest {
         mockServerClient
                 .when(request()
                         .withMethod("GET")
-                        .withPath("/routed-without-backend"))
+                        .withPath("/routed-with-backend"))
                 .respond(response()
                         .withStatusCode(200));
 
         // expect ok response from backend
         client.get()
-                .uri("/routed-without-backend")
+                .uri("/routed-with-backend")
                 .exchange()
                 .expectStatus().isOk();
     }
