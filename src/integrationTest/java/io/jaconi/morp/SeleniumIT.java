@@ -100,7 +100,7 @@ public class SeleniumIT {
     }
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception{
 
         // point our mockserver client to mockserver running in the container
         mockServerClient = new MockServerClient(mockserverContainer.getHost(), mockserverContainer.getServerPort());
@@ -125,6 +125,7 @@ public class SeleniumIT {
         driver.get("chrome://settings/clearBrowserData");
         driver.findElement(By.xpath("//settings-ui")).sendKeys(
                 Keys.TAB, Keys.TAB, Keys.TAB, Keys.TAB, Keys.TAB, Keys.TAB, Keys.TAB, Keys.ENTER);
+        Thread.sleep(2000);
     }
 
     @AfterEach
