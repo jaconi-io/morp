@@ -6,7 +6,7 @@ plugins {
     id("org.springframework.experimental.aot") version "0.12.1"
     id("com.github.rising3.semver") version "0.8.1"
     id("org.barfuin.gradle.jacocolog") version "2.0.0"
-    id ("org.sonarqube") version "3.4.0.2513"
+    id("org.sonarqube") version "3.4.0.2513"
 }
 
 apply(plugin = "io.spring.dependency-management")
@@ -88,6 +88,7 @@ testing {
                     setSrcDirs(listOf("src/integrationTest/java"))
                 }
             }
+
             dependencies {
                 implementation(project)
                 implementation("org.jsoup:jsoup:1.15.2")
@@ -107,6 +108,8 @@ testing {
                 all {
                     testTask.configure {
                         mustRunAfter(tasks.test)
+                        testLogging.exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+                        testLogging.showStandardStreams = true
                     }
                 }
             }
@@ -141,6 +144,8 @@ tasks.check {
 
 tasks.test {
     useJUnitPlatform()
+    testLogging.exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    testLogging.showStandardStreams = true
 }
 
 tasks.jacocoTestReport {
