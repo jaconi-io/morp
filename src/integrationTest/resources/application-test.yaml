@@ -57,3 +57,8 @@ morp:
     provider:
       keycloak:
         issuer-uri: http://keycloak:8080/realms/{tenant}
+
+logging.level:
+  root: DEBUG
+  reactor.core: ERROR
+  io.netty: ERROR

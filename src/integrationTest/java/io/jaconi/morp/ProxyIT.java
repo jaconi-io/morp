@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URLDecoder;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockserver.model.HttpRequest.request;
@@ -57,17 +59,16 @@ public class ProxyIT extends TestBase {
 
         // Morp will produce OIDC redirect with keycloak DNS name that we cannot resolve running outside the Docker network
         // therefore rewrite the URL to use localhost and the mapped port
-        var keycloakUri = UriComponentsBuilder.fromUri(step2.getResponseHeaders().getLocation())
+        var keycloakUri = URLDecoder.decode(UriComponentsBuilder.fromUri(step2.getResponseHeaders().getLocation())
                 .host("localhost")
                 .port(getKeycloakContainer().getMappedPort(8080))
                 .build()
-                .toUri();
+                .toUriString(), UTF_8);
 
         // step 3 - follow the IDP redirect
         // expect the Keycloak login mask
         var step3 = webTestClient.get()
                 .uri(keycloakUri)
-                .header("host","keycloak:8080")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody().returnResult();
