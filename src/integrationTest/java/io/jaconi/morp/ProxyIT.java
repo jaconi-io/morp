@@ -1,17 +1,9 @@
 package io.jaconi.morp;
 
 import org.jsoup.Jsoup;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockserver.client.MockServerClient;
-import org.mockserver.springtest.MockServerTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import reactor.netty.http.client.HttpClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,34 +13,11 @@ import static org.springframework.web.reactive.function.BodyInserters.fromFormDa
 
 
 /**
- * Integration test validating a complete OIDC (happy path) round trip using Keycloak as IDP running in docker-compose.
+ * Integration test validating a complete OIDC (happy path) round trip using Keycloak as IDP running. This test
+ * operates via a REST client that validates every redirect in the OIDC dance (with Keycloak as IDP). This is a good
+ * documentation of how OIDC actually works under the covers.
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({"test"})
-@MockServerTest
-public class ProxyIT {
-
-    @LocalServerPort
-    private int port;
-
-    private MockServerClient mockServerClient;
-
-    private WebTestClient client;
-
-    @BeforeEach
-    void setUp() {
-
-        // control the HTTP client to enable wiretap logs
-        HttpClient httpClient = HttpClient.create()
-                .wiretap(true) // hex dump wiretap
-                .compress(true);
-
-        client = WebTestClient.bindToServer(new ReactorClientHttpConnector(httpClient))
-                .baseUrl("http://localhost:" + port)
-                .build();
-
-        mockServerClient.reset();
-    }
+public class ProxyIT extends TestBase {
 
     @Test
     void testKeycloak() {
@@ -57,18 +26,16 @@ public class ProxyIT {
         mockServerClient
                 .when(request()
                         .withMethod("GET")
-                        .withPath("/upstream/.+"))
+                        .withPath("/test"))
                 .respond(response()
                         .withStatusCode(200)
                         .withBody("I am the backend"));
 
-
         // step 1 - run a request for our upstream (using a tenant that will be mapped to Keycloak)
         // expect a 302 redirect into the Spring OAuth2 registry with the identified tenant
-        var step1 = client.get()
-                .uri("/upstream/test")
+        var step1 = webTestClient.get()
+                .uri("/upstream/tenant1/test")
                 .accept(MediaType.TEXT_HTML)
-                .header("x-tenant-id", "tenant1")
                 .exchange()
                 .expectStatus().is3xxRedirection()
                 .expectHeader().location("/oauth2/authorization/tenant1")
@@ -80,7 +47,7 @@ public class ProxyIT {
 
         // step 2 - follow the Spring OAuth2 redirect
         // expect the actual IDP redirect into the proper Keycloak realm
-        var step2 = client.get()
+        var step2 = webTestClient.get()
                 .uri(step1.getResponseHeaders().getLocation().getPath())
                 .cookie("SESSION", session)
                 .exchange()
@@ -88,10 +55,19 @@ public class ProxyIT {
                 .expectHeader().valueMatches("location", ".*/realms/tenant1/protocol/openid-connect/.*")
                 .expectBody().returnResult();
 
+        // Morp will produce OIDC redirect with keycloak DNS name that we cannot resolve running outside the Docker network
+        // therefore rewrite the URL to use localhost and the mapped port
+        var keycloakUri = UriComponentsBuilder.fromUri(step2.getResponseHeaders().getLocation())
+                .host("localhost")
+                .port(getKeycloakContainer().getMappedPort(8080))
+                .build()
+                .toUri();
+
         // step 3 - follow the IDP redirect
         // expect the Keycloak login mask
-        var step3 = client.get()
-                .uri(step2.getResponseHeaders().getLocation())
+        var step3 = webTestClient.get()
+                .uri(keycloakUri)
+                .header("host","keycloak:8080")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody().returnResult();
@@ -107,7 +83,7 @@ public class ProxyIT {
 
         // step 4 - fill the form with test user credentials
         // expect redirection back to gateway into OAuth2 authorization code flow for correct tenant
-        var step4 = client.post()
+        var step4 = webTestClient.post()
                 .uri(url)
                 .cookies(c -> step3.getResponseCookies().toSingleValueMap().entrySet().stream().forEach(e -> c.add(e.getKey(), e.getValue().getValue())))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -121,7 +97,7 @@ public class ProxyIT {
 
         // step 5 - follow the authorization code flow redirect back to the gateway
         // expect to be redirected to the upstream request url with a new SESSION cookie set
-        var step5 = client.get()
+        var step5 = webTestClient.get()
                 .uri(step4.getResponseHeaders().getLocation())
                 .cookie("SESSION", session)
                 .header("x-tenant-id", "tenant1")
@@ -136,7 +112,7 @@ public class ProxyIT {
 
         // step 6 - follow the upstream redirect to finally execute the request we started with
         // expect our upstream response
-        var step6 = client.get()
+        var step6 = webTestClient.get()
                 .uri(step5.getResponseHeaders().getLocation().getPath())
                 .cookie("SESSION", session)
                 .header("x-tenant-id", "tenant1")

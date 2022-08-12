@@ -4,7 +4,6 @@ plugins {
     `jvm-test-suite`
     id("org.springframework.boot") version "2.7.1"
     id("org.springframework.experimental.aot") version "0.12.1"
-    id("com.avast.gradle.docker-compose") version "0.16.8"
     id("com.github.rising3.semver") version "0.8.1"
     id("org.barfuin.gradle.jacocolog") version "2.0.0"
     id ("org.sonarqube") version "3.4.0.2513"
@@ -109,11 +108,6 @@ testing {
                     testTask.configure {
                         mustRunAfter(tasks.test)
                     }
-
-                    // we can drop this (entire compose setup) if we run all IT with TestContainers against the Morp image
-                    dockerCompose.isRequiredBy(testTask)
-                    dockerCompose.exposeAsSystemProperties(testTask.get())
-                    dockerCompose.useComposeFiles.add("src/integrationTest/resources/docker-compose.yaml")
                 }
             }
         }
@@ -175,10 +169,6 @@ tasks.sonarqube {
     dependsOn(tasks.jacocoTestReport)
 }
 
-
-tasks.composeUp {
-    mustRunAfter(tasks.test)
-}
 
 configurations {
     get("integrationTestImplementation").apply {
