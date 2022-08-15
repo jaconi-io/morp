@@ -1,31 +1,42 @@
+# keycloak is running on 8080 so we need different ports for Morp here
+server:
+  port: 8081
+management:
+  server:
+    port: 8082
+
 # Routing config
 spring:
   cloud:
     gateway:
       routes:
-        - id: mockserver
-          uri: http://localhost:${mockServerPort}
+        - id: upstream-tenant-path
+          uri: http://upstream:1080
           predicates:
-            - Path=/upstream/**
+            - Host=morp:8081
+            - Path=/upstream/{tenant}/{path}
+          filters:
+            - SetPath=/{path}
+            - SetRequestHeader=x-tenant-id, {tenant}
+        - id: upstream-tenant-host
+          uri: http://upstream:1080
+          predicates:
+            - Host={tenant}-morp:8081
+            - Path=/upstream/{path}
+          filters:
+            - SetPath=/{path}
+            - SetRequestHeader=x-tenant-id, {tenant}
 
 morp:
   default-oauth2-client-registration: keycloak
   # Tenant identification
   tenant-extractors:
     - host-pattern:
-        pattern: (\w+)-(dev|stg).example.com
+        pattern: (\w+)-morp
         capture-group: 1
-    - host-pattern:
-        pattern: ([a-z]+).localtest.me
-        capture-group: 1
-    - host-mapping:
-        special.example.com: foobar
-        another-special.example.com: foobaz
     - path-pattern:
-        pattern: /([a-z]+)/tenant/([a-z]+)
-        capture-group: 2
-    - header:
-        name: X-Tenant-ID
+        pattern: /upstream/(\w+)/.*
+        capture-group: 1
 
   tenant:
     tenant1:
@@ -45,4 +56,9 @@ morp:
           - email
     provider:
       keycloak:
-        issuer-uri: http://${keycloak.host:localhost}:9000/realms/{tenant}
+        issuer-uri: http://keycloak:8080/realms/{tenant}
+
+logging.level:
+  root: DEBUG
+  reactor.core: ERROR
+  io.netty: ERROR
