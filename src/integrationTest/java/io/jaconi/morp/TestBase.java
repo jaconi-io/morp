@@ -35,8 +35,7 @@ public class TestBase {
 
     protected static WebTestClient webTestClient;
 
-    @BeforeAll
-    static final void beforeAllBase() {
+    static {
 
         // we need a network for our containers to see each other
         network = Network.newNetwork();
@@ -49,13 +48,15 @@ public class TestBase {
                 .withNetworkAliases("keycloak")
                 .withEnv("KC_HOSTNAME_STRICT", "false")
                 .withEnv("KC_HOSTNAME_STRICT_HTTPS", "false")
-                .withEnv("KC_PROXY", "edge");
+                .withEnv("KC_PROXY", "edge")
+                .withReuse(true);
         keycloakContainer.start();
 
         // start mockserver as generic upstream (protected by Morp)
         mockserverContainer = new MockServerContainer(DockerImageName.parse("mockserver/mockserver:5.13.2"))
                 .withNetwork(network)
-                .withNetworkAliases("upstream");
+                .withNetworkAliases("upstream")
+                .withReuse(true);
         mockserverContainer
                 .withLogConsumer(new Slf4jLogConsumer(DockerLoggerFactory.getLogger(mockserverContainer.getDockerImageName())))
                 .start();
@@ -69,6 +70,7 @@ public class TestBase {
                 .withNetworkAliases("morp", "tenant1-morp")
                 .withExposedPorts(8081, 8082)
                 .withEnv("SPRING_PROFILES_ACTIVE", "test")
+                .withReuse(true)
                 .withFileSystemBind(
                         "./src/integrationTest/resources/application-test.yaml",
                         "/workspace/config/application-test.yaml",

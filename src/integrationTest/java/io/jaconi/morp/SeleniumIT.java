@@ -30,21 +30,7 @@ import static org.mockserver.model.HttpResponse.response;
  * This integration tests checks whether a Morp protected backend (mockserver) can be accesses via various identity
  * providers (as defined in application-selenium.yaml)
  */
-public class SeleniumIT extends TestBase {
-
-    private static BrowserWebDriverContainer seleniumContainer;
-    private RemoteWebDriver driver;
-
-    @BeforeAll
-    static void setup() {
-        // start Selenium with a Chrome browser
-        seleniumContainer = new BrowserWebDriverContainer(
-                ArmUtil.select("seleniarm/standalone-chromium", "selenium/standalone-chrome:latest"))
-                .withCapabilities(new ChromeOptions());
-        //.withRecordingMode(BrowserWebDriverContainer.VncRecordingMode.RECORD_ALL, Path.of("./build").toFile());
-        seleniumContainer.withNetwork(getNetwork()).start();
-        System.out.println("VNC URL is: " + seleniumContainer.getVncAddress());
-    }
+public class SeleniumIT extends TestSeleniumBase {
 
     @BeforeEach
     void setUp() throws Exception{
@@ -59,18 +45,8 @@ public class SeleniumIT extends TestBase {
                         .withStatusCode(200)
                         .withBody("<h1 id='test'>Hello from mockserver</h1>"));
 
-        // get the web driver into the Selenium container
-        driver = seleniumContainer.getWebDriver();
-        // use implicit wait of 10s (for DOM to build) when asking for page elements
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        resetDriver();
 
-        // TODO consider jumping to IPD logout URL instead
-        // hacky way to delete all cookies (cross domain) in Chrome
-        driver.manage().deleteAllCookies();
-        driver.get("chrome://settings/clearBrowserData");
-        driver.findElement(By.xpath("//settings-ui")).sendKeys(
-                Keys.TAB, Keys.TAB, Keys.TAB, Keys.TAB, Keys.TAB, Keys.TAB, Keys.TAB, Keys.ENTER);
-        Thread.sleep(5000);
     }
 
     @ParameterizedTest
@@ -79,6 +55,8 @@ public class SeleniumIT extends TestBase {
             "tenant1, tenant1-morp:8081, /upstream, /test"
     })
     void testWithKeycloak(String tenant, String host, String prefix, String path) {
+
+        RemoteWebDriver driver = getDriver();
 
         // have browser access the protected upstream via Morp
         driver.get("http://" + host + prefix + path);
@@ -112,15 +90,5 @@ public class SeleniumIT extends TestBase {
                         .withCookie("SESSION", ".+"), VerificationTimes.once());
     }
 
-    // TODO move into a SeleniumUtil class so we can share it
-    private void saveScreenshot(String name) {
-        try {
-            var screenshot = driver.getScreenshotAs(OutputType.FILE);
-            Files.copy(screenshot.toPath(),
-                    Path.of("./build", Optional.ofNullable(name).orElse(screenshot.getName())),
-                    StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            fail("Error taking screenshot", e);
-        }
-    }
+
 }
