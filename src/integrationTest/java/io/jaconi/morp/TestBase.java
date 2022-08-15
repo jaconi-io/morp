@@ -48,15 +48,13 @@ public class TestBase {
                 .withNetworkAliases("keycloak")
                 .withEnv("KC_HOSTNAME_STRICT", "false")
                 .withEnv("KC_HOSTNAME_STRICT_HTTPS", "false")
-                .withEnv("KC_PROXY", "edge")
-                .withReuse(true);
+                .withEnv("KC_PROXY", "edge");
         keycloakContainer.start();
 
         // start mockserver as generic upstream (protected by Morp)
         mockserverContainer = new MockServerContainer(DockerImageName.parse("mockserver/mockserver:5.13.2"))
                 .withNetwork(network)
-                .withNetworkAliases("upstream")
-                .withReuse(true);
+                .withNetworkAliases("upstream");
         mockserverContainer
                 .withLogConsumer(new Slf4jLogConsumer(DockerLoggerFactory.getLogger(mockserverContainer.getDockerImageName())))
                 .start();
@@ -70,7 +68,6 @@ public class TestBase {
                 .withNetworkAliases("morp", "tenant1-morp")
                 .withExposedPorts(8081, 8082)
                 .withEnv("SPRING_PROFILES_ACTIVE", "test")
-                .withReuse(true)
                 .withFileSystemBind(
                         "./src/integrationTest/resources/application-test.yaml",
                         "/workspace/config/application-test.yaml",
