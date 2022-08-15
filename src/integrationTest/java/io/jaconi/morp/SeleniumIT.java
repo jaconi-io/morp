@@ -1,28 +1,16 @@
 package io.jaconi.morp;
 
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockserver.model.MediaType;
 import org.mockserver.verify.VerificationTimes;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.testcontainers.containers.BrowserWebDriverContainer;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.time.Duration;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
@@ -30,13 +18,16 @@ import static org.mockserver.model.HttpResponse.response;
  * This integration tests checks whether a Morp protected backend (mockserver) can be accesses via various identity
  * providers (as defined in application-selenium.yaml)
  */
-public class SeleniumIT extends TestSeleniumBase {
+public class SeleniumIT {
+
+    @RegisterExtension
+    private static final SeleniumExtension SELENIUM = new SeleniumExtension();
 
     @BeforeEach
-    void setUp() throws Exception{
+    void setUp() throws Exception {
 
-        // setup upstream behavior via mockserver client
-        getMockServerClient()
+        // Setup upstream behavior via mockserver client.
+        MORPExtension.MOCK_SERVER_CLIENT
                 .when(request()
                         .withMethod("GET")
                         .withPath("/test"))
@@ -45,8 +36,7 @@ public class SeleniumIT extends TestSeleniumBase {
                         .withStatusCode(200)
                         .withBody("<h1 id='test'>Hello from mockserver</h1>"));
 
-        resetDriver();
-
+        SELENIUM.resetDriver();
     }
 
     @ParameterizedTest
@@ -55,14 +45,13 @@ public class SeleniumIT extends TestSeleniumBase {
             "tenant1, tenant1-morp:8081, /upstream, /test"
     })
     void testWithKeycloak(String tenant, String host, String prefix, String path) {
-
-        RemoteWebDriver driver = getDriver();
+        RemoteWebDriver driver = SELENIUM.getDriver();
 
         // have browser access the protected upstream via Morp
         driver.get("http://" + host + prefix + path);
 
         // expect redirects to take us to the Keycloak login mast
-        saveScreenshot("01-keycloak-login-mask.png");
+        SELENIUM.saveScreenshot("01-keycloak-login-mask.png");
         driver.findElement(By.id("kc-form-login"));
 
         // fill the form with our admin credentials
@@ -71,11 +60,11 @@ public class SeleniumIT extends TestSeleniumBase {
         driver.findElement(By.id("kc-login")).click();
 
         // match upstream browser content
-        saveScreenshot("02-keycloak-after-login.png");
+        SELENIUM.saveScreenshot("02-keycloak-after-login.png");
         assertThat(driver.findElement(By.id("test")).getText()).isEqualTo("Hello from mockserver");
 
         // assert what upstream has seen (i.e. headers etc)
-        getMockServerClient().verify(
+        MORPExtension.MOCK_SERVER_CLIENT.verify(
                 request()
                         .withMethod("GET")
                         .withPath(path)
@@ -89,6 +78,4 @@ public class SeleniumIT extends TestSeleniumBase {
                         // expect security session cookie (really?)
                         .withCookie("SESSION", ".+"), VerificationTimes.once());
     }
-
-
 }
