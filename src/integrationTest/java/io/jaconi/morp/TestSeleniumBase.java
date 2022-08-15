@@ -37,7 +37,7 @@ public class TestSeleniumBase extends TestBase {
     static {
         // start Selenium with a Chrome browser
         seleniumContainer = new BrowserWebDriverContainer(
-                ArmUtil.select("seleniarm/standalone-chromium", "selenium/standalone-chrome:latest"))
+                ArmUtil.select("seleniarm/standalone-chromium", "selenium/standalone-chrome:103.0"))
                 .withCapabilities(new ChromeOptions());
         //.withRecordingMode(BrowserWebDriverContainer.VncRecordingMode.RECORD_ALL, Path.of("./build").toFile());
         seleniumContainer.withNetwork(getNetwork()).start();
