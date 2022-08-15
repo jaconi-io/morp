@@ -69,6 +69,7 @@ public class ProxyIT extends TestBase {
         // expect the Keycloak login mask
         var step3 = webTestClient.get()
                 .uri(keycloakUri)
+                .header("host","keycloak:8080")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody().returnResult();
@@ -77,15 +78,20 @@ public class ProxyIT extends TestBase {
         var html = new String(step3.getResponseBody(), UTF_8);
         assertThat(html).contains("kc-form-login");
 
-        // extract the login form post target URL (that holds all the oidc state)
-        var url = Jsoup.parse(html)
-                .select("form#kc-form-login")
-                .attr("action");
+        // extract the login form post target URL (that holds all the oidc state) and rewrite to localhost again...
+        var formUrl = URLDecoder.decode(UriComponentsBuilder.fromUriString(Jsoup.parse(html)
+                        .select("form#kc-form-login")
+                        .attr("action"))
+                .host("localhost")
+                .port(getKeycloakContainer().getMappedPort(8080))
+                .build()
+                .toUriString(), UTF_8);
 
         // step 4 - fill the form with test user credentials
         // expect redirection back to gateway into OAuth2 authorization code flow for correct tenant
         var step4 = webTestClient.post()
-                .uri(url)
+                .uri(formUrl)
+                .header("host","keycloak:8080")
                 .cookies(c -> step3.getResponseCookies().toSingleValueMap().entrySet().stream().forEach(e -> c.add(e.getKey(), e.getValue().getValue())))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(fromFormData("username", "test@jaconi.io").with("password", "password"))
@@ -101,10 +107,10 @@ public class ProxyIT extends TestBase {
         var step5 = webTestClient.get()
                 .uri(step4.getResponseHeaders().getLocation())
                 .cookie("SESSION", session)
-                .header("x-tenant-id", "tenant1")
+                .header("host", "morp:8081")
                 .exchange()
                 .expectStatus().is3xxRedirection()
-                .expectHeader().location("/upstream/test")
+                .expectHeader().location("/upstream/tenant1/test")
                 .expectCookie().exists("SESSION")
                 .expectBody().returnResult();
 
@@ -115,6 +121,8 @@ public class ProxyIT extends TestBase {
         // expect our upstream response
         var step6 = webTestClient.get()
                 .uri(step5.getResponseHeaders().getLocation().getPath())
+                .accept(MediaType.TEXT_HTML)
+                .header("host", "morp:8081")
                 .cookie("SESSION", session)
                 .header("x-tenant-id", "tenant1")
                 .exchange()
