@@ -1,6 +1,7 @@
 package io.jaconi.morp;
 
-import org.junit.jupiter.api.extension.Extension;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.OutputType;
@@ -31,7 +32,7 @@ import static org.assertj.core.api.Assertions.fail;
  * }
  * </pre>
  */
-public class SeleniumExtension extends MORPExtension {
+public class SeleniumExtension extends MORPExtension implements BeforeAllCallback {
     private static final BrowserWebDriverContainer<?> SELENIUM_CONTAINER;
 
     static {
@@ -47,12 +48,14 @@ public class SeleniumExtension extends MORPExtension {
 
     private RemoteWebDriver driver;
 
-    public void resetDriver() {
+    void initDriver() {
         // get the web driver into the Selenium container
         driver = SELENIUM_CONTAINER.getWebDriver();
         // use implicit wait of 10s (for DOM to build) when asking for page elements
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+    }
 
+    void resetDriver() {
         // TODO consider jumping to IPD logout URL instead
         // hacky way to delete all cookies (cross domain) in Chrome
         driver.manage().deleteAllCookies();
@@ -64,6 +67,17 @@ public class SeleniumExtension extends MORPExtension {
 
     public RemoteWebDriver getDriver() {
         return driver;
+    }
+
+    @Override
+    public void afterEach(ExtensionContext context) {
+        super.afterEach(context);
+        resetDriver();
+    }
+
+    @Override
+    public void beforeAll(ExtensionContext context) {
+        initDriver();
     }
 
     public void saveScreenshot(String name) {

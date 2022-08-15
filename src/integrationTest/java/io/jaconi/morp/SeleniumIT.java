@@ -35,8 +35,6 @@ public class SeleniumIT {
                         .withContentType(MediaType.TEXT_HTML)
                         .withStatusCode(200)
                         .withBody("<h1 id='test'>Hello from mockserver</h1>"));
-
-        SELENIUM.resetDriver();
     }
 
     @ParameterizedTest
