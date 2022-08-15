@@ -57,15 +57,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          arguments: clean check sonarqube -i
-
-      - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          junit_files: 'build/test-results/**/*.xml'
-          check_name: publish-unit-test-result-action
-          check_run_annotations: 'none'
+          arguments: clean check sonarqube
 
       - name: JUnit Report
         if: always() # always run even if the previous step fails
