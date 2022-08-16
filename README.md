@@ -45,14 +45,14 @@ MORP "glue".
 * **Spring Security** - for flexible request authentication and authorization
 * **Spring Native** - for producing native Docker images with a small resource footprint and fast startup times
 
-# Example
+# Demo
 
 This project contains an example showing how to protect a httpbin instance using authentication with Keycloak. Run the
 example by switching to the example folder and using `docker compose`:
 
 ```shell
-cd example
-docker compose up
+cd compose
+docker compose up -d
 ```
 
 Open [http://foo.localtest.me:8080](http://foo.localtest.me:8080) in your browser and log in with the username
@@ -203,14 +203,12 @@ first non-empty match will be used. When no tenant match, the request will be de
 
 The project comes with a `docker compose` setup that runs Keycloak with a couple of test realms for an interactive
 developer experience. This setup is also used for running automated integration test.
-Bring up the setup either via CLI or via `gradle`.
+Bring up the setup via CLI:
 
 ```shell
 # via CLI
-docker compose up -d 
-
-# via gradle
-./gradlew composeUp
+cd compose
+docker compose -f docker-compose.yaml up -d
 ```
 
 ## Keycloak

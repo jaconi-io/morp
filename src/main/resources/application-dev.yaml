@@ -40,7 +40,9 @@ morp:
           - example.com
     okta:
       oauth2-client-registration: okta
-    tenant1:
+    foo:
+      oauth2-client-registration: keycloak
+    bar:
       oauth2-client-registration: keycloak
 
   oauth2-client:

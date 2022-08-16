@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+
+  morp:
+    image: ghcr.io/jaconi-io/morp:0.2.3
+    ports:
+      - "8080:8080"
+    volumes:
+      - type: bind
+        source: ./application.yaml
+        target: /workspace/application.yaml
