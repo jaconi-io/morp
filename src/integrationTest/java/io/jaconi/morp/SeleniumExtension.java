@@ -1,22 +1,14 @@
 package io.jaconi.morp;
 
-import dasniko.testcontainers.keycloak.KeycloakContainer;
-import org.junit.jupiter.api.AfterEach;
-import org.mockserver.client.MockServerClient;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import org.testcontainers.containers.*;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
-import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
+import org.testcontainers.containers.BrowserWebDriverContainer;
 import org.testcontainers.shaded.com.google.common.util.concurrent.Uninterruptibles;
-import org.testcontainers.utility.DockerImageName;
-import org.testcontainers.utility.DockerLoggerFactory;
-import reactor.netty.http.client.HttpClient;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,28 +20,42 @@ import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.fail;
 
-public class TestSeleniumBase extends TestBase {
-
-    private static BrowserWebDriverContainer seleniumContainer;
-
-    private RemoteWebDriver driver;
+/**
+ * Usage:
+ * <pre>
+ * public class MyIntegrationTest {
+ *
+ *     &#64;RegisterExtension
+ *     private static SeleniumExtension selenium = new SeleniumExtension();
+ *
+ *     ...
+ * }
+ * </pre>
+ */
+public class SeleniumExtension extends MORPExtension implements BeforeAllCallback {
+    private static final BrowserWebDriverContainer<?> SELENIUM_CONTAINER;
 
     static {
-        // start Selenium with a Chrome browser
-        seleniumContainer = new BrowserWebDriverContainer(
+        // Start Selenium with a Chrome browser.
+        //noinspection resource
+        SELENIUM_CONTAINER = new BrowserWebDriverContainer<>(
                 ArmUtil.select("seleniarm/standalone-chromium", "selenium/standalone-chrome:103.0"))
                 .withCapabilities(new ChromeOptions());
         //.withRecordingMode(BrowserWebDriverContainer.VncRecordingMode.RECORD_ALL, Path.of("./build").toFile());
-        seleniumContainer.withNetwork(getNetwork()).start();
-        System.out.println("VNC URL is: " + seleniumContainer.getVncAddress());
+        SELENIUM_CONTAINER.withNetwork(MORPExtension.NETWORK).start();
+        System.out.println("VNC URL is: " + SELENIUM_CONTAINER.getVncAddress());
     }
 
-    public void resetDriver() {
+    private RemoteWebDriver driver;
+
+    void initDriver() {
         // get the web driver into the Selenium container
-        driver = seleniumContainer.getWebDriver();
+        driver = SELENIUM_CONTAINER.getWebDriver();
         // use implicit wait of 10s (for DOM to build) when asking for page elements
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+    }
 
+    void resetDriver() {
         // TODO consider jumping to IPD logout URL instead
         // hacky way to delete all cookies (cross domain) in Chrome
         driver.manage().deleteAllCookies();
@@ -61,6 +67,17 @@ public class TestSeleniumBase extends TestBase {
 
     public RemoteWebDriver getDriver() {
         return driver;
+    }
+
+    @Override
+    public void afterEach(ExtensionContext context) {
+        super.afterEach(context);
+        resetDriver();
+    }
+
+    @Override
+    public void beforeAll(ExtensionContext context) {
+        initDriver();
     }
 
     public void saveScreenshot(String name) {
