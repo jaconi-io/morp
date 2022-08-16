@@ -53,28 +53,29 @@ public class RoutingTest {
     }
 
     @Test
-    void testRoutedPathWithoutBackend() {
-        // expect some gateway error code if the backend is missing
+    void testRoutedPathWithoutTenant() {
+        // expect some gateway error code if no tenant can be extracted
         client.get()
-                .uri("/routed-without-backend")
+                .uri("/routed-without-tenant")
                 .exchange()
                 .expectStatus().is5xxServerError();
     }
 
     @Test
-    void testRoutedPathWithBackend() {
+    void testRoutedPathWithTenant() {
         // simulate an upstream using mockserver
         mockServerClient
                 .when(request()
                         .withMethod("GET")
-                        .withPath("/routed-with-backend"))
+                        .withPath("/routed-with-tenant"))
                 .respond(response()
                         .withStatusCode(200));
 
-        // expect ok response from backend
+        // expect redirect to login
         client.get()
-                .uri("/routed-with-backend")
+                .uri("/routed-with-tenant/tenant1")
                 .exchange()
-                .expectStatus().isOk();
+                .expectStatus().is3xxRedirection()
+                .expectHeader().location("/oauth2/authorization/tenant1");
     }
 }

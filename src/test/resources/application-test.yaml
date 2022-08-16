@@ -2,11 +2,11 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: routed-with-backend
+        - id: routed-with-tenant
           uri: http://localhost:${mockServerPort}
           predicates:
-            - Path=/routed-with-backend
-        - id: routed-without-backend
+            - Path=/routed-with-tenant/{tenant}
+        - id: routed-without-tenant
           uri: http://localhost:${mockServerPort}
           predicates:
-            - Path=/routed-without-backend
+            - Path=/routed-without-tenant
