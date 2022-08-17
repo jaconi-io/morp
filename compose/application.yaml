@@ -5,15 +5,10 @@ spring:
         - id: httpbin
           uri: http://httpbin
           predicates:
-            - Path=/**
+            - Host={tenant}.localtest.me:8080
 
 morp:
   default-oauth2-client-registration: keycloak
-
-  tenant-extractors:
-    - host-pattern:
-        pattern: ([a-z]+).localtest.me
-        capture-group: 1
 
   tenant:
     foo:

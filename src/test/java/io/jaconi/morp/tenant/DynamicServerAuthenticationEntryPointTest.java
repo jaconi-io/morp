@@ -1,10 +1,10 @@
 package io.jaconi.morp.tenant;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
-import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
 import org.springframework.web.client.HttpServerErrorException;
 
 import java.net.URI;
@@ -17,9 +17,10 @@ class DynamicServerAuthenticationEntryPointTest {
 
     @Test
     void commence() {
-        var entryPoint = new DynamicServerAuthenticationEntryPoint(exchange -> ServerWebExchangeMatcher.MatchResult.match(Map.of("tenant", "foo")));
+        var entryPoint = new DynamicServerAuthenticationEntryPoint();
         var request = MockServerHttpRequest.get("/foo").build();
         var exchange = new MockServerWebExchange.Builder(request).build();
+        ServerWebExchangeUtils.putUriTemplateVariables(exchange, Map.of("tenant", "foo"));
 
         entryPoint.commence(exchange, null).block();
 
@@ -29,9 +30,10 @@ class DynamicServerAuthenticationEntryPointTest {
 
     @Test
     void commenceNoTenant() {
-        var entryPoint = new DynamicServerAuthenticationEntryPoint(exchange -> ServerWebExchangeMatcher.MatchResult.notMatch());
+        var entryPoint = new DynamicServerAuthenticationEntryPoint();
         var request = MockServerHttpRequest.get("/foo").build();
         var exchange = new MockServerWebExchange.Builder(request).build();
+        ServerWebExchangeUtils.putUriTemplateVariables(exchange, Map.of());
 
         assertThrows(HttpServerErrorException.class, () -> entryPoint.commence(exchange, null).block());
     }
