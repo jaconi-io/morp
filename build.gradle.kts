@@ -119,7 +119,7 @@ testing {
 
 tasks.bootBuildImage {
     mustRunAfter(tasks.test)
-    builder = "paketobuildpacks/builder:tiny"
+    builder = "paketobuildpacks/builder:0.1.241-tiny"
     imageName = "ghcr.io/jaconi-io/${project.name}:${project.version}"
     environment = mapOf(
             "BP_NATIVE_IMAGE" to "true"
