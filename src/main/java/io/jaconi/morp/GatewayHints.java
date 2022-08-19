@@ -1,5 +1,7 @@
 package io.jaconi.morp;
 
+import io.jaconi.morp.predicates.TenantFromHeaderRoutePredicateFactory;
+import io.jaconi.morp.predicates.TenantFromHostRoutePredicateFactory;
 import org.reflections.Reflections;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
 import org.springframework.cloud.gateway.config.GatewayAutoConfiguration;
@@ -23,7 +25,11 @@ import static org.reflections.scanners.Scanners.SubTypes;
                 @TypeHint(types = PredicateDefinition.class, access = TypeAccess.PUBLIC_CONSTRUCTORS),
                 @TypeHint(types = FilterDefinition.class, access = TypeAccess.PUBLIC_CONSTRUCTORS),
                 @TypeHint(types = RouteRefreshListener.class, access = TypeAccess.PUBLIC_CONSTRUCTORS),
-                @TypeHint(types = CachingRouteLocator.class, access = TypeAccess.PUBLIC_CONSTRUCTORS)
+                @TypeHint(types = CachingRouteLocator.class, access = TypeAccess.PUBLIC_CONSTRUCTORS),
+                @TypeHint(types = TenantFromHeaderRoutePredicateFactory.class, access = {TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS}),
+                @TypeHint(types = TenantFromHeaderRoutePredicateFactory.Config.class, access = {TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS}),
+                @TypeHint(types = TenantFromHostRoutePredicateFactory.class, access = {TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS}),
+                @TypeHint(types = TenantFromHostRoutePredicateFactory.Config.class, access = {TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS}),
         }
 )
 public class GatewayHints implements NativeConfiguration {

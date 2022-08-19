@@ -9,6 +9,7 @@ management:
     web:
       exposure:
         include:
+          - gateway
           - health
           - prometheus
   metrics:
@@ -44,36 +45,7 @@ spring:
     type: caffeine
 
 # Non-spring configuration goes here!
-morp:
-
-  # The tenant extractors determine the tenant ID for each request. The first extractor returning a match will be used.
-  tenant-extractors: []
-    # Extract the tenant ID from the hostname:
-    # - host-pattern:
-    #     pattern: ([a-z]+).example.com
-
-    # Extract the tenant ID from the hostname, when having multiple capture groups in the pattern:
-    # - host-pattern:
-    #     pattern: (dev|stg|prd)-([a-z]+).example.com
-    #     capture-group: 2
-
-    # Statically map hostnames tenant IDs:
-    # - host-mapping:
-    #     foo.example.com: customer-foo
-    #     bar.example.com: customer-bar
-
-    # Extract the tenant ID from the path:
-    # - path-pattern:
-    #     pattern: /tenant/([a-z]+)
-
-    # Extract the tenant ID from the path, when having multiple capture groups in the pattern:
-    # - path-pattern:
-    #     pattern: /api/(v1|v2)/([a-z]+)
-    #     capture-group: 2
-
-    # Extract the tenant ID from a header.
-    # - header:
-    #     name: X-Tenant-ID
+morp: {}
 
 ---
 spring.config.activate.on-profile:

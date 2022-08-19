@@ -182,20 +182,19 @@ Usually, only `client-id` and `client-secret` are required.
 ## Tenant
 
 A tenant is the entity determining the registration to be used. This might be a customer, an application or a
-department. To figure out the tenant for a request, MORP uses tenant extractors. MORP comes with the following tenant
-extractors:
+department. To figure out the tenant for a request, MORP uses predicates. MORP comes with the following predicates:
 
-| Tenant Extractor | Example Configuration                                                                                            | Example Request                   | Example Tenant |
-|------------------|------------------------------------------------------------------------------------------------------------------|-----------------------------------|----------------|
-| `host-pattern`   | <pre>- host-pattern<br/>    pattern: ([a-z]+).example.com</pre>                                                  | foo.example.com                   | foo            |
-| `host-pattern`   | <pre>- host-pattern<br/>    pattern: (dev&#124;prod)-([a-z]+).example.com<br/>    capture-group: 2</pre>         | dev-foo.example.com               | foo            |
-| `host-mapping`   | <pre>- host-mapping<br/>    foo.example.com: foo<br/>    bar.example.com: bar</pre>                              | foo.example.com                   | foo            |
-| `path-pattern`   | <pre>- path-pattern<br/>    pattern: example.com/tenant/([a-z]+)</pre>                                           | example.com/tenant/foo            | foo            |
-| `path-pattern`   | <pre>- path-pattern<br/>    pattern: example.com/api/(v1&#124;v2)/tenant/([a-z]+)<br/>    capture-group: 2</pre> | foo.example.com/api/v1/tenant/foo | foo            |
-| `header`         | <pre>- header<br/>    name: X-Tenant-ID</pre>                                                                    | -H 'X-Tenant-ID: foo' example.com | foo            |
+| Tenant Extractor   | Example Configuration                                                                                                                                     | Example Request               | Example Tenant |
+|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------|----------------|
+| `Host`             | <pre>Host={tenant}.example.com</pre>                                                                                                                      | foo.example.com               | foo            |
+| `Host`             | <pre>Host={stage}-{tenant}.example.com                                                                                                                    | dev-foo.example.com           | foo            |
+| `Path`             | <pre>Path=example.com/tenant/{tenant}</pre>                                                                                                               | example.com/tenant/foo        | foo            |
+| `Path`             | <pre>Path=example.com/api/{version}/tenant/{tenant}</pre>                                                                                                 | example.com/api/v1/tenant/foo | foo            |
+| `TenantFromHost`   | <pre>name: TenantFromHost<br/>args:<br/>  patterns:<br/>    - static.localtest.me:8080<br/>    - another-static.localtest.me:8080<br/>  tenant: foo</pre> | static.example.com            | foo            |
+| `TenantFromHeader` | <pre>TenantFromHeader=X-Tenant-ID,{tenant}</pre>                                                                                                          | X-Tenant-ID: foo              | foo            |
 
-Tenant extractors are configured in the `morp.tenant-extractors` section. Tenant extractors are applied in order. The
-first non-empty match will be used. When no tenant match, the request will be denied.
+Predicates are configured in the `spring.cloud.gateway.routes[*].predicates` section. Predicates are applied per route.
+When no tenant is matched, the request will fail.
 
 # Development
 

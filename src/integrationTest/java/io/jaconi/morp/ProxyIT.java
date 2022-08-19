@@ -40,6 +40,7 @@ public class ProxyIT {
         var step1 = MORPExtension.WEB_TEST_CLIENT.get()
                 .uri("/upstream/tenant1/test")
                 .accept(MediaType.TEXT_HTML)
+                .header("host", "morp:8081")
                 .exchange()
                 .expectStatus().is3xxRedirection()
                 .expectHeader().location("/oauth2/authorization/tenant1")

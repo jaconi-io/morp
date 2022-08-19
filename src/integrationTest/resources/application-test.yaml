@@ -29,14 +29,6 @@ spring:
 
 morp:
   default-oauth2-client-registration: keycloak
-  # Tenant identification
-  tenant-extractors:
-    - host-pattern:
-        pattern: (\w+)-morp
-        capture-group: 1
-    - path-pattern:
-        pattern: /upstream/(\w+)/.*
-        capture-group: 1
 
   tenant:
     tenant1:

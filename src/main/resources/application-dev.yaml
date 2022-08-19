@@ -2,30 +2,37 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: httpbin
+        - id: host-mapping
+          uri: https://httpbin.org
+          order: 2
+          predicates:
+            - Host={tenant}.localtest.me:8080
+        - id: host-mapping-with-stage
+          uri: https://httpbin.org
+          order: 1
+          predicates:
+            - Host={tenant}-{stage}.localtest.me:8080
+        - id: path-mapping
           uri: https://httpbin.org
           predicates:
-            - Path=/**
+            - Path=/tenant/{tenant}/**
+        - id: host-mapping-static
+          uri: https://httpbin.org
+          order: 0
+          predicates:
+            - name: TenantFromHost
+              args:
+                patterns:
+                  - static.localtest.me:8080
+                  - another-static.localtest.me:8080
+                tenant: foo
+        - id: header-mapping
+          uri: https://httpbin.org
+          predicates:
+            - TenantFromHeader=X-Tenant-ID,{tenant}
 
 morp:
-
   default-oauth2-client-registration: google
-
-  tenant-extractors:
-    - host-pattern:
-        pattern: (\w+)-(dev|stg).example.com
-        capture-group: 1
-    - host-pattern:
-        pattern: (\w+).localtest.me
-        capture-group: 1
-    - host-mapping:
-        special.example.com: foobar
-        another-special.example.com: foobaz
-    - path-pattern:
-        pattern: /(\w+)/tenant/([a-z]+)
-        capture-group: 2
-    - header:
-        name: X-Tenant-ID
 
   tenant:
     mybar:
