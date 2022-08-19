@@ -3,15 +3,9 @@ package io.jaconi.morp.oauth;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesRegistrationAdapter;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 import org.springframework.stereotype.Component;
-
-import java.util.Collections;
-import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -22,6 +16,15 @@ public class ClientRegistrationFetcher {
         log.debug("Creating Client Registration for tenant '{}' from scratch.", tenant);
         var properties = new SimpleOAuth2Properties(tenant, clientRegistrationSource);
         var clientRegistrations = OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties);
-        return clientRegistrations.get(tenant);
+        return withDefaults(clientRegistrations.get(tenant));
+    }
+
+    private static ClientRegistration withDefaults(ClientRegistration clientRegistration) {
+        if (clientRegistration.getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName() == null) {
+            ClientRegistration.Builder builder = ClientRegistration.withClientRegistration(clientRegistration);
+            builder.userNameAttributeName(IdTokenClaimNames.SUB);
+            clientRegistration = builder.build();
+        }
+        return clientRegistration;
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
 
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +50,27 @@ class RegistrationResolverTest {
         return registration;
     }
 
+    private static OAuth2ClientProperties.Registration noDefaultsRegistration() {
+        OAuth2ClientProperties.Registration registration = new OAuth2ClientProperties.Registration();
+        registration.setProvider("global");
+        registration.setClientId("globalclient");
+        registration.setClientSecret("globalsecret");
+        registration.setClientName("Global");
+        registration.setClientAuthenticationMethod("client_secret");
+        registration.setScope(Set.of("openid", "profile"));
+        // Some values not set
+        registration.setRedirectUri(null);
+        registration.setAuthorizationGrantType(null);
+        return registration;
+    }
+
+    private static OAuth2ClientProperties.Registration noClientIdRegistration() {
+        OAuth2ClientProperties.Registration registration = new OAuth2ClientProperties.Registration();
+        registration.setProvider("global");
+        registration.setClientId(null);
+        return registration;
+    }
+
     @Test
     void testNoRegistrations() {
         OAuth2ClientProperties.Registration registration = registrationResolver.getRegistration("tenant1");
@@ -69,7 +91,6 @@ class RegistrationResolverTest {
         assertEquals(tenant1.getClientName(), registration.getClientName());
         assertEquals(tenant1.getClientSecret(), registration.getClientSecret());
         assertEquals(tenant1.getClientAuthenticationMethod(), registration.getClientAuthenticationMethod());
-        assertEquals(tenant1.getRedirectUri(), registration.getRedirectUri());
         assertEquals(tenant1.getScope(), registration.getScope());
     }
 
@@ -114,5 +135,31 @@ class RegistrationResolverTest {
         assertEquals(global.getScope(), registration.getScope());
     }
 
+    @Test
+    void testDefaults() {
+        OAuth2ClientProperties.Registration noDefaults = noDefaultsRegistration();
+        when(tenantService.getRegistration(anyString())).thenReturn(noDefaults);
+        when(tenantService.getRegistrationId(anyString())).thenReturn("tenant1");
+        when(properties.getRegistration()).thenReturn(Map.of("tenant1", noDefaults));
+
+        OAuth2ClientProperties.Registration registration = registrationResolver.getRegistration("tenant1");
+
+        assertNotNull(registration);
+        assertEquals(AuthorizationGrantType.AUTHORIZATION_CODE.getValue(), registration.getAuthorizationGrantType());
+        assertEquals("{baseUrl}/{action}/oauth2/code/{registrationId}", registration.getRedirectUri());
+    }
+
+    @Test
+    void testNoClientId() {
+        OAuth2ClientProperties.Registration noClientId = noClientIdRegistration();
+        when(tenantService.getRegistration(anyString())).thenReturn(noClientId);
+        when(tenantService.getRegistrationId(anyString())).thenReturn("tenant1");
+        when(properties.getRegistration()).thenReturn(Map.of("tenant1", noClientId));
+
+
+        assertThrows(IllegalStateException.class, () -> {
+            registrationResolver.getRegistration("tenant1");
+        });
+    }
 
 }
