@@ -1,3 +1,13 @@
+# [1.0.0](https://github.com/jaconi-io/morp/compare/v0.3.0...v1.0.0) (2022-08-19)
+
+
+* feat!: use URI template variables for tenant discovery ([651e6a9](https://github.com/jaconi-io/morp/commit/651e6a950fbad61d5fef5ec67bc04c716b8f2a36))
+
+
+### BREAKING CHANGES
+
+* Tenant extraction config changed heavily!
+
 # [0.3.0](https://github.com/jaconi-io/morp/compare/v0.2.3...v0.3.0) (2022-08-19)
 
 
