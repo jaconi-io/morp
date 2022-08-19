@@ -119,10 +119,11 @@ testing {
 
 tasks.bootBuildImage {
     mustRunAfter(tasks.test)
-    builder = "paketobuildpacks/builder:0.1.241-tiny"
+    builder = "paketobuildpacks/builder:tiny"
     imageName = "ghcr.io/jaconi-io/${project.name}:${project.version}"
     environment = mapOf(
-            "BP_NATIVE_IMAGE" to "true"
+            "BP_NATIVE_IMAGE" to "true",
+            "USE_NATIVE_IMAGE_JAVA_PLATFORM_MODULE_SYSTEM" to "false"
     )
     isPublish = false
     tag("ghcr.io/jaconi-io/${project.name}:latest")
