@@ -1,3 +1,22 @@
+# [0.3.0](https://github.com/jaconi-io/morp/compare/v0.2.3...v0.3.0) (2022-08-19)
+
+
+### Bug Fixes
+
+* add sensible defaults ([8f5e261](https://github.com/jaconi-io/morp/commit/8f5e2618935b65405d6f9a20880597a9006600b7))
+* fix native image ([ed2bc0f](https://github.com/jaconi-io/morp/commit/ed2bc0f0a2509ae4007264f8ee7f23793109c705))
+* improve test ([6d9197d](https://github.com/jaconi-io/morp/commit/6d9197d98d93170c6d720f5354ff49f611a3402c))
+* make sonar happy ([9e4f33b](https://github.com/jaconi-io/morp/commit/9e4f33b397b9fa94599ad05cacc9e6a54000f272))
+* migrate to sha256 ([fc5c85e](https://github.com/jaconi-io/morp/commit/fc5c85ea44241b8c70963d5e1c47301d542a3778))
+* remove remaining code smells ([d5b84ff](https://github.com/jaconi-io/morp/commit/d5b84ff7aa944e477fee8d0359a40a54c41ae478))
+* use only AssertJ ([8d17958](https://github.com/jaconi-io/morp/commit/8d17958a47a551d6c233ae959991247d2eee370b))
+
+
+### Features
+
+* add caching for client registration ([99c130b](https://github.com/jaconi-io/morp/commit/99c130b8be8d0ecf657e9475b9429d938bc11d18))
+* add dev profile ([cf68883](https://github.com/jaconi-io/morp/commit/cf68883c21aba993d1e2f16d53ef77b7a8744bee))
+
 ## [0.2.3](https://github.com/jaconi-io/morp/compare/v0.2.2...v0.2.3) (2022-07-20)
 
 
