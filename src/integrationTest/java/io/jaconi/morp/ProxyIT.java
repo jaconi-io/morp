@@ -23,6 +23,8 @@ import static org.springframework.web.reactive.function.BodyInserters.fromFormDa
 @ExtendWith(MORPExtension.class)
 public class ProxyIT {
 
+    private static final String SESSION_COOKIE = "MORP_SESSION";
+
     @Test
     void testKeycloak() {
 
@@ -44,17 +46,17 @@ public class ProxyIT {
                 .exchange()
                 .expectStatus().is3xxRedirection()
                 .expectHeader().location("/oauth2/authorization/tenant1")
-                .expectCookie().exists("SESSION")
+                .expectCookie().exists(SESSION_COOKIE)
                 .expectBody().returnResult();
 
         // memorize the session with the gateway
-        var session = step1.getResponseCookies().getFirst("SESSION").getValue();
+        var session = step1.getResponseCookies().getFirst(SESSION_COOKIE).getValue();
 
         // step 2 - follow the Spring OAuth2 redirect
         // expect the actual IDP redirect into the proper Keycloak realm
         var step2 = MORPExtension.WEB_TEST_CLIENT.get()
                 .uri(step1.getResponseHeaders().getLocation().getPath())
-                .cookie("SESSION", session)
+                .cookie(SESSION_COOKIE, session)
                 .exchange()
                 .expectStatus().is3xxRedirection()
                 .expectHeader().valueMatches("location", ".*/realms/tenant1/protocol/openid-connect/.*")
@@ -109,16 +111,16 @@ public class ProxyIT {
         // expect to be redirected to the upstream request url with a new SESSION cookie set
         var step5 = MORPExtension.WEB_TEST_CLIENT.get()
                 .uri(step4.getResponseHeaders().getLocation())
-                .cookie("SESSION", session)
+                .cookie(SESSION_COOKIE, session)
                 .header("host", "morp:8081")
                 .exchange()
                 .expectStatus().is3xxRedirection()
                 .expectHeader().location("/upstream/tenant1/test")
-                .expectCookie().exists("SESSION")
+                .expectCookie().exists(SESSION_COOKIE)
                 .expectBody().returnResult();
 
         // extract the new session cookie (not the auth session anymore)
-        session = step5.getResponseCookies().getFirst("SESSION").getValue();
+        session = step5.getResponseCookies().getFirst(SESSION_COOKIE).getValue();
 
         // step 6 - follow the upstream redirect to finally execute the request we started with
         // expect our upstream response
@@ -126,7 +128,7 @@ public class ProxyIT {
                 .uri(step5.getResponseHeaders().getLocation().getPath())
                 .accept(MediaType.TEXT_HTML)
                 .header("host", "morp:8081")
-                .cookie("SESSION", session)
+                .cookie(SESSION_COOKIE, session)
                 .header("x-tenant-id", "tenant1")
                 .exchange()
                 .expectStatus().isOk()

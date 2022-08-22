@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockserver.model.MediaType;
+import org.mockserver.model.NottableString;
 import org.mockserver.verify.VerificationTimes;
 import org.openqa.selenium.By;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -73,7 +74,7 @@ public class SeleniumIT {
                         .withHeader("x-forwarded-prefix", prefix)
                         // expect custom tenant header
                         .withHeader("x-tenant-id", tenant)
-                        // expect security session cookie (really?)
-                        .withCookie("SESSION", ".+"), VerificationTimes.once());
+                        // expect security session cookie to be removed
+                        .withCookie(NottableString.not("MORP_SESSION"), NottableString.string(".*")));
     }
 }
