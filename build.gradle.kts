@@ -19,6 +19,10 @@ repositories {
     maven(url = "https://repo.spring.io/release")
 }
 
+springAot {
+    removeXmlSupport.set(false)
+}
+
 dependencies {
     annotationProcessor("org.projectlombok:lombok")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
@@ -26,6 +30,14 @@ dependencies {
     compileOnly("org.projectlombok:lombok")
     compileOnly("org.springframework.experimental:spring-aot:0.12.1")
     implementation("org.reflections:reflections:0.10.2")
+
+    // logback workaround
+    // see: https://github.com/spring-projects-experimental/spring-native/tree/main/samples/logger
+    implementation("org.codehaus.janino:janino:3.1.6")
+
+    // json logging
+    implementation("net.logstash.logback:logstash-logback-encoder:7.2")
+    implementation("ch.qos.logback:logback-classic")
 
     implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2021.0.3"))
 
