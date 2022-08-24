@@ -14,18 +14,21 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.ServerAuthenticationEntryPoint;
 import org.springframework.security.web.server.ui.LogoutPageGeneratingWebFilter;
+import org.springframework.security.web.server.util.matcher.*;
 
 import static io.jaconi.morp.MorpReactiveUserService.ROLE_PROXY;
 
 @Configuration
 public class SecurityConfiguration {
 
+    private static final String DEBUG_ENDPOINT = "/debug";
+
     @Bean
     SecurityWebFilterChain securityFilterChain(ServerAuthenticationEntryPoint serverAuthenticationEntryPoint, ServerHttpSecurity httpSecurity,
                                                FilteringWebHandler webHandler, RouteLocator routeLocator,
                                                GlobalCorsProperties globalCorsProperties, Environment environment) {
         return httpSecurity.authorizeExchange()
-                .pathMatchers("/debug").authenticated()
+                .pathMatchers(DEBUG_ENDPOINT).authenticated()
                 .matchers(EndpointRequest.toAnyEndpoint()).permitAll()
                 .anyExchange().hasAuthority(ROLE_PROXY)
                 .and()
@@ -39,7 +42,20 @@ public class SecurityConfiguration {
                 .and()
                 .addFilterAt(new LogoutPageGeneratingWebFilter(),
                         SecurityWebFiltersOrder.LOGOUT_PAGE_GENERATING)
-                .addFilterAfter(new TenantExtractionFilter(webHandler, routeLocator, globalCorsProperties, environment), SecurityWebFiltersOrder.REACTOR_CONTEXT)
+                .addFilterAfter(new TenantExtractionFilter(webHandler, routeLocator, globalCorsProperties, environment,
+                        tenantExtractionRequestMatcher()), SecurityWebFiltersOrder.REACTOR_CONTEXT)
                 .build();
     }
+
+    private ServerWebExchangeMatcher tenantExtractionRequestMatcher() {
+        return new NegatedServerWebExchangeMatcher(
+                new OrServerWebExchangeMatcher(
+                        new PathPatternParserServerWebExchangeMatcher(DEBUG_ENDPOINT),
+                        new PathPatternParserServerWebExchangeMatcher("/oauth2/**"),
+                        new PathPatternParserServerWebExchangeMatcher("/login/oauth2/**"),
+                        EndpointRequest.toAnyEndpoint()
+                )
+        );
+    }
+
 }

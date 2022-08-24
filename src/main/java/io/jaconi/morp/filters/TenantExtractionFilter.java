@@ -7,6 +7,8 @@ import org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
+import org.springframework.util.Assert;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
@@ -32,9 +34,15 @@ import reactor.core.publisher.Mono;
  * {@link io.jaconi.morp.SecurityConfiguration}.
  */
 public class TenantExtractionFilter extends RoutePredicateHandlerMapping implements WebFilter {
+
+    private final ServerWebExchangeMatcher exchangeMatcher;
+
     public TenantExtractionFilter(FilteringWebHandler webHandler, RouteLocator routeLocator,
-                                  GlobalCorsProperties globalCorsProperties, Environment environment) {
+                                  GlobalCorsProperties globalCorsProperties, Environment environment,
+                                  ServerWebExchangeMatcher exchangeMatcher) {
         super(webHandler, routeLocator, globalCorsProperties, environment);
+        Assert.notNull(exchangeMatcher, "exchangeMatcher cannot be null");
+        this.exchangeMatcher = exchangeMatcher;
     }
 
     @Override
@@ -43,6 +51,13 @@ public class TenantExtractionFilter extends RoutePredicateHandlerMapping impleme
         // again by Spring Cloud Gateway). However, changing the order of Spring Cloud Gateway and Spring Security
         // causes side effects (for example, breaking injection of principals inside controllers) and might create
         // security issues as well.
+        return this.exchangeMatcher.matches(exchange)
+                .filter(ServerWebExchangeMatcher.MatchResult::isMatch)
+                .switchIfEmpty(chain.filter(exchange).then(Mono.empty()))
+                .flatMap(r -> lookupTenant(exchange, chain));
+    }
+
+    private Mono<Void> lookupTenant(ServerWebExchange exchange, WebFilterChain chain) {
         return lookupRoute(exchange)
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
                 .then(chain.filter(exchange));
