@@ -6,7 +6,12 @@ import org.springframework.cloud.gateway.handler.FilteringWebHandler;
 import org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.core.env.Environment;
+import org.springframework.core.log.LogMessage;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
 import org.springframework.util.Assert;
 import org.springframework.web.server.ResponseStatusException;
@@ -53,13 +58,22 @@ public class TenantExtractionFilter extends RoutePredicateHandlerMapping impleme
         // security issues as well.
         return this.exchangeMatcher.matches(exchange)
                 .filter(ServerWebExchangeMatcher.MatchResult::isMatch)
+                .filterWhen(b -> isNotAuthenticated())
                 .switchIfEmpty(chain.filter(exchange).then(Mono.empty()))
                 .flatMap(r -> lookupTenant(exchange, chain));
     }
 
     private Mono<Void> lookupTenant(ServerWebExchange exchange, WebFilterChain chain) {
         return lookupRoute(exchange)
-                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
-                .then(chain.filter(exchange));
+                        .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
+                        .then(chain.filter(exchange));
+    }
+
+    private Mono<Boolean> isNotAuthenticated() {
+        return ReactiveSecurityContextHolder.getContext().filter((c) -> c.getAuthentication() != null)
+                .map(SecurityContext::getAuthentication)
+                .map(Authentication::isAuthenticated)
+                .switchIfEmpty(Mono.just(Boolean.FALSE))
+                .map(r -> !r);
     }
 }

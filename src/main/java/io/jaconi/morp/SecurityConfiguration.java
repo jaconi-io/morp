@@ -1,7 +1,6 @@
 package io.jaconi.morp;
 
 import io.jaconi.morp.filters.TenantExtractionFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
 import org.springframework.cloud.gateway.config.GlobalCorsProperties;
 import org.springframework.cloud.gateway.handler.FilteringWebHandler;
@@ -14,7 +13,9 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.ServerAuthenticationEntryPoint;
 import org.springframework.security.web.server.ui.LogoutPageGeneratingWebFilter;
-import org.springframework.security.web.server.util.matcher.*;
+import org.springframework.security.web.server.util.matcher.NegatedServerWebExchangeMatcher;
+import org.springframework.security.web.server.util.matcher.OrServerWebExchangeMatcher;
+import org.springframework.security.web.server.util.matcher.PathPatternParserServerWebExchangeMatcher;
 
 import static io.jaconi.morp.MorpReactiveUserService.ROLE_PROXY;
 
@@ -22,6 +23,15 @@ import static io.jaconi.morp.MorpReactiveUserService.ROLE_PROXY;
 public class SecurityConfiguration {
 
     private static final String DEBUG_ENDPOINT = "/debug";
+
+    private static final NegatedServerWebExchangeMatcher TENANT_EXTRACTION_REQUEST_MATCHER = new NegatedServerWebExchangeMatcher(
+            new OrServerWebExchangeMatcher(
+                    new PathPatternParserServerWebExchangeMatcher(DEBUG_ENDPOINT),
+                    new PathPatternParserServerWebExchangeMatcher("/oauth2/**"),
+                    new PathPatternParserServerWebExchangeMatcher("/login/oauth2/**"),
+                    EndpointRequest.toAnyEndpoint()
+            )
+    );
 
     @Bean
     SecurityWebFilterChain securityFilterChain(ServerAuthenticationEntryPoint serverAuthenticationEntryPoint, ServerHttpSecurity httpSecurity,
@@ -43,19 +53,8 @@ public class SecurityConfiguration {
                 .addFilterAt(new LogoutPageGeneratingWebFilter(),
                         SecurityWebFiltersOrder.LOGOUT_PAGE_GENERATING)
                 .addFilterAfter(new TenantExtractionFilter(webHandler, routeLocator, globalCorsProperties, environment,
-                        tenantExtractionRequestMatcher()), SecurityWebFiltersOrder.REACTOR_CONTEXT)
+                        TENANT_EXTRACTION_REQUEST_MATCHER), SecurityWebFiltersOrder.REACTOR_CONTEXT)
                 .build();
-    }
-
-    private ServerWebExchangeMatcher tenantExtractionRequestMatcher() {
-        return new NegatedServerWebExchangeMatcher(
-                new OrServerWebExchangeMatcher(
-                        new PathPatternParserServerWebExchangeMatcher(DEBUG_ENDPOINT),
-                        new PathPatternParserServerWebExchangeMatcher("/oauth2/**"),
-                        new PathPatternParserServerWebExchangeMatcher("/login/oauth2/**"),
-                        EndpointRequest.toAnyEndpoint()
-                )
-        );
     }
 
 }
