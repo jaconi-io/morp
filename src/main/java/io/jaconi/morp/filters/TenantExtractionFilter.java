@@ -6,17 +6,12 @@ import org.springframework.cloud.gateway.handler.FilteringWebHandler;
 import org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
-
-import java.nio.charset.StandardCharsets;
 
 /**
  * The tenant extraction filter determines a tenant from route predicates. Supported predicates are:
@@ -36,7 +31,6 @@ import java.nio.charset.StandardCharsets;
  * The filters position in the Spring Security filter chain is configured in the
  * {@link io.jaconi.morp.SecurityConfiguration}.
  */
-@Component
 public class TenantExtractionFilter extends RoutePredicateHandlerMapping implements WebFilter {
     public TenantExtractionFilter(FilteringWebHandler webHandler, RouteLocator routeLocator,
                                   GlobalCorsProperties globalCorsProperties, Environment environment) {
