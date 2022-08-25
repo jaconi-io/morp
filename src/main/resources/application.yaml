@@ -1,3 +1,9 @@
+server:
+  reactive:
+    session:
+      cookie:
+        name: MORP_SESSION
+
 management:
   endpoint:
     health:

@@ -1,5 +1,6 @@
 package io.jaconi.morp;
 
+import io.jaconi.morp.filters.RemoveSessionCookieFilter;
 import io.jaconi.morp.filters.TenantExtractionFilter;
 import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
 import org.springframework.cloud.gateway.config.GlobalCorsProperties;
@@ -16,6 +17,8 @@ import org.springframework.security.web.server.ui.LogoutPageGeneratingWebFilter;
 import org.springframework.security.web.server.util.matcher.NegatedServerWebExchangeMatcher;
 import org.springframework.security.web.server.util.matcher.OrServerWebExchangeMatcher;
 import org.springframework.security.web.server.util.matcher.PathPatternParserServerWebExchangeMatcher;
+import org.springframework.web.server.session.CookieWebSessionIdResolver;
+import org.springframework.web.server.session.WebSessionIdResolver;
 
 import static io.jaconi.morp.MorpReactiveUserService.ROLE_PROXY;
 
@@ -55,6 +58,14 @@ public class SecurityConfiguration {
                 .addFilterAfter(new TenantExtractionFilter(webHandler, routeLocator, globalCorsProperties, environment,
                         TENANT_EXTRACTION_REQUEST_MATCHER), SecurityWebFiltersOrder.REACTOR_CONTEXT)
                 .build();
+    }
+
+    @Bean
+    public RemoveSessionCookieFilter removeSessionCookie(WebSessionIdResolver webSessionIdResolver) {
+        if (!(webSessionIdResolver instanceof CookieWebSessionIdResolver)) {
+            return null;
+        }
+        return new RemoveSessionCookieFilter(((CookieWebSessionIdResolver) webSessionIdResolver).getCookieName());
     }
 
 }
