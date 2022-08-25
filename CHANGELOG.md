@@ -1,3 +1,15 @@
+# [1.1.0](https://github.com/jaconi-io/morp/compare/v1.0.0...v1.1.0) (2022-08-25)
+
+
+### Bug Fixes
+
+* remove session cookie from backend request ([f4c24df](https://github.com/jaconi-io/morp/commit/f4c24df497c8e64e942638dc4cf196fe2d0aa405))
+
+
+### Features
+
+* json logging by profile ([3f2fb85](https://github.com/jaconi-io/morp/commit/3f2fb85a8338d0495f0ac517eaca0f28a17e8a66))
+
 # [1.0.0](https://github.com/jaconi-io/morp/compare/v0.3.0...v1.0.0) (2022-08-19)
 
 
