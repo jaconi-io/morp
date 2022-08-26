@@ -5,3 +5,5 @@ out/
 package.json
 yarn.lock
 /secret.properties
+/mkdocs/Pipfile
+/mkdocs/Pipfile.lock
