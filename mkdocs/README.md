@@ -26,3 +26,5 @@ If you don't want to install Python on your machine, you can just run
 ```shell
 docker-compose up -d
 ```
+
+The documentation can be viewed at `http://localhot:8000`.

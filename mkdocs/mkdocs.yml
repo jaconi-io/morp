@@ -1,4 +1,4 @@
-site_name: MORP
+site_name: MORP Documentation
 site_description: Multi-tenant OpenID Connect Reverse Proxy
 site_author: 'jaconi'
 
@@ -13,6 +13,8 @@ nav:
   - User Guide:
       - Routing: user-guide/routing.md
       - OAuth2: user-guide/oauth2.md
+      - Session Storage: user-guide/session.md
+      - Client Registration Caching: user-guide/caching.md
   - Deployment:
       - deployment/index.md
   - Development: development.md
@@ -21,7 +23,7 @@ theme:
   name: 'material'
   custom_dir: overrides
   features:
-    - navigation.tabs
+    # - navigation.tabs
     - navigation.indexes
   palette:
     - scheme: default
