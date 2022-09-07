@@ -51,6 +51,8 @@ morp:
       oauth2-client-registration: keycloak
     bar:
       oauth2-client-registration: keycloak
+      registration:
+        client-secret: another-secret
 
   oauth2-client:
     registration:
