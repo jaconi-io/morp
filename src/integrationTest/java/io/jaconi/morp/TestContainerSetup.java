@@ -16,6 +16,8 @@ import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.DockerLoggerFactory;
 import reactor.netty.http.client.HttpClient;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 
 /**
@@ -72,6 +74,14 @@ public class TestContainerSetup implements AfterEachCallback {
         keycloak.start();
         mockserver.withLogConsumer(new Slf4jLogConsumer(DockerLoggerFactory.getLogger(mockserver.getDockerImageName())))
                 .start();
+
+        // for local development convenience, bind mount the git-ignored 'secret.properties' (if it exists)
+        if (Files.exists(Path.of("./secret.properties"))) {
+            morp.withFileSystemBind(
+                    "./secret.properties",
+                    "/workspace/config/secret.properties",
+                    BindMode.READ_ONLY);
+        }
 
         // for morp pass any ENV variables with prefix "MORP_"
         // this is relevant for passing oauth client secrets from GitHub secrets all the way into TestContainers

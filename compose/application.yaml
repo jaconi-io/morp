@@ -7,6 +7,9 @@ spring:
           predicates:
             - Host={tenant}.localtest.me:8080
 
+# for convenience read a git-ignored properties file holding credentials
+spring.config.import: optional:file:./config/secret.properties
+
 morp:
   default-oauth2-client-registration: keycloak
 
