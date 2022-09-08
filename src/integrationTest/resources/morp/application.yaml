@@ -66,3 +66,6 @@ logging.level:
   root: DEBUG
   reactor.core: ERROR
   io.netty: ERROR
+
+# used for integration test cases - for convenience read a git-ignored properties file holding credentials
+spring.config.import: optional:file:./config/secret.properties

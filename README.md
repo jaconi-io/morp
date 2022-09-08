@@ -201,13 +201,19 @@ When no tenant is matched, the request will fail.
 ## Startup
 
 The project comes with a `docker compose` setup that runs Keycloak with a couple of test realms for an interactive
-developer experience. This setup is also used for running automated integration test.
+developer experience. You can optionally run Morp itself as part of the compose setup.
+
 Bring up the setup via CLI:
 
 ```shell
 # via CLI
 cd compose
+
+# if you want to run Morp locally in your IDE
 docker compose -f docker-compose.yaml up -d
+
+# if you want to run Morp as part of compose
+docker compose up -d
 ```
 
 ## Keycloak
@@ -227,7 +233,9 @@ You can then start MORP with a dedicated `dev` profile which allows logging in v
 ```
 You can also start MORP from your favorite IDE.
 
-For Google and Okta we need additional credentials that can be put into an `application-dev.properties` file:
+For Google and Okta as well as integration tests we need additional credentials that can be put into a (git-ignored)
+`secrets.properties` file in the project root directory:
+
 ```properties
 # Google
 morp.oauth2-client.registration.google.client-id=...
@@ -236,6 +244,8 @@ morp.oauth2-client.registration.google.client-secret=...
 # Okta
 morp.oauth2-client.registration.okta.client-id=...
 morp.oauth2-client.registration.okta.client-secret=...
+
+test.okta.password=...
 ```
 
 ## Shutdown

@@ -2,10 +2,16 @@ version: "3.9"
 services:
 
   morp:
-    image: ghcr.io/jaconi-io/morp:0.2.3
+    image: ghcr.io/jaconi-io/morp:latest
+    environment:
+      - SPRING_PROFILES_ACTIVE=test,wiretap
     ports:
       - "8080:8080"
+      - "8081:8081"
     volumes:
       - type: bind
         source: ./application.yaml
-        target: /workspace/application.yaml
+        target: /workspace/config/application.yaml
+      - type: bind
+        source: ../secret.properties
+        target: /workspace/config/secret.properties

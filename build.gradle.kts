@@ -135,7 +135,9 @@ tasks.bootBuildImage {
     imageName = "ghcr.io/jaconi-io/${project.name}:${project.version}"
     environment = mapOf(
             "BP_NATIVE_IMAGE" to "false",
-            "USE_NATIVE_IMAGE_JAVA_PLATFORM_MODULE_SYSTEM" to "false"
+            "USE_NATIVE_IMAGE_JAVA_PLATFORM_MODULE_SYSTEM" to "false",
+            "BPE_APPEND_JAVA_TOOL_OPTIONS" to "-XX:MaxDirectMemorySize=100M",
+            "BPE_DELIM_JAVA_TOOL_OPTIONS" to " ",
     )
     isPublish = false
     tag("ghcr.io/jaconi-io/${project.name}:latest")
