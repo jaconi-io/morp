@@ -10,6 +10,7 @@ spring:
   cloud:
     gateway:
       routes:
+        # test route that identifies tenant via path element
         - id: upstream-tenant-path
           uri: http://upstream:1080
           predicates:
@@ -18,6 +19,7 @@ spring:
           filters:
             - SetPath=/{path}
             - SetRequestHeader=x-tenant-id, {tenant}
+        # test route that identifies tenant via host header pattern
         - id: upstream-tenant-host
           uri: http://upstream:1080
           predicates:
@@ -36,19 +38,29 @@ morp:
       registration:
         client-id: morp
         client-secret: secret
+    tenant2:
+      oauth2-client-registration: okta
 
   oauth2-client:
     registration:
       keycloak:
+        provider: keycloak
         client-id: morp
         client-secret: secret
         scope:
           - openid
           - profile
           - email
+      okta:
+        provider: okta
+        client-name: Okta-Dev
+        scope: openid,profile,email
     provider:
       keycloak:
         issuer-uri: http://keycloak:8080/realms/{tenant}
+      okta:
+        issuer-uri: https://dev-3715202.okta.com
+
 
 logging.level:
   root: DEBUG
