@@ -1,8 +1,8 @@
 package io.jaconi.morp;
 
 import org.jsoup.Jsoup;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.MediaType;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -20,26 +20,28 @@ import static org.springframework.web.reactive.function.BodyInserters.fromFormDa
  * operates via a REST client that validates every redirect in the OIDC dance (with Keycloak as IDP). This is a good
  * documentation of how OIDC actually works under the covers.
  */
-@ExtendWith(MORPExtension.class)
-public class ProxyIT {
+public class ProxyIT extends TestBase {
 
     private static final String SESSION_COOKIE = "MORP_SESSION";
 
-    @Test
-    void testKeycloak() {
-
+    @BeforeEach
+    void setUp() {
         // simulate an upstream using mockserver
-        MORPExtension.MOCK_SERVER_CLIENT
+        mockServerClient
                 .when(request()
                         .withMethod("GET")
                         .withPath("/test"))
                 .respond(response()
                         .withStatusCode(200)
                         .withBody("I am the backend"));
+    }
+
+    @Test
+    void testKeycloak() {
 
         // step 1 - run a request for our upstream (using a tenant that will be mapped to Keycloak)
         // expect a 302 redirect into the Spring OAuth2 registry with the identified tenant
-        var step1 = MORPExtension.WEB_TEST_CLIENT.get()
+        var step1 = webTestClient.get()
                 .uri("/upstream/tenant1/test")
                 .accept(MediaType.TEXT_HTML)
                 .header("host", "morp:8081")
@@ -54,7 +56,7 @@ public class ProxyIT {
 
         // step 2 - follow the Spring OAuth2 redirect
         // expect the actual IDP redirect into the proper Keycloak realm
-        var step2 = MORPExtension.WEB_TEST_CLIENT.get()
+        var step2 = webTestClient.get()
                 .uri(step1.getResponseHeaders().getLocation().getPath())
                 .cookie(SESSION_COOKIE, session)
                 .exchange()
@@ -66,13 +68,13 @@ public class ProxyIT {
         // therefore rewrite the URL to use localhost and the mapped port
         var keycloakUri = URLDecoder.decode(UriComponentsBuilder.fromUri(step2.getResponseHeaders().getLocation())
                 .host("localhost")
-                .port(MORPExtension.KEYCLOAK_CONTAINER.getMappedPort(8080))
+                .port(keycloak.getMappedPort(8080))
                 .build()
                 .toUriString(), UTF_8);
 
         // step 3 - follow the IDP redirect
         // expect the Keycloak login mask
-        var step3 = MORPExtension.WEB_TEST_CLIENT.get()
+        var step3 = webTestClient.get()
                 .uri(keycloakUri)
                 .header("host", "keycloak:8080")
                 .exchange()
@@ -88,13 +90,13 @@ public class ProxyIT {
                         .select("form#kc-form-login")
                         .attr("action"))
                 .host("localhost")
-                .port(MORPExtension.KEYCLOAK_CONTAINER.getMappedPort(8080))
+                .port(keycloak.getMappedPort(8080))
                 .build()
                 .toUriString(), UTF_8);
 
         // step 4 - fill the form with test user credentials
         // expect redirection back to gateway into OAuth2 authorization code flow for correct tenant
-        var step4 = MORPExtension.WEB_TEST_CLIENT.post()
+        var step4 = webTestClient.post()
                 .uri(formUrl)
                 .header("host", "keycloak:8080")
                 .cookies(c -> step3.getResponseCookies().toSingleValueMap().entrySet().stream().forEach(e -> c.add(e.getKey(), e.getValue().getValue())))
@@ -109,7 +111,7 @@ public class ProxyIT {
 
         // step 5 - follow the authorization code flow redirect back to the gateway
         // expect to be redirected to the upstream request url with a new SESSION cookie set
-        var step5 = MORPExtension.WEB_TEST_CLIENT.get()
+        var step5 = webTestClient.get()
                 .uri(step4.getResponseHeaders().getLocation())
                 .cookie(SESSION_COOKIE, session)
                 .header("host", "morp:8081")
@@ -124,7 +126,7 @@ public class ProxyIT {
 
         // step 6 - follow the upstream redirect to finally execute the request we started with
         // expect our upstream response
-        var step6 = MORPExtension.WEB_TEST_CLIENT.get()
+        var step6 = webTestClient.get()
                 .uri(step5.getResponseHeaders().getLocation().getPath())
                 .accept(MediaType.TEXT_HTML)
                 .header("host", "morp:8081")

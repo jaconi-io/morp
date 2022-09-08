@@ -1,0 +1,6 @@
+test:
+  okta:
+    username: test.user@jaconi.io
+
+# used for integration test cases - for convenience read a git-ignored properties file holding credentials
+spring.config.import: optional:secret.properties

@@ -66,7 +66,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude("org.hamcrest", "hamcrest")
     }
-    testImplementation("org.mock-server:mockserver-spring-test-listener:5.13.2") {
+    testImplementation("org.mock-server:mockserver-spring-test-listener:5.14.0") {
         exclude("org.hamcrest", "hamcrest")
     }
     testImplementation("org.jsoup:jsoup:1.15.2")
@@ -134,7 +134,7 @@ tasks.bootBuildImage {
     builder = "paketobuildpacks/builder:tiny"
     imageName = "ghcr.io/jaconi-io/${project.name}:${project.version}"
     environment = mapOf(
-            "BP_NATIVE_IMAGE" to "true",
+            "BP_NATIVE_IMAGE" to "false",
             "USE_NATIVE_IMAGE_JAVA_PLATFORM_MODULE_SYSTEM" to "false"
     )
     isPublish = false
