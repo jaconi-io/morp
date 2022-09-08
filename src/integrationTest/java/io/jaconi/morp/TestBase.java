@@ -63,6 +63,13 @@ public abstract class TestBase {
         keycloak.start();
         mockserver.withLogConsumer(new Slf4jLogConsumer(DockerLoggerFactory.getLogger(mockserver.getDockerImageName())))
                 .start();
+
+        // for morp pass any ENV variables with prefix "MORP_"
+        // this is relevant for passing oauth client secrets from GitHub secrets all the way into TestContainers
+        System.getenv().entrySet().stream()
+                .filter(e -> e.getKey().startsWith("MORP_"))
+                .forEach(e -> morp.withEnv(e.getKey(), e.getValue()));
+
         morp.withLogConsumer(new Slf4jLogConsumer(DockerLoggerFactory.getLogger(morp.getDockerImageName())))
                 .start();
 
