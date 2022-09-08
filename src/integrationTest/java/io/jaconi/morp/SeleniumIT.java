@@ -46,7 +46,7 @@ public class SeleniumIT extends TestBase {
     // screen recording not working on ARM Mac due to missing ARM image of vnc-recorder
     @Container
     public BrowserWebDriverContainer chrome = new BrowserWebDriverContainer<>(ArmUtil.select("seleniarm/standalone-chromium:103.0", "selenium/standalone-chrome:103.0"))
-            .withNetwork(network)
+            .withNetwork(containerSetup.getNetwork())
             .withNetworkAliases("chrome")
             .withCapabilities(new ChromeOptions())
             .withStartupTimeout(Duration.ofSeconds(30));
@@ -61,7 +61,7 @@ public class SeleniumIT extends TestBase {
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 
         // Setup upstream behavior via mockserver client.
-        mockServerClient
+        containerSetup.getMockServerClient()
                 .when(request()
                         .withMethod("GET")
                         .withPath("/test"))
@@ -100,18 +100,19 @@ public class SeleniumIT extends TestBase {
         assertThat(driver.findElement(By.id("test")).getText()).isEqualTo("Hello from mockserver");
 
         // assert what upstream has seen (i.e. headers etc)
-        mockServerClient.verify(request()
-                .withMethod("GET")
-                .withPath(path)
-                // expect host header rewritten by proxy
-                .withHeader("host", "upstream:1080")
-                // expect gateway proxy headers
-                .withHeader("x-forwarded-host", host)
-                .withHeader("x-forwarded-prefix", prefix)
-                // expect custom tenant header
-                .withHeader("x-tenant-id", tenant)
-                // expect security session cookie to be removed
-                .withCookie(NottableString.not("MORP_SESSION"), NottableString.string(".*")));
+        containerSetup.getMockServerClient()
+                .verify(request()
+                        .withMethod("GET")
+                        .withPath(path)
+                        // expect host header rewritten by proxy
+                        .withHeader("host", "upstream:1080")
+                        // expect gateway proxy headers
+                        .withHeader("x-forwarded-host", host)
+                        .withHeader("x-forwarded-prefix", prefix)
+                        // expect custom tenant header
+                        .withHeader("x-tenant-id", tenant)
+                        // expect security session cookie to be removed
+                        .withCookie(NottableString.not("MORP_SESSION"), NottableString.string(".*")));
     }
 
     @ParameterizedTest
@@ -139,17 +140,18 @@ public class SeleniumIT extends TestBase {
         //SELENIUM.saveScreenshot("03-okta-after-login.png");
 
         // assert what upstream has seen (i.e. headers etc)
-        mockServerClient.verify(request()
-                .withMethod("GET")
-                .withPath(path)
-                // expect host header rewritten by proxy
-                .withHeader("host", "upstream:1080")
-                // expect gateway proxy headers
-                .withHeader("x-forwarded-host", host)
-                .withHeader("x-forwarded-prefix", prefix)
-                // expect custom tenant header
-                .withHeader("x-tenant-id", tenant)
-                // expect security session cookie to be removed
-                .withCookie(NottableString.not("MORP_SESSION"), NottableString.string(".*")));
+        containerSetup.getMockServerClient()
+                .verify(request()
+                        .withMethod("GET")
+                        .withPath(path)
+                        // expect host header rewritten by proxy
+                        .withHeader("host", "upstream:1080")
+                        // expect gateway proxy headers
+                        .withHeader("x-forwarded-host", host)
+                        .withHeader("x-forwarded-prefix", prefix)
+                        // expect custom tenant header
+                        .withHeader("x-tenant-id", tenant)
+                        // expect security session cookie to be removed
+                        .withCookie(NottableString.not("MORP_SESSION"), NottableString.string(".*")));
     }
 }

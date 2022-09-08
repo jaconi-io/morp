@@ -1,21 +1,6 @@
 package io.jaconi.morp;
 
-import dasniko.testcontainers.keycloak.KeycloakContainer;
-import org.junit.jupiter.api.AfterEach;
-import org.mockserver.client.MockServerClient;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import org.testcontainers.containers.BindMode;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.MockServerContainer;
-import org.testcontainers.containers.Network;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
-import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
-import org.testcontainers.utility.DockerImageName;
-import org.testcontainers.utility.DockerLoggerFactory;
-import reactor.netty.http.client.HttpClient;
-
-import java.time.Duration;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 /**
  * Base class for test cases that rely on a TestContainers based environment running Keycloak, Morp and MockServer.
@@ -23,71 +8,7 @@ import java.time.Duration;
  */
 public abstract class TestBase {
 
-    public static Network network = Network.newNetwork();
-
-    public static KeycloakContainer keycloak = new KeycloakContainer("quay.io/keycloak/keycloak:19.0.1")
-            .withRealmImportFile("/keycloak/realm-1.json")
-            .withNetwork(network)
-            .withExposedPorts(8080)
-            .withNetworkAliases("keycloak")
-            .withEnv("KC_HOSTNAME_STRICT", "false")
-            .withEnv("KC_HOSTNAME_STRICT_HTTPS", "false")
-            .withEnv("KC_PROXY", "edge");
-
-    public static MockServerContainer mockserver = new MockServerContainer(DockerImageName.parse("mockserver/mockserver:5.14.0"))
-            .withNetwork(network)
-            .withNetworkAliases("upstream");
-
-    public static GenericContainer morp = new GenericContainer<>(DockerImageName.parse("ghcr.io/jaconi-io/morp:latest"))
-            .withNetwork(network)
-            .withNetworkAliases("morp", "tenant1-morp", "tenant2-morp")
-            .withExposedPorts(8081, 8082)
-            .withEnv("SPRING_PROFILES_ACTIVE", "test")
-            .withFileSystemBind(
-                    "./src/integrationTest/resources/morp/application.yaml",
-                    "/workspace/config/application.yaml",
-                    BindMode.READ_ONLY)
-            .waitingFor(new HttpWaitStrategy()
-                    .forPort(8082)
-                    .forPath("/actuator/health/readiness")
-                    .withStartupTimeout(Duration.ofMinutes(5)));
-
-
-    protected static MockServerClient mockServerClient;
-
-    protected static WebTestClient webTestClient;
-
-    // manual lifecycle control to share containers across subclasses:
-    // See: https://www.testcontainers.org/test_framework_integration/manual_lifecycle_control/#singleton-containers
-    static {
-        keycloak.start();
-        mockserver.withLogConsumer(new Slf4jLogConsumer(DockerLoggerFactory.getLogger(mockserver.getDockerImageName())))
-                .start();
-
-        // for morp pass any ENV variables with prefix "MORP_"
-        // this is relevant for passing oauth client secrets from GitHub secrets all the way into TestContainers
-        System.getenv().entrySet().stream()
-                .filter(e -> e.getKey().startsWith("MORP_"))
-                .forEach(e -> morp.withEnv(e.getKey(), e.getValue()));
-
-        morp.withLogConsumer(new Slf4jLogConsumer(DockerLoggerFactory.getLogger(morp.getDockerImageName())))
-                .start();
-
-        // create client to control mockserver (running as container)
-        mockServerClient = new MockServerClient(mockserver.getHost(), mockserver.getServerPort());
-
-        // Control the HTTP client to enable wiretap logs.
-        var httpClient = HttpClient.create()
-                .wiretap(true) // hex dump wiretap
-                .compress(true);
-        webTestClient = WebTestClient.bindToServer(new ReactorClientHttpConnector(httpClient))
-                .baseUrl("http://localhost:" + morp.getMappedPort(8081))
-                .build();
-    }
-
-    @AfterEach
-    final void _tearDown() {
-        mockServerClient.reset();
-    }
+    @RegisterExtension
+    static TestContainerSetup containerSetup = new TestContainerSetup();
 
 }
