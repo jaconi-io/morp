@@ -233,8 +233,9 @@ You can then start MORP with a dedicated `dev` profile which allows logging in v
 ```
 You can also start MORP from your favorite IDE.
 
+## Obtain Secrets
 For Google and Okta as well as integration tests we need additional credentials that can be put into a (git-ignored)
-`secrets.properties` file in the project root directory:
+`secret.properties` file in the project root directory:
 
 ```properties
 # Google
@@ -246,6 +247,12 @@ morp.oauth2-client.registration.okta.client-id=...
 morp.oauth2-client.registration.okta.client-secret=...
 
 test.okta.password=...
+```
+
+This `secret.properties` file can also be created using the 1Password CLI: https://developer.1password.com/docs/cli.
+After installing the CLI on your machine (https://developer.1password.com/docs/cli/get-started#install) and signing in (https://developer.1password.com/docs/cli/get-started#sign-in), the `secret.properties` file can be created using the follwing command:
+```shell
+op inject -i secret.properties.tpl -o secret.properties
 ```
 
 ## Shutdown
