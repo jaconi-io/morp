@@ -5,6 +5,8 @@ server:
         name: MORP_SESSION
 
 management:
+  server:
+    port: 8081
   endpoint:
     health:
       probes:
@@ -16,6 +18,9 @@ management:
       exposure:
         include:
           - "*"
+  health:
+    redis:
+      enabled: false
   metrics:
     distribution:
       percentiles-histogram:
@@ -31,8 +36,7 @@ management:
         request:
           autotime:
             percentiles-histogram: true
-  server:
-    port: 8081
+
 
 spring:
   application:
@@ -50,6 +54,19 @@ spring:
 
 # Non-spring configuration goes here!
 morp: {}
+
+---
+spring.config.activate.on-profile:
+  - redis
+
+management:
+  health:
+    redis:
+      enabled: true
+
+spring:
+  session:
+    store-type: redis
 
 ---
 spring.config.activate.on-profile:

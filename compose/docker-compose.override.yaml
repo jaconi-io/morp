@@ -14,4 +14,4 @@ services:
         target: /workspace/config/application.yaml
       - type: bind
         source: ../secret.properties
-        target: /workspace/config/secret.properties
+        target: /workspace/secret.properties

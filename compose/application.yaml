@@ -1,34 +1,82 @@
+# for local developer convenience read a git-ignored properties file holding credentials
+spring.config.import: file:./secret.properties
+
 spring:
   cloud:
     gateway:
       routes:
-        - id: httpbin
-          uri: http://httpbin
+        - id: host-mapping
+          uri: https://httpbin.org
+          order: 2
           predicates:
             - Host={tenant}.localtest.me:8080
-
-# for convenience read a git-ignored properties file holding credentials
-spring.config.import: optional:file:./config/secret.properties
+        - id: host-mapping-with-stage
+          uri: https://httpbin.org
+          order: 1
+          predicates:
+            - Host={tenant}-{stage}.localtest.me:8080
+        - id: path-mapping
+          uri: https://httpbin.org
+          predicates:
+            - Path=/tenant/{tenant}/**
+        - id: host-mapping-static
+          uri: https://httpbin.org
+          order: 0
+          predicates:
+            - name: TenantFromHost
+              args:
+                patterns:
+                  - static.localtest.me:8080
+                  - another-static.localtest.me:8080
+                tenant: foo
+        - id: header-mapping
+          uri: https://httpbin.org
+          predicates:
+            - TenantFromHeader=X-Tenant-ID,{tenant}
 
 morp:
-  default-oauth2-client-registration: keycloak
+  default-oauth2-client-registration: google
 
   tenant:
-    foo:
+    mybar:
       registration:
-        client-secret: secret
+        client-id: foo
+        client-secret: bar
+    myfoo:
+      claim-constraints:
+        email_verified: "true"
+        hd:
+          - jaconi.io
+          - example.com
+    okta:
+      oauth2-client-registration: okta
+    foo:
+      oauth2-client-registration: keycloak
     bar:
+      oauth2-client-registration: keycloak
+      # showcase tenant specific client secret
       registration:
         client-secret: another-secret
 
   oauth2-client:
     registration:
+      google:
+        client-id:
+        client-secret:
+      okta:
+        client-name: Okta-Dev
+        scope: openid,profile,email
       keycloak:
+        # default client secrets (for all Keycloak tenants)
         client-id: morp
+        client-secret: secret
         scope:
           - openid
           - profile
           - email
     provider:
+      okta:
+        issuer-uri: https://dev-3715202.okta.com
       keycloak:
         issuer-uri: http://keycloak.localtest.me:9000/realms/{tenant}
+
