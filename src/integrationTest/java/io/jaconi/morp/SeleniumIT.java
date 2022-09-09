@@ -16,6 +16,7 @@ import org.testcontainers.containers.BrowserWebDriverContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.File;
 import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,8 +50,9 @@ public class SeleniumIT extends TestBase {
             .withNetwork(containerSetup.getNetwork())
             .withNetworkAliases("chrome")
             .withCapabilities(new ChromeOptions())
-            .withStartupTimeout(Duration.ofSeconds(30));
-    //.withRecordingMode(BrowserWebDriverContainer.VncRecordingMode.RECORD_ALL, new File("./build/"));
+            .withStartupTimeout(Duration.ofSeconds(30))
+            .withRecordingMode(BrowserWebDriverContainer.VncRecordingMode.SKIP, new File("./build/"))
+            .withRecordingFileFactory(new TruncatedRecordingFileFactory());
 
     protected RemoteWebDriver driver;
 
