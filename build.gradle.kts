@@ -134,7 +134,7 @@ tasks.bootBuildImage {
     builder = "paketobuildpacks/builder:tiny"
     imageName = "ghcr.io/jaconi-io/${project.name}:${project.version}"
     environment = mapOf(
-            "BP_NATIVE_IMAGE" to "false",
+            "BP_NATIVE_IMAGE" to setOf("x86_64", "amd64").contains(System.getProperty("os.arch")).toString(),
             "USE_NATIVE_IMAGE_JAVA_PLATFORM_MODULE_SYSTEM" to "false",
             "BPE_APPEND_JAVA_TOOL_OPTIONS" to "-XX:MaxDirectMemorySize=100M",
             "BPE_DELIM_JAVA_TOOL_OPTIONS" to " ",
