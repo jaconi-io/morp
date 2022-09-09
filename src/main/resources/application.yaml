@@ -67,6 +67,8 @@ management:
 spring:
   session:
     store-type: redis
+  cache:
+    type: redis
 
 ---
 spring.config.activate.on-profile:
