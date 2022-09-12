@@ -20,7 +20,7 @@ import org.springframework.security.web.server.util.matcher.PathPatternParserSer
 import org.springframework.web.server.session.CookieWebSessionIdResolver;
 import org.springframework.web.server.session.WebSessionIdResolver;
 
-import static io.jaconi.morp.MorpReactiveUserService.ROLE_PROXY;
+import static io.jaconi.morp.oauth.ProxyAuthorityMapper.ROLE_PROXY;
 
 @Configuration
 public class SecurityConfiguration {

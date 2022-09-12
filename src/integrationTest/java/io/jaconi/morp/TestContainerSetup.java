@@ -58,7 +58,7 @@ public class TestContainerSetup implements AfterEachCallback {
         // setup morp as auth proxy for upstream
         this.morp = new GenericContainer<>(DockerImageName.parse("ghcr.io/jaconi-io/morp:latest"))
                 .withNetwork(network)
-                .withNetworkAliases("morp", "tenant1-morp", "tenant2-morp")
+                .withNetworkAliases("morp", "tenant1-morp", "tenant1a-morp", "tenant2-morp")
                 .withExposedPorts(8081, 8082)
                 .withEnv("SPRING_PROFILES_ACTIVE", "test")
                 .withFileSystemBind(

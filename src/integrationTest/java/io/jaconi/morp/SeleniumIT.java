@@ -1,5 +1,6 @@
 package io.jaconi.morp;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,6 +18,8 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -81,9 +84,11 @@ public class SeleniumIT extends TestBase {
     @ParameterizedTest
     @CsvSource({
             "tenant1, morp:8081, /upstream/tenant1, /test",
-            "tenant1, tenant1-morp:8081, /upstream, /test"
+            "tenant1, tenant1-morp:8081, /upstream, /test",
+            "tenant1a, morp:8081, /upstream/tenant1a, /test",
+            "tenant1a, tenant1a-morp:8081, /upstream, /test"
     })
-    void testWithKeycloak(String tenant, String host, String prefix, String path) {
+    void testWithKeycloak(String tenant, String host, String prefix, String path) throws MalformedURLException {
 
         // have browser access the protected upstream via Morp
         driver.get("http://" + host + prefix + path);
@@ -99,6 +104,12 @@ public class SeleniumIT extends TestBase {
 
         // match upstream browser content
         //SELENIUM.saveScreenshot("02-keycloak-after-login.png");
+        // assert that we ended up in the right place
+        URL url = new URL(driver.getCurrentUrl());
+        assertThat(url.getHost()).isEqualTo(StringUtils.substringBefore(host, ":"));
+        assertThat(url.getPort()).isEqualTo(8081);
+        assertThat(url.getPath()).isEqualTo(prefix + path);
+
         assertThat(driver.findElement(By.id("test")).getText()).isEqualTo("Hello from mockserver");
 
         // assert what upstream has seen (i.e. headers etc)

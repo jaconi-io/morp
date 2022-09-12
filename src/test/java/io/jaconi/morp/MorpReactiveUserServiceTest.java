@@ -1,5 +1,6 @@
 package io.jaconi.morp;
 
+import io.jaconi.morp.oauth.MorpReactiveOidcUserService;
 import io.jaconi.morp.tenant.TenantService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static io.jaconi.morp.MorpReactiveUserService.ROLE_PROXY;
+import static io.jaconi.morp.oauth.ProxyAuthorityMapper.ROLE_PROXY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -32,7 +33,7 @@ import static org.mockito.Mockito.*;
 class MorpReactiveUserServiceTest {
 
     @Autowired
-    MorpReactiveUserService morpReactiveUserService;
+    MorpReactiveOidcUserService morpReactiveUserService;
 
     @MockBean
     TenantService tenantService;
