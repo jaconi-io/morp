@@ -40,7 +40,9 @@ public class SecurityConfiguration {
     SecurityWebFilterChain securityFilterChain(ServerAuthenticationEntryPoint serverAuthenticationEntryPoint, ServerHttpSecurity httpSecurity,
                                                FilteringWebHandler webHandler, RouteLocator routeLocator,
                                                GlobalCorsProperties globalCorsProperties, Environment environment) {
-        return httpSecurity.authorizeExchange()
+        return httpSecurity
+                .csrf().disable()
+                .authorizeExchange()
                 .pathMatchers(DEBUG_ENDPOINT).authenticated()
                 .matchers(EndpointRequest.toAnyEndpoint()).permitAll()
                 .anyExchange().hasAuthority(ROLE_PROXY)

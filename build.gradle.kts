@@ -2,7 +2,7 @@ plugins {
     java
     jacoco
     `jvm-test-suite`
-    id("org.springframework.boot") version "2.7.1"
+    id("org.springframework.boot") version "2.7.3"
     id("org.springframework.experimental.aot") version "0.12.1"
     id("com.github.rising3.semver") version "0.8.1"
     id("org.barfuin.gradle.jacocolog") version "2.0.0"
@@ -119,7 +119,7 @@ testing {
             targets {
                 all {
                     testTask.configure {
-                        mustRunAfter(tasks.test)
+                        mustRunAfter(tasks.bootBuildImage)
                         testLogging.exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
                         testLogging.showStandardStreams = true
                     }
