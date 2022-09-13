@@ -276,3 +276,13 @@ By default, MORP exposes [Prometheus](https://prometheus.io) metrics at
 
 * Consider Spring profiles for a better `local` developer experience
 * Documentation of how to set gateway request and connection timeouts (per route)
+
+# Diagnostics
+
+Morp comes with actuator endpoints to help diagnosing routing and request authentication issues. The Spring actuator
+endpoints (by default) run on port 8081. You may find the the following endpoints most useful:
+
+* GET `/actuator/gateway/routes` - provides a list of routes configured for the morp
+* GET `/actuator/gateway/routes/{id}` provides details about a given route based on its id
+* GET `/actuator/clientregistrations` - provides a list of tenants for which client registrations have been created dynamically
+* GET `/actuator/clientregistrations/{tenant}` - provides details of a client registration for a given tenant
