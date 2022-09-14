@@ -1,6 +1,5 @@
 package io.jaconi.morp.tenant;
 
-import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.server.ServerAuthenticationEntryPoint;
@@ -15,13 +14,11 @@ public class DynamicServerAuthenticationEntryPoint implements ServerAuthenticati
 
     @Override
     public Mono<Void> commence(ServerWebExchange exchange, AuthenticationException ex) {
-        var templateVariables = ServerWebExchangeUtils.getUriTemplateVariables(exchange);
-        var tenant = templateVariables.get("tenant");
-        if (tenant == null) {
-            return Mono.error(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "no tenant"));
-        }
-
-        var redirect = new RedirectServerAuthenticationEntryPoint("/oauth2/authorization/%s".formatted(tenant));
-        return redirect.commence(exchange, ex);
+        return TenantExtractor.extractTenant(exchange)
+                .map(t -> {
+                    var redirect = new RedirectServerAuthenticationEntryPoint("/oauth2/authorization/%s".formatted(t));
+                    return redirect.commence(exchange, ex);
+                })
+                .orElse(Mono.error(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "no tenant")));
     }
 }
