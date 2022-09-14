@@ -4,9 +4,15 @@ on:
   push:
     branches:
       - main
+    paths:
+      - '**'
+      - '!mkdocs/**'
   pull_request:
     branches:
       - main
+    paths:
+      - '**'
+      - '!mkdocs/**'
 
 jobs:
   lint-commits:

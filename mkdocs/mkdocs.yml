@@ -1,0 +1,53 @@
+site_name: MORP Documentation
+site_description: Multi-tenant OpenID Connect Reverse Proxy
+site_author: 'jaconi'
+
+repo_url: https://github.com/jaconi-io/morp
+repo_name: jaconi-io/morp
+edit_uri: ""
+
+docs_dir: ./docs/
+
+nav:
+  - Home: index.md
+  - User Guide:
+      - Routing: user-guide/routing.md
+      - OAuth2: user-guide/oauth2.md
+      - Session Storage: user-guide/session.md
+      - Client Registration Caching: user-guide/caching.md
+  - Deployment:
+      - deployment/index.md
+  - Development: development.md
+
+theme:
+  name: 'material'
+  custom_dir: overrides
+  features:
+    # - navigation.tabs
+    - navigation.indexes
+  palette:
+    - scheme: default
+      primary: pink
+      accent: pink
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: pink
+      accent: pink
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: Roboto
+    code: Roboto Mono
+  favicon: assets/favicon.ico
+  logo: assets/morp.svg
+  icon:
+    logo: logo
+    repo: fontawesome/brands/github
+
+extra:
+  version:
+    provider: mike
+  generator: false
