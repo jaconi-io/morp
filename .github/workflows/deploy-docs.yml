@@ -27,13 +27,13 @@ jobs:
       - name: Install Python dependencies
         run: python3 -m pip install -r ./mkdocs/requirements.txt
 
-      - name: Configure Git user
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
+    #  - name: Configure Git user
+    #    run: |
+    #      git config --local user.email "github-actions[bot]@users.noreply.github.com"
+    #      git config --local user.name "github-actions[bot]"
 
-      - name: Deploy with mike 🚀
-        run: |
-          cd mkdocs
-          mike deploy --update-aliases ${{ github.event.release.tag_name }} latest
-          mike set-default --push latest
+    #  - name: Deploy with mike 🚀
+    #    run: |
+    #      cd mkdocs
+    #      mike deploy --update-aliases ${{ github.event.release.tag_name }} latest
+    #      mike set-default --push latest
