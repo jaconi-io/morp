@@ -6,9 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.nativex.hint.NativeHint;
-import org.springframework.nativex.hint.TypeAccess;
-import org.springframework.nativex.hint.TypeHint;
+import org.springframework.nativex.hint.*;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.validation.beanvalidation.OptionalValidatorFactoryBean;
 
@@ -26,7 +24,12 @@ import java.util.Collections;
                 types = {LogstashEncoder.class, ShortenedThrowableConverter.class},
                 access = {TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS}
         ),
-})
+    },
+    // Remove warning when building the native image
+    initialization = {
+        @InitializationHint(typeNames = "io.netty.handler.ssl.BouncyCastleAlpnSslUtils", initTime = InitializationTime.RUN)
+    }
+)
 @EnableCaching
 public class MorpApplication {
     public static void main(String[] args) {

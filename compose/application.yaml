@@ -35,6 +35,11 @@ spring:
             - TenantFromHeader=X-Tenant-ID,{tenant}
 
 morp:
+
+  metrics:
+    tenantdimension:
+      enabled: true
+
   default-oauth2-client-registration: google
 
   tenant:
