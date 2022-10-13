@@ -1,3 +1,19 @@
+# [1.2.0](https://github.com/jaconi-io/morp/compare/v1.1.0...v1.2.0) (2022-10-13)
+
+
+### Bug Fixes
+
+* build native image only on x86_64 architecture ([e6a555d](https://github.com/jaconi-io/morp/commit/e6a555dfc5ddbed6060a301af96a7cdf1a6d4e37))
+* fix bar client secret ([8d1c087](https://github.com/jaconi-io/morp/commit/8d1c0875078be6b8d1ef46859ea69a42b24d9f74))
+* shorten file names for selenium video recording ([61227ec](https://github.com/jaconi-io/morp/commit/61227ec9f86c540f81cc7ca842f1f1b7d5414436))
+* support non-OIDC clients ([53b3390](https://github.com/jaconi-io/morp/commit/53b3390a9844a1833a25b87f3f5829e30648676e))
+
+
+### Features
+
+* actuator endpoint for oauth client registry ([9652e69](https://github.com/jaconi-io/morp/commit/9652e6944f86b1d1aa383149dc13d781ac7789fa))
+* add tenant as optional metric dimension ([761f1be](https://github.com/jaconi-io/morp/commit/761f1be78436da524fff1d2391c1223ad20bb9b0))
+
 # [1.1.0](https://github.com/jaconi-io/morp/compare/v1.0.0...v1.1.0) (2022-08-25)
 
 
