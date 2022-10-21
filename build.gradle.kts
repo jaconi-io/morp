@@ -1,15 +1,19 @@
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
+
 plugins {
     java
     jacoco
     `jvm-test-suite`
-    id("org.springframework.boot") version "2.7.3"
-    id("org.springframework.experimental.aot") version "0.12.1"
+    id("org.springframework.boot") version "3.0.0-RC1"
+    id("org.graalvm.buildtools.native") version "0.9.16"
     id("com.github.rising3.semver") version "0.8.1"
     id("org.barfuin.gradle.jacocolog") version "2.0.0"
     id("org.sonarqube") version "3.4.0.2513"
 }
 
 apply(plugin = "io.spring.dependency-management")
+// Downgrade OpenTelemetry, Selenium won't work otherwise
+extra["opentelemetry.version"] = "1.17.0"
 
 group = "io.jaconi"
 version = "1.2.3"
@@ -17,10 +21,8 @@ version = "1.2.3"
 repositories {
     mavenCentral()
     maven(url = "https://repo.spring.io/release")
-}
-
-springAot {
-    removeXmlSupport.set(false)
+    maven(url = "https://repo.spring.io/milestone")
+    maven(url = "https://repo.spring.io/snapshot")
 }
 
 dependencies {
@@ -28,18 +30,12 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     compileOnly("org.projectlombok:lombok")
-    compileOnly("org.springframework.experimental:spring-aot:0.12.1")
-    implementation("org.reflections:reflections:0.10.2")
-
-    // logback workaround
-    // see: https://github.com/spring-projects-experimental/spring-native/tree/main/samples/logger
-    implementation("org.codehaus.janino:janino:3.1.6")
 
     // json logging
     implementation("net.logstash.logback:logstash-logback-encoder:7.2")
     implementation("ch.qos.logback:logback-classic")
 
-    implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2021.0.3"))
+    implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2022.0.0-SNAPSHOT"))
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
@@ -47,7 +43,7 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-gateway-webflux")
 
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity5")
+    implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
 
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.session:spring-session-data-redis")
@@ -105,16 +101,16 @@ testing {
                 implementation(project)
                 implementation("org.jsoup:jsoup:1.15.2")
                 // testcontainers core
-                implementation("org.testcontainers:junit-jupiter:1.17.3")
-                implementation("org.testcontainers:testcontainers:1.17.3")
+                implementation("org.testcontainers:junit-jupiter:1.17.5")
+                implementation("org.testcontainers:testcontainers:1.17.5")
                 // testcontainers containers
-                implementation("org.testcontainers:selenium:1.17.3")
-                implementation("com.github.dasniko:testcontainers-keycloak:2.2.2")
-                implementation("org.testcontainers:mockserver:1.17.3")
+                implementation("org.testcontainers:selenium:1.17.5")
+                implementation("com.github.dasniko:testcontainers-keycloak:2.3.0")
+                implementation("org.testcontainers:mockserver:1.17.5")
                 // selenium itself
-                implementation("org.seleniumhq.selenium:selenium-api:4.3.0")
-                implementation("org.seleniumhq.selenium:selenium-chrome-driver:4.3.0")
-                implementation("org.seleniumhq.selenium:selenium-remote-driver:4.3.0")
+                implementation("org.seleniumhq.selenium:selenium-api")
+                implementation("org.seleniumhq.selenium:selenium-chrome-driver")
+                implementation("org.seleniumhq.selenium:selenium-remote-driver")
             }
             targets {
                 all {
@@ -129,30 +125,30 @@ testing {
     }
 }
 
-tasks.bootBuildImage {
+tasks.named<BootBuildImage>("bootBuildImage") {
     mustRunAfter(tasks.test)
-    builder = "paketobuildpacks/builder:tiny"
-    imageName = "ghcr.io/jaconi-io/${project.name}:${project.version}"
-    environment = mapOf(
-            "BP_NATIVE_IMAGE" to setOf("x86_64", "amd64").contains(System.getProperty("os.arch")).toString(),
-            "USE_NATIVE_IMAGE_JAVA_PLATFORM_MODULE_SYSTEM" to "false",
-            "BPE_APPEND_JAVA_TOOL_OPTIONS" to "-XX:MaxDirectMemorySize=100M",
-            "BPE_DELIM_JAVA_TOOL_OPTIONS" to " ",
-    )
-    isPublish = false
-    tag("ghcr.io/jaconi-io/${project.name}:latest")
+    // buildpacks.addAll(listOf("gcr.io/paketo-buildpacks/bellsoft-liberica:9.9.0-ea", "gcr.io/paketo-buildpacks/java-native-image"))
+    imageName.value("ghcr.io/jaconi-io/${project.name}:${project.version}")
+    publish.value(false)
+    environment.putAll(mapOf(
+        "BP_NATIVE_IMAGE" to "false", // setOf("x86_64", "amd64").contains(System.getProperty("os.arch")).toString()
+        //"USE_NATIVE_IMAGE_JAVA_PLATFORM_MODULE_SYSTEM" to "false",
+        "BPE_APPEND_JAVA_TOOL_OPTIONS" to "-XX:MaxDirectMemorySize=100M",
+        "BPE_DELIM_JAVA_TOOL_OPTIONS" to " ",
+    ))
+    tags.add("ghcr.io/jaconi-io/${project.name}:latest")
     docker {
         publishRegistry {
-            url = "ghcr.io"
-            username = "${System.getenv("GITHUB_USER")}"
-            password = "${System.getenv("GITHUB_TOKEN")}"
+            url.value("ghcr.io")
+            username.value("${System.getenv("GITHUB_USER")}")
+            password.value("${System.getenv("GITHUB_TOKEN")}")
         }
     }
 }
 
 tasks.check {
     dependsOn(tasks.test)
-    dependsOn(tasks.bootBuildImage)
+    dependsOn(tasks.named<BootBuildImage>("bootBuildImage"))
     dependsOn(testing.suites.named("integrationTest"))
     dependsOn(tasks.jacocoTestReport)
 }

@@ -1,3 +1,4 @@
+/*
 package io.jaconi.morp;
 
 import io.jaconi.morp.predicates.TenantFromHeaderRoutePredicateFactory;
@@ -49,3 +50,4 @@ public class GatewayHints implements NativeConfiguration {
     }
 
 }
+*/

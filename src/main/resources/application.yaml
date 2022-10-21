@@ -45,15 +45,15 @@ spring:
     cache: false
   main:
     banner-mode: off
-  session:
-    # To enable Redis set 'store-type' to 'redis'
-    # Local redis can be started like this: `docker run -p 6379:6379 redis`
-    store-type: none
   cache:
     type: caffeine
 
 # Non-spring configuration goes here!
-morp: {}
+morp:
+  session:
+    # To enable Redis set 'store-type' to 'redis'
+    # Local redis can be started like this: `docker run -p 6379:6379 redis`
+    store-type: none
 
 ---
 spring.config.activate.on-profile:
@@ -65,10 +65,12 @@ management:
       enabled: true
 
 spring:
-  session:
-    store-type: redis
   cache:
     type: redis
+
+morp:
+  session:
+    store-type: redis
 
 ---
 spring.config.activate.on-profile:
