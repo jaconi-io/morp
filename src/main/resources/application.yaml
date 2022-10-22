@@ -47,6 +47,11 @@ spring:
     banner-mode: off
   cache:
     type: caffeine
+  # Workaround for native image:
+  cloud:
+    gateway:
+      redis:
+        enabled: false
 
 # Non-spring configuration goes here!
 morp:

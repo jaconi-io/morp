@@ -11,6 +11,9 @@ plugins {
     id("org.sonarqube") version "3.4.0.2513"
 }
 
+// Workaround for native image:
+configurations.forEach { it.exclude("org.apache.logging.log4j", "log4j-api") }
+
 apply(plugin = "io.spring.dependency-management")
 // Downgrade OpenTelemetry, Selenium won't work otherwise
 extra["opentelemetry.version"] = "1.17.0"
@@ -19,6 +22,7 @@ group = "io.jaconi"
 version = "1.2.3"
 
 repositories {
+    // mavenLocal()
     mavenCentral()
     maven(url = "https://repo.spring.io/release")
     maven(url = "https://repo.spring.io/milestone")
@@ -30,6 +34,8 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     compileOnly("org.projectlombok:lombok")
+
+    implementation("org.reflections:reflections:0.10.2")
 
     // json logging
     implementation("net.logstash.logback:logstash-logback-encoder:7.2")
@@ -125,16 +131,16 @@ testing {
     }
 }
 
-tasks.named<BootBuildImage>("bootBuildImage") {
+tasks.withType<BootBuildImage> {
     mustRunAfter(tasks.test)
-    // buildpacks.addAll(listOf("gcr.io/paketo-buildpacks/bellsoft-liberica:9.9.0-ea", "gcr.io/paketo-buildpacks/java-native-image"))
+    buildpacks.addAll(listOf("gcr.io/paketo-buildpacks/bellsoft-liberica:9.9.0-ea", "gcr.io/paketo-buildpacks/java-native-image"))
     imageName.value("ghcr.io/jaconi-io/${project.name}:${project.version}")
     publish.value(false)
     environment.putAll(mapOf(
-        "BP_NATIVE_IMAGE" to "false", // setOf("x86_64", "amd64").contains(System.getProperty("os.arch")).toString()
-        //"USE_NATIVE_IMAGE_JAVA_PLATFORM_MODULE_SYSTEM" to "false",
+        "BP_NATIVE_IMAGE" to setOf("x86_64", "amd64").contains(System.getProperty("os.arch")).toString(),
         "BPE_APPEND_JAVA_TOOL_OPTIONS" to "-XX:MaxDirectMemorySize=100M",
         "BPE_DELIM_JAVA_TOOL_OPTIONS" to " ",
+        "BP_NATIVE_IMAGE_BUILD_ARGUMENTS" to "--initialize-at-run-time=io.netty",
     ))
     tags.add("ghcr.io/jaconi-io/${project.name}:latest")
     docker {
@@ -148,7 +154,7 @@ tasks.named<BootBuildImage>("bootBuildImage") {
 
 tasks.check {
     dependsOn(tasks.test)
-    dependsOn(tasks.named<BootBuildImage>("bootBuildImage"))
+    dependsOn(tasks.withType<BootBuildImage>())
     dependsOn(testing.suites.named("integrationTest"))
     dependsOn(tasks.jacocoTestReport)
 }
