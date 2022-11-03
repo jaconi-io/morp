@@ -37,6 +37,8 @@ public class TestContainerSetup implements AfterEachCallback {
 
     private final WebTestClient webTestClient;
 
+    private final WebTestClient managementTestClient;
+
     public TestContainerSetup() {
         this.network = Network.newNetwork();
 
@@ -102,6 +104,10 @@ public class TestContainerSetup implements AfterEachCallback {
         webTestClient = WebTestClient.bindToServer(new ReactorClientHttpConnector(httpClient))
                 .baseUrl("http://localhost:" + morp.getMappedPort(8081))
                 .build();
+
+        managementTestClient = WebTestClient.bindToServer(new ReactorClientHttpConnector(httpClient))
+                .baseUrl("http://localhost:" + morp.getMappedPort(8082))
+                .build();
     }
 
     @Override
@@ -131,5 +137,9 @@ public class TestContainerSetup implements AfterEachCallback {
 
     public WebTestClient getWebTestClient() {
         return webTestClient;
+    }
+
+    public WebTestClient getManagementTestClient() {
+        return managementTestClient;
     }
 }
