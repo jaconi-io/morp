@@ -4,7 +4,9 @@ plugins {
     java
     jacoco
     `jvm-test-suite`
+    id("io.freefair.lombok") version "6.5.1"
     id("org.springframework.boot") version "3.0.0-RC1"
+    id("io.spring.dependency-management") version "1.1.0"
     id("org.graalvm.buildtools.native") version "0.9.16"
     id("com.github.rising3.semver") version "0.8.1"
     id("org.barfuin.gradle.jacocolog") version "2.0.0"
@@ -14,9 +16,8 @@ plugins {
 // Workaround for native image:
 configurations.forEach { it.exclude("org.apache.logging.log4j", "log4j-api") }
 
-apply(plugin = "io.spring.dependency-management")
-// Downgrade OpenTelemetry, Selenium won't work otherwise
-extra["opentelemetry.version"] = "1.17.0"
+// Upgrade Selenium, so it plays nice with OpenTelemetry
+extra["selenium.version"] = "4.5.3"
 
 group = "io.jaconi"
 version = "1.2.3"
@@ -26,22 +27,16 @@ repositories {
     mavenCentral()
     maven(url = "https://repo.spring.io/release")
     maven(url = "https://repo.spring.io/milestone")
-    maven(url = "https://repo.spring.io/snapshot")
 }
 
 dependencies {
-    annotationProcessor("org.projectlombok:lombok")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-
-    compileOnly("org.projectlombok:lombok")
-
     implementation("org.reflections:reflections:0.10.2")
 
     // json logging
     implementation("net.logstash.logback:logstash-logback-encoder:7.2")
     implementation("ch.qos.logback:logback-classic")
 
-    implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2022.0.0-SNAPSHOT"))
+    implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2022.0.0-RC1"))
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")

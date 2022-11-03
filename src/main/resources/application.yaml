@@ -13,6 +13,8 @@ management:
         enabled: true
     prometheus:
       enabled: true
+    gateway:
+      enabled: true
   endpoints:
     web:
       exposure:
@@ -52,6 +54,10 @@ spring:
     gateway:
       redis:
         enabled: false
+      # Workaround to disable 2nd cacheManager
+      filter:
+        local-response-cache:
+          enabled: false
 
 # Non-spring configuration goes here!
 morp:
