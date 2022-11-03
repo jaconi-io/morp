@@ -12,7 +12,7 @@ plugins {
 apply(plugin = "io.spring.dependency-management")
 
 group = "io.jaconi"
-version = "1.2.0"
+version = "1.2.1"
 
 repositories {
     mavenCentral()

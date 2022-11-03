@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/jaconi-io/morp/compare/v1.2.0...v1.2.1) (2022-11-03)
+
+
+### Bug Fixes
+
+* disable CSRF ([f549d24](https://github.com/jaconi-io/morp/commit/f549d242df9562e28629eb86ea0d4f8dc42e5b5b))
+
 # [1.2.0](https://github.com/jaconi-io/morp/compare/v1.1.0...v1.2.0) (2022-10-13)
 
 
