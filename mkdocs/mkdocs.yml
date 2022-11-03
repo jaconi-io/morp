@@ -15,6 +15,7 @@ nav:
       - OAuth2: user-guide/oauth2.md
       - Session Storage: user-guide/session.md
       - Client Registration Caching: user-guide/caching.md
+      - DNS Rebind Protection: user-guide/dns-rebind-protection.md
   - Deployment:
       - deployment/index.md
   - Development: development.md

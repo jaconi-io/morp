@@ -1,0 +1,34 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: host-mapping
+          uri: https://httpbin.org
+          order: 2
+          predicates:
+            - Host={tenant}.localtest.me:8080
+
+morp:
+  default-oauth2-client-registration: keycloak
+
+  tenant:
+    foo:
+      oauth2-client-registration: keycloak
+      registration:
+        client-secret: secret
+    bar:
+      oauth2-client-registration: keycloak
+      registration:
+        client-secret: another-secret
+
+  oauth2-client:
+    registration:
+      keycloak:
+        client-id: morp
+        scope:
+          - openid
+          - profile
+          - email
+    provider:
+      keycloak:
+        issuer-uri: http://keycloak.localtest.me:9000/realms/{tenant}

@@ -51,50 +51,15 @@ This project contains an example showing how to protect a httpbin instance using
 example by switching to the example folder and using `docker compose`:
 
 ```shell
-cd compose
-docker compose up -d
+docker compose -f compose/docker-compose.yaml -f compose/docker-compose.demo.yaml up
 ```
 
 Open [http://foo.localtest.me:8080](http://foo.localtest.me:8080) in your browser and log in with the username
-`test.user@jaconi.io` and the password `user`.
-
-To use a different tenant, open [http://bar.localtest.me:8080](http://bar.localtest.me:8080) in your browser and
+`test.user@jaconi.io` and the password `user`. To use a different tenant, open [http://bar.localtest.me:8080](http://bar.localtest.me:8080) in your browser and
 log in with username `test.user@example.com` and the password `user`.
 
-## DNS Rebind Protection
-
-If you are having troubles accessing [http://localtest.me](http://localtest.me), check if your router does DNS rebind
-protection. There are various options to avoid this problem.
-
-### Add Exception
-
-You can add an exception for the following domains in your routers configuration:
-```
-bar.localtest.me
-foo.localtest.me
-keycloak.localtest.me
-```
-
-For instructions see your router vendors documentation. For example:
-* [AVM FRITZ!Box](https://en.avm.de/service/knowledge-base/dok/FRITZ-Box-6660-Cable/3565_FRITZ-Box-reports-Your-FRITZ-Box-s-DNS-rebind-protection-rejected-your-query-for-reasons-of-security/)
-* [Google Nest](https://support.google.com/googlenest/answer/9144137)
-
-### Use external DNS
-
-Use an external DNS service. For example:
-
-[Cloudflare](https://1.1.1.1)
-[Google](https://developers.google.com/speed/public-dns/docs/using)
-
-### Add to `/etc/hosts`
-
-Add this to your `/etc/hosts`:
-
-```
-127.0.0.1 bar.localtest.me
-127.0.0.1 foo.localtest.me
-127.0.0.1 keycloak.localtest.me
-```
+If you are having troubles accessing [http://localtest.me](http://localtest.me), see
+[DNS Rebind Protection](https://jaconi-io.github.io/morp/user-guide/dns-rebind-protection/).
 
 # Deployment
 

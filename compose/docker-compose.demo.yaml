@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+
+  morp:
+    image: ghcr.io/jaconi-io/morp:latest
+    pull_policy: always
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    volumes:
+      - type: bind
+        source: ./application.demo.yaml
+        target: /workspace/config/application.yaml

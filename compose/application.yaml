@@ -84,4 +84,3 @@ morp:
         issuer-uri: https://dev-3715202.okta.com
       keycloak:
         issuer-uri: http://keycloak.localtest.me:9000/realms/{tenant}
-
