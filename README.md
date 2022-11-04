@@ -1,4 +1,4 @@
-![MORP](morp.svg)
+![MORP](mkdocs/docs/assets/morp.svg)
 
 <p align="center">
 
