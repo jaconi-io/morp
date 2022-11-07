@@ -21,7 +21,7 @@ public class MorpReactiveOAuth2UserService implements ReactiveOAuth2UserService<
     @Override
     public Mono<OAuth2User> loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         return delegate.loadUser(userRequest)
-                .map((user) -> {
+                .map(user -> {
                     String tenant = userRequest.getClientRegistration().getRegistrationId();
                     String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
                     return new DefaultOAuth2User(proxyAuthorityMapper.mapAuthorities(tenant, user.getAttributes()), user.getAttributes(),

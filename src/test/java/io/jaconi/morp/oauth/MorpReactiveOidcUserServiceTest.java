@@ -1,6 +1,5 @@
-package io.jaconi.morp;
+package io.jaconi.morp.oauth;
 
-import io.jaconi.morp.oauth.MorpReactiveOidcUserService;
 import io.jaconi.morp.tenant.TenantService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +13,6 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.time.Instant;
@@ -26,45 +23,45 @@ import java.util.Map;
 import static io.jaconi.morp.oauth.ProxyAuthorityMapper.ROLE_PROXY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-@SuppressWarnings("unchecked")
 @SpringBootTest
-class MorpReactiveUserServiceTest {
+class MorpReactiveOidcUserServiceTest {
 
     @Autowired
-    MorpReactiveOidcUserService morpReactiveUserService;
+    MorpReactiveOidcUserService userService;
 
     @MockBean
     TenantService tenantService;
 
     @Test
+    @SuppressWarnings("unchecked")
     void testNoClaimsConfigured() {
-        OidcUserRequest oidcUserRequest = getOidcUserRequest();
-
-        Mono<OidcUser> oidcUserMono = morpReactiveUserService.loadUser(oidcUserRequest);
-        StepVerifier.create(oidcUserMono)
+        var userRequest = getUserRequest();
+        var user = userService.loadUser(userRequest);
+        StepVerifier.create(user)
                 .assertNext(o ->
                 {
-                    DefaultOidcUser defaultOidcUser = (DefaultOidcUser) o;
-                    assertThat((Collection<GrantedAuthority>)defaultOidcUser.getAuthorities()).containsOnly(new SimpleGrantedAuthority(ROLE_PROXY));
+                    var defaultUser = (DefaultOidcUser) o;
+                    assertThat((Collection<GrantedAuthority>) defaultUser.getAuthorities()).containsOnly(new SimpleGrantedAuthority(ROLE_PROXY));
                 })
                 .verifyComplete();
 
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void testClaimsMatch() {
         when(tenantService.getClaimConstraints(anyString())).thenReturn(Map.of("sub", List.of("match")));
 
-        OidcUserRequest oidcUserRequest = getOidcUserRequest();
-
-        Mono<OidcUser> oidcUserMono = morpReactiveUserService.loadUser(oidcUserRequest);
-        StepVerifier.create(oidcUserMono)
+        var userRequest = getUserRequest();
+        var user = userService.loadUser(userRequest);
+        StepVerifier.create(user)
                 .assertNext(o ->
                 {
-                    DefaultOidcUser defaultOidcUser = (DefaultOidcUser) o;
-                    assertThat((Collection<GrantedAuthority>)defaultOidcUser.getAuthorities()).containsOnly(new SimpleGrantedAuthority(ROLE_PROXY));
+                    var defaultUser = (DefaultOidcUser) o;
+                    assertThat((Collection<GrantedAuthority>) defaultUser.getAuthorities()).containsOnly(new SimpleGrantedAuthority(ROLE_PROXY));
                 })
                 .verifyComplete();
 
@@ -74,20 +71,19 @@ class MorpReactiveUserServiceTest {
     void testClaimsDontMatch() {
         when(tenantService.getClaimConstraints(anyString())).thenReturn(Map.of("sub", List.of("nomatch")));
 
-        OidcUserRequest oidcUserRequest = getOidcUserRequest();
-
-        Mono<OidcUser> oidcUserMono = morpReactiveUserService.loadUser(oidcUserRequest);
-        StepVerifier.create(oidcUserMono)
+        var userRequest = getUserRequest();
+        var user = userService.loadUser(userRequest);
+        StepVerifier.create(user)
                 .assertNext(o ->
                 {
-                    DefaultOidcUser defaultOidcUser = (DefaultOidcUser) o;
-                    assertThat(defaultOidcUser.getAuthorities()).isEmpty();
+                    var defaultUser = (DefaultOidcUser) o;
+                    assertThat(defaultUser.getAuthorities()).isEmpty();
                 })
                 .verifyComplete();
     }
 
-    private OidcUserRequest getOidcUserRequest() {
-        ClientRegistration clientRegistration = ClientRegistration.withRegistrationId("tenant1")
+    private OidcUserRequest getUserRequest() {
+        var clientRegistration = ClientRegistration.withRegistrationId("tenant1")
                 .clientId("id")
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .redirectUri("redirect")
@@ -95,8 +91,7 @@ class MorpReactiveUserServiceTest {
                 .tokenUri("token")
                 .build();
 
-        OidcIdToken idToken = new OidcIdToken("token", Instant.now(), Instant.MAX, Map.of("sub", "match"));
+        var idToken = new OidcIdToken("token", Instant.now(), Instant.MAX, Map.of("sub", "match"));
         return new OidcUserRequest(clientRegistration, mock(OAuth2AccessToken.class), idToken);
     }
-
 }

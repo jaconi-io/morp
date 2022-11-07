@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RemoveSessionCookieFilterTest {
 
     @Test
-    public void shouldNotAddCookieIfNone() {
+    void shouldNotAddCookieIfNone() {
         MockServerHttpRequest request = MockServerHttpRequest.get("http://localhost:8080/get")
                 .header("foo", "bar")
                 .build();
@@ -28,7 +28,7 @@ class RemoveSessionCookieFilterTest {
     }
 
     @Test
-    public void shouldRemoveCookieHeaderIfOnlySession() {
+    void shouldRemoveCookieHeaderIfOnlySession() {
         MockServerHttpRequest request = MockServerHttpRequest.get("http://localhost:8080/get")
                 .header("foo", "bar")
                 .cookie(new HttpCookie("SESSION", "whatever")).build();
@@ -41,7 +41,7 @@ class RemoveSessionCookieFilterTest {
     }
 
     @Test
-    public void shouldRemoveCustomCookieHeader() {
+    void shouldRemoveCustomCookieHeader() {
         MockServerHttpRequest request = MockServerHttpRequest.get("http://localhost:8080/get")
                 .header("foo", "bar")
                 .cookie(new HttpCookie("CUSTOMSESSION", "whatever")).build();
@@ -54,7 +54,7 @@ class RemoveSessionCookieFilterTest {
     }
 
     @Test
-    public void shouldRemoveSessionCookieIfOthersExist() {
+    void shouldRemoveSessionCookieIfOthersExist() {
         MockServerHttpRequest request = MockServerHttpRequest.get("http://localhost:8080/get")
                 .header("foo", "bar")
                 .cookie(new HttpCookie("SESSION", "whatever"), new HttpCookie("OTHER", "xxx")).build();
@@ -70,7 +70,7 @@ class RemoveSessionCookieFilterTest {
     }
 
     @Test
-    public void shouldNotChangeHeaderIfNoSessionCookie() {
+    void shouldNotChangeHeaderIfNoSessionCookie() {
         MockServerHttpRequest request = MockServerHttpRequest.get("http://localhost:8080/get")
                 .header("foo", "bar")
                 .cookie(new HttpCookie("ANY", "whatever"), new HttpCookie("OTHER", "xxx")).build();
