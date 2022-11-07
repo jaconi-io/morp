@@ -21,3 +21,5 @@ plugins:
     assets:
     - "build.gradle.kts"
     - "CHANGELOG.md"
+
+- - "@semantic-release/github"
