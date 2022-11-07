@@ -78,16 +78,5 @@ Usually, only `client-id` and `client-secret` are required.
 ## Tenant
 
 A tenant is the entity determining the registration to be used. This might be a customer, an application or a
-department. To figure out the tenant for a request, MORP uses predicates. MORP comes with the following predicates:
-
-| Tenant Extractor   | Example Configuration                                                                                                                                     | Example Request               | Example Tenant |
-|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------|----------------|
-| `Host`             | <pre>Host={tenant}.example.com</pre>                                                                                                                      | foo.example.com               | foo            |
-| `Host`             | <pre>Host={stage}-{tenant}.example.com                                                                                                                    | dev-foo.example.com           | foo            |
-| `Path`             | <pre>Path=example.com/tenant/{tenant}</pre>                                                                                                               | example.com/tenant/foo        | foo            |
-| `Path`             | <pre>Path=example.com/api/{version}/tenant/{tenant}</pre>                                                                                                 | example.com/api/v1/tenant/foo | foo            |
-| `TenantFromHost`   | <pre>name: TenantFromHost<br/>args:<br/>  patterns:<br/>    - static.localtest.me:8080<br/>    - another-static.localtest.me:8080<br/>  tenant: foo</pre> | static.example.com            | foo            |
-| `TenantFromHeader` | <pre>TenantFromHeader=X-Tenant-ID,{tenant}</pre>                                                                                                          | X-Tenant-ID: foo              | foo            |
-
-Predicates are configured in the `spring.cloud.gateway.routes[*].predicates` section. Predicates are applied per route.
-When no tenant is matched, the request will fail.
+department. To figure out the tenant for a request, MORP uses predicates. See
+[Tenant Extraction](user-guide/routing.md#tenant-extraction) for details.

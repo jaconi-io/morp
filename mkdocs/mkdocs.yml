@@ -15,7 +15,7 @@ nav:
       - Diagnostics: user-guide/diagnostics.md
       - DNS Rebind Protection: user-guide/dns-rebind-protection.md
       - Metrics: user-guide/metrics.md
-      # - Routing: user-guide/routing.md
+      - Routing: user-guide/routing.md
       # - OAuth2: user-guide/oauth2.md
       # - Session Storage: user-guide/session.md
       # - Client Registration Caching: user-guide/caching.md
