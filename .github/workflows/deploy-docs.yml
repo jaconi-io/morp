@@ -1,6 +1,11 @@
 name: Generate and push documentation
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - mkdocs
   release:
     types:
       - published
@@ -30,7 +35,14 @@ jobs:
           git config --local user.name "github-actions[bot]"
 
       - name: Deploy with mike 🚀
+        if: ${{ github.event_name == 'release' }}
         run: |
           cd mkdocs
-          mike deploy --update-aliases ${{ github.event.release.tag_name }} latest
+          mike deploy ${{ github.event.release.tag_name }}
+
+      - name: Deploy with mike 🚀
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          cd mkdocs
+          mike deploy latest
           mike set-default --push latest
