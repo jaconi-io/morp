@@ -1,6 +1,6 @@
 site_name: MORP Documentation
 site_description: Multi-tenant OpenID Connect Reverse Proxy
-site_author: 'jaconi'
+site_author: jaconi GmbH
 
 repo_url: https://github.com/jaconi-io/morp
 repo_name: jaconi-io/morp
@@ -15,15 +15,15 @@ nav:
       - Diagnostics: user-guide/diagnostics.md
       - DNS Rebind Protection: user-guide/dns-rebind-protection.md
       - Metrics: user-guide/metrics.md
-      - Routing: user-guide/routing.md
-      - OAuth2: user-guide/oauth2.md
-      - Session Storage: user-guide/session.md
-      - Client Registration Caching: user-guide/caching.md
-  - Deployment:
-      - deployment/index.md
+      # - Routing: user-guide/routing.md
+      # - OAuth2: user-guide/oauth2.md
+      # - Session Storage: user-guide/session.md
+      # - Client Registration Caching: user-guide/caching.md
+  # - Deployment:
+  #     - deployment/index.md
 
 theme:
-  name: 'material'
+  name: material
   custom_dir: overrides
   features:
     # - navigation.tabs
@@ -54,6 +54,15 @@ extra:
   version:
     provider: mike
   generator: false
+  social:
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/company/jaconi/
+    - icon: fontawesome/brands/github
+      link: https://github.com/jaconi-io/
+    - icon: fontawesome/brands/instagram
+      link: https://www.instagram.com/jaconi.io
+
+copyright: Copyright &copy; 2022 jaconi GmbH
 
 markdown_extensions:
   - admonition
