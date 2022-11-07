@@ -16,7 +16,7 @@ support authentication on their own. MORP takes care of the OpenID Connect "danc
 
 # Documentation
 
-Documentation can be found at [https://jaconi-io.github.com/morp](https://jaconi-io.github.com/morp).
+Documentation can be found at [https://jaconi-io.github.io/morp](https://jaconi-io.github.io/morp).
 
 # Tech Stack
 
