@@ -14,9 +14,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpServerErrorException;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static io.jaconi.morp.oauth.TenantAwareClientRegistrationRepository.REGISTRATIONS;
 import static java.util.stream.Collectors.toSet;
@@ -46,7 +44,8 @@ public class ClientRegistrationActuator {
         } else if (cache instanceof ConcurrentMapCache c) {
             keys = c.getNativeCache().keySet();
         } else if (cache instanceof RedisCache) {
-            keys = redisTemplate.keys(REGISTRATIONS + "*")
+            keys = Optional.ofNullable(redisTemplate.keys(REGISTRATIONS + "*"))
+                    .orElse(Collections.emptySet())
                     .stream()
                     .map(k -> substringAfter(k, "::"))
                     .collect(toSet());
