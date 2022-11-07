@@ -38,10 +38,10 @@ jobs:
         if: ${{ github.event_name == 'release' }}
         run: |
           cd mkdocs
-          mike deploy ${{ github.event.release.tag_name }} latest
+          mike deploy --push --update-aliases ${{ github.event.release.tag_name }} latest
 
       - name: Deploy with mike 🚀
         if: ${{ github.event_name == 'push' }}
         run: |
           cd mkdocs
-          mike deploy main
+          mike deploy --push main
