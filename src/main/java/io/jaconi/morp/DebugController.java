@@ -18,7 +18,6 @@ public class DebugController {
         model.addAttribute("userName", oauth2User.getName());
         model.addAttribute("clientName", authorizedClient.getClientRegistration().getRegistrationId());
         model.addAttribute("userAttributes", oauth2User.getAttributes());
-        // model.addAttribute("tenant", tenant);
         model.addAttribute("authorities", authentication.getAuthorities());
 
         return "index";

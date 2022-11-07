@@ -21,7 +21,7 @@ public class MorpReactiveOidcUserService implements ReactiveOAuth2UserService<Oi
     @Override
     public Mono<OidcUser> loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
         return delegate.loadUser(userRequest)
-                .map((oidcUser) -> {
+                .map(oidcUser -> {
                     String tenant = userRequest.getClientRegistration().getRegistrationId();
                     return new DefaultOidcUser(proxyAuthorityMapper.mapAuthorities(tenant, oidcUser.getClaims()), oidcUser.getIdToken(),
                             oidcUser.getUserInfo());
