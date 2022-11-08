@@ -22,6 +22,8 @@ extra["selenium.version"] = "4.5.3"
 group = "io.jaconi"
 version = "1.2.3"
 
+val registry = "ghcr.io/jaconi-io"
+
 repositories {
     // mavenLocal()
     mavenCentral()
@@ -116,7 +118,7 @@ testing {
             targets {
                 all {
                     testTask.configure {
-                        mustRunAfter(tasks.bootBuildImage)
+                        mustRunAfter(tasks.named("dockerBuild"))
                         testLogging.exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
                         testLogging.showStandardStreams = true
                     }
@@ -126,18 +128,27 @@ testing {
     }
 }
 
+tasks.create<Exec>("dockerBuild") {
+    mustRunAfter(tasks.test)
+    executable("docker")
+    args(listOf("build", "-t", "${registry}/${project.name}:${project.version}", "-t", "${registry}/${project.name}:latest", "."))
+}
+
+tasks.create<Exec>("dockerBuildPush") {
+    executable("docker")
+    args(listOf("buildx", "build", "--platform", "linux/amd64,linux/arm64", "-t", "${registry}/${project.name}:${project.version}", "--push", "."))
+}
+
 tasks.withType<BootBuildImage> {
     mustRunAfter(tasks.test)
-    buildpacks.addAll(listOf("gcr.io/paketo-buildpacks/bellsoft-liberica:9.9.0-ea", "gcr.io/paketo-buildpacks/java-native-image"))
-    imageName.value("ghcr.io/jaconi-io/${project.name}:${project.version}")
+    imageName.value("${registry}/${project.name}:${project.version}")
     publish.value(false)
     environment.putAll(mapOf(
         "BP_NATIVE_IMAGE" to setOf("x86_64", "amd64").contains(System.getProperty("os.arch")).toString(),
         "BPE_APPEND_JAVA_TOOL_OPTIONS" to "-XX:MaxDirectMemorySize=100M",
         "BPE_DELIM_JAVA_TOOL_OPTIONS" to " ",
-        "BP_NATIVE_IMAGE_BUILD_ARGUMENTS" to "--initialize-at-run-time=io.netty",
     ))
-    tags.add("ghcr.io/jaconi-io/${project.name}:latest")
+    tags.add("${registry}/${project.name}:latest")
     docker {
         publishRegistry {
             url.value("ghcr.io")
@@ -149,7 +160,7 @@ tasks.withType<BootBuildImage> {
 
 tasks.check {
     dependsOn(tasks.test)
-    dependsOn(tasks.withType<BootBuildImage>())
+    dependsOn(tasks.named("dockerBuild"))
     dependsOn(testing.suites.named("integrationTest"))
     dependsOn(tasks.jacocoTestReport)
 }

@@ -1,8 +1,7 @@
 FROM ghcr.io/graalvm/native-image:ol9-java17-22.3.0 AS builder
 
 # Install tar and gzip to extract the Maven binaries
-RUN microdnf update -y \
- && microdnf install --nodocs -y \
+RUN microdnf install --nodocs -y \
     findutils \
  && microdnf clean all \
  && rm -rf /var/cache/yum
@@ -13,7 +12,7 @@ WORKDIR /build
 COPY . /build
 
 # Build
-RUN ./gradlew nativeCompile -i
+RUN ./gradlew nativeCompile
 
 # The deployment Image
 FROM docker.io/oraclelinux:9-slim
