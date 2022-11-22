@@ -2,8 +2,8 @@ package io.jaconi.morp.tenant;
 
 import io.micrometer.common.KeyValues;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.http.observation.reactive.ServerRequestObservationContext;
-import org.springframework.http.observation.reactive.ServerRequestObservationConvention;
+import org.springframework.http.server.reactive.observation.ServerRequestObservationContext;
+import org.springframework.http.server.reactive.observation.ServerRequestObservationConvention;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
@@ -17,7 +17,7 @@ public class TenantWebFluxObservationConvention implements ServerRequestObservat
     @Override
     @Nonnull
     public KeyValues getHighCardinalityKeyValues(ServerRequestObservationContext context) {
-        return TenantExtractor.extractTenant(context.getServerWebExchange())
+        return TenantExtractor.extractTenant(context.getAttributes())
                 .map(t -> KeyValues.of(KEY, t))
                 .orElse(KeyValues.empty());
     }

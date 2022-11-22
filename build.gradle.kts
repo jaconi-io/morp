@@ -5,19 +5,13 @@ plugins {
     jacoco
     `jvm-test-suite`
     id("io.freefair.lombok") version "6.5.1"
-    id("org.springframework.boot") version "3.0.0-RC1"
+    id("org.springframework.boot") version "3.0.0"
     id("io.spring.dependency-management") version "1.1.0"
-    id("org.graalvm.buildtools.native") version "0.9.16"
+    id("org.graalvm.buildtools.native") version "0.9.18"
     id("com.github.rising3.semver") version "0.8.1"
     id("org.barfuin.gradle.jacocolog") version "2.0.0"
     id("org.sonarqube") version "3.4.0.2513"
 }
-
-// Workaround for native image:
-configurations.forEach { it.exclude("org.apache.logging.log4j", "log4j-api") }
-
-// Upgrade Selenium, so it plays nice with OpenTelemetry
-extra["selenium.version"] = "4.5.3"
 
 group = "io.jaconi"
 version = "1.2.3"
@@ -27,18 +21,16 @@ val registry = "ghcr.io/jaconi-io"
 repositories {
     // mavenLocal()
     mavenCentral()
-    maven(url = "https://repo.spring.io/release")
     maven(url = "https://repo.spring.io/milestone")
 }
 
 dependencies {
-    implementation("org.reflections:reflections:0.10.2")
 
     // json logging
     implementation("net.logstash.logback:logstash-logback-encoder:7.2")
     implementation("ch.qos.logback:logback-classic")
 
-    implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2022.0.0-RC1"))
+    implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2022.0.0-RC2"))
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
@@ -55,7 +47,7 @@ dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine")
 
     implementation("org.apache.commons:commons-lang3")
-    implementation("commons-codec:commons-codec:1.15")
+    implementation("commons-codec:commons-codec")
 
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 

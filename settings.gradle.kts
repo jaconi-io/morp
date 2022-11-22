@@ -1,11 +1,3 @@
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        maven(url = "https://repo.spring.io/release")
-        maven(url = "https://repo.spring.io/milestone")
-    }
-}
-
 plugins {
     id("com.gradle.enterprise") version("3.10.2")
 }

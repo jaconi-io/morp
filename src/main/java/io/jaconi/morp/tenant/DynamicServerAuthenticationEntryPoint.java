@@ -14,7 +14,7 @@ public class DynamicServerAuthenticationEntryPoint implements ServerAuthenticati
 
     @Override
     public Mono<Void> commence(ServerWebExchange exchange, AuthenticationException ex) {
-        return TenantExtractor.extractTenant(exchange)
+        return TenantExtractor.extractTenant(exchange.getAttributes())
                 .map(t -> {
                     var redirect = new RedirectServerAuthenticationEntryPoint("/oauth2/authorization/%s".formatted(t));
                     return redirect.commence(exchange, ex);
