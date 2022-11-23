@@ -1,3 +1,10 @@
+## [1.2.3](https://github.com/jaconi-io/morp/compare/v1.2.2...v1.2.3) (2022-11-23)
+
+
+### Bug Fixes
+
+* minor code smells ([590ab5f](https://github.com/jaconi-io/morp/commit/590ab5fb83fe8cff908b297398fe271657e79aa8))
+
 ## [1.2.2](https://github.com/jaconi-io/morp/compare/v1.2.1...v1.2.2) (2022-11-07)
 
 
