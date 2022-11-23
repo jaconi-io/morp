@@ -13,12 +13,13 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 public class TenantService {
+    private static final String TENANT_NULL = "tenant must not be null";
 
     @NonNull
     private final TenantProperties tenantProperties;
 
     public OAuth2ClientProperties.Registration getRegistration(String tenant) {
-        Assert.notNull(tenant, "tenant cannot be null");
+        Assert.notNull(tenant, TENANT_NULL);
 
         if (tenantProperties.tenant() == null || !tenantProperties.tenant().containsKey(tenant)) {
             return null;
@@ -28,7 +29,7 @@ public class TenantService {
     }
 
     public String getRegistrationId(String tenant) {
-        Assert.notNull(tenant, "tenant cannot be null");
+        Assert.notNull(tenant, TENANT_NULL);
 
         if (tenantProperties.tenant() == null || !tenantProperties.tenant().containsKey(tenant) || tenantProperties.tenant().get(tenant).oauth2ClientRegistration() == null) {
             return tenantProperties.defaultOauth2ClientRegistration();
@@ -38,7 +39,7 @@ public class TenantService {
     }
 
     public Map<String, List<String>> getClaimConstraints(String tenant) {
-        Assert.notNull(tenant, "tenant cannot be null");
+        Assert.notNull(tenant, TENANT_NULL);
         TenantProperties.TenantSettings tenantSettings = tenantProperties.tenant().get(tenant);
         if (tenantSettings == null
                 || tenantSettings.claimConstraints() == null

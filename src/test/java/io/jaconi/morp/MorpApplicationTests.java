@@ -16,10 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 class MorpApplicationTests {
 
-    @Test
-    void contextLoads() {
-    }
-
     @Nested
     @TestPropertySource(properties = "morp.metrics.tenantdimension.enabled=false")
     class NoTenantMetricContributors {
@@ -32,7 +28,6 @@ class MorpApplicationTests {
             assertThrows(NoSuchBeanDefinitionException.class, () -> appContext.getBean(TenantWebFluxTagsContributor.class));
             assertThrows(NoSuchBeanDefinitionException.class, () -> appContext.getBean(TenantGatewayTagsProvider.class));
         }
-
     }
 
     @Nested
@@ -49,5 +44,4 @@ class MorpApplicationTests {
         }
 
     }
-
 }
