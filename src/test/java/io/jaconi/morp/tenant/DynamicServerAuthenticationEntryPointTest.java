@@ -6,12 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.web.client.HttpServerErrorException;
+import reactor.test.StepVerifier;
 
 import java.net.URI;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DynamicServerAuthenticationEntryPointTest {
 
@@ -35,6 +35,8 @@ class DynamicServerAuthenticationEntryPointTest {
         var exchange = new MockServerWebExchange.Builder(request).build();
         ServerWebExchangeUtils.putUriTemplateVariables(exchange, Map.of());
 
-        assertThrows(HttpServerErrorException.class, () -> entryPoint.commence(exchange, null).block());
+        StepVerifier.create(entryPoint.commence(exchange, null))
+                .expectError(HttpServerErrorException.class)
+                .verify();
     }
 }

@@ -18,7 +18,7 @@ import static org.mockserver.model.HttpResponse.response;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"test", "wiretap"})
 @MockServerTest
-public class RoutingTest {
+class RoutingTest {
 
     @LocalServerPort
     private int port;
