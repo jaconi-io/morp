@@ -60,7 +60,7 @@ dependencies {
     testImplementation("org.mock-server:mockserver-spring-test-listener:5.14.0") {
         exclude("org.hamcrest", "hamcrest")
     }
-    testImplementation("org.jsoup:jsoup:1.15.2")
+    testImplementation("org.jsoup:jsoup")
     testImplementation("io.projectreactor:reactor-test")
 }
 
@@ -75,6 +75,8 @@ sonarqube {
         property("sonar.host.url", "https://sonarcloud.io")
     }
 }
+
+extra["testcontainersVersion"] = "1.17.6"
 
 // setup separate test suites for unit and integration tests
 testing {
@@ -94,18 +96,23 @@ testing {
 
             dependencies {
                 implementation(project)
-                implementation("org.jsoup:jsoup:1.15.2")
+                implementation("org.jsoup:jsoup")
                 // testcontainers core
-                implementation("org.testcontainers:junit-jupiter:1.17.5")
-                implementation("org.testcontainers:testcontainers:1.17.5")
+                implementation("org.testcontainers:junit-jupiter")
+                implementation("org.testcontainers:testcontainers")
                 // testcontainers containers
-                implementation("org.testcontainers:selenium:1.17.5")
-                implementation("com.github.dasniko:testcontainers-keycloak:2.3.0")
-                implementation("org.testcontainers:mockserver:1.17.5")
+                implementation("org.testcontainers:selenium")
+                implementation("com.github.dasniko:testcontainers-keycloak:2.4.0")
+                implementation("org.testcontainers:mockserver")
                 // selenium itself
                 implementation("org.seleniumhq.selenium:selenium-api")
                 implementation("org.seleniumhq.selenium:selenium-chrome-driver")
                 implementation("org.seleniumhq.selenium:selenium-remote-driver")
+            }
+            dependencyManagement {
+                imports {
+                    mavenBom("org.testcontainers:testcontainers-bom:${property("testcontainersVersion")}")
+                }
             }
             targets {
                 all {

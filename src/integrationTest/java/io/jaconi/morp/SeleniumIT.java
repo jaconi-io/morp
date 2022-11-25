@@ -49,7 +49,7 @@ public class SeleniumIT extends TestBase {
     // we start Chrome for each test to ensure a clean state (i.e. cookies etc)
     // screen recording not working on ARM Mac due to missing ARM image of vnc-recorder
     @Container
-    public BrowserWebDriverContainer chrome = new BrowserWebDriverContainer<>(ArmUtil.select("seleniarm/standalone-chromium:103.0", "selenium/standalone-chrome:103.0"))
+    public BrowserWebDriverContainer chrome = new BrowserWebDriverContainer<>(ArmUtil.select("seleniarm/standalone-chromium:107.0", "selenium/standalone-chrome:107.0"))
             .withNetwork(containerSetup.getNetwork())
             .withNetworkAliases("chrome")
             .withCapabilities(new ChromeOptions())
@@ -84,9 +84,7 @@ public class SeleniumIT extends TestBase {
     @ParameterizedTest
     @CsvSource({
             "tenant1, morp:8081, /upstream/tenant1, /test",
-            "tenant1, tenant1-morp:8081, /upstream, /test",
-            "tenant1a, morp:8081, /upstream/tenant1a, /test",
-            "tenant1a, tenant1a-morp:8081, /upstream, /test"
+            "tenant1, tenant1-morp:8081, /upstream, /test"
     })
     void testWithKeycloak(String tenant, String host, String prefix, String path) throws MalformedURLException {
 

@@ -1,5 +1,6 @@
 package io.jaconi.morp;
 
+import com.sun.management.OperatingSystemMXBean;
 import org.junit.jupiter.api.Test;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -16,6 +17,7 @@ class MorpRuntimeHintsTests {
         new MorpRuntimeHints().registerHints(hints, getClass().getClassLoader());
 
         // Generic hints
+        assertThat(reflection().onType(OperatingSystemMXBean.class)).accepts(hints);
         assertThat(reflection().onType(JwtDecoder.class).withMemberCategory(INVOKE_PUBLIC_CONSTRUCTORS)).accepts(hints);
 
     }

@@ -2182,7 +2182,7 @@
     "parRequestUriLifespan": "60",
     "cibaInterval": "5"
   },
-  "keycloakVersion": "18.0.2",
+  "keycloakVersion": "20.0.1",
   "userManagedAccessAllowed": false,
   "clientProfiles": {
     "profiles": []
