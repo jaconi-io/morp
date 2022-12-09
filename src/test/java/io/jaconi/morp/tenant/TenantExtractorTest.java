@@ -18,7 +18,7 @@ class TenantExtractorTest {
         var exchange = new MockServerWebExchange.Builder(request).build();
         ServerWebExchangeUtils.putUriTemplateVariables(exchange, Map.of("tenant", "foo"));
 
-        Optional<String> tenant = TenantExtractor.extractTenant(exchange);
+        Optional<String> tenant = TenantExtractor.extractTenant(exchange.getAttributes());
 
         assertThat(tenant).contains("foo");
     }
@@ -29,7 +29,7 @@ class TenantExtractorTest {
         var exchange = new MockServerWebExchange.Builder(request).build();
         ServerWebExchangeUtils.putUriTemplateVariables(exchange, Map.of());
 
-        Optional<String> tenant = TenantExtractor.extractTenant(exchange);
+        Optional<String> tenant = TenantExtractor.extractTenant(exchange.getAttributes());
 
         assertThat(tenant).isEmpty();
     }

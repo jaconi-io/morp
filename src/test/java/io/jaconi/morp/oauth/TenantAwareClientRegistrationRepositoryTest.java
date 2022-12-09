@@ -45,7 +45,7 @@ class TenantAwareClientRegistrationRepositoryTest {
             .build();
 
     @BeforeEach
-    private void clearCaches() {
+    void clearCaches() {
         cacheManager.getCache(TenantAwareClientRegistrationRepository.REGISTRATIONS).clear();
         cacheManager.getCache(TenantAwareClientRegistrationRepository.SOURCE_HASHES).clear();
         when(providerResolver.getProvider(anyString(), anyString())).thenReturn(buildProvider("i"));

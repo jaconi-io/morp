@@ -38,12 +38,6 @@ morp:
       registration:
         client-id: morp
         client-secret: secret
-    tenant1a:
-      # Configure tenant-specific overrides here.
-      registration:
-        scope:
-          - profile
-          - email
     tenant2:
       oauth2-client-registration: okta
 

@@ -13,6 +13,8 @@ management:
         enabled: true
     prometheus:
       enabled: true
+    gateway:
+      enabled: true
   endpoints:
     web:
       exposure:
@@ -45,15 +47,24 @@ spring:
     cache: false
   main:
     banner-mode: off
+  cache:
+    type: caffeine
+  # Workaround for native image:
+  cloud:
+    gateway:
+      redis:
+        enabled: false
+      # Workaround to disable 2nd cacheManager
+      filter:
+        local-response-cache:
+          enabled: false
+
+# Non-spring configuration goes here!
+morp:
   session:
     # To enable Redis set 'store-type' to 'redis'
     # Local redis can be started like this: `docker run -p 6379:6379 redis`
     store-type: none
-  cache:
-    type: caffeine
-
-# Non-spring configuration goes here!
-morp: {}
 
 ---
 spring.config.activate.on-profile:
@@ -65,10 +76,12 @@ management:
       enabled: true
 
 spring:
-  session:
-    store-type: redis
   cache:
     type: redis
+
+morp:
+  session:
+    store-type: redis
 
 ---
 spring.config.activate.on-profile:

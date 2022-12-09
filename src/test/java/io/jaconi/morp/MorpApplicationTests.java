@@ -1,7 +1,7 @@
 package io.jaconi.morp;
 
 import io.jaconi.morp.tenant.TenantGatewayTagsProvider;
-import io.jaconi.morp.tenant.TenantWebFluxTagsContributor;
+import io.jaconi.morp.tenant.TenantWebFluxObservationConvention;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -25,7 +25,7 @@ class MorpApplicationTests {
 
         @Test
         void test() {
-            assertThrows(NoSuchBeanDefinitionException.class, () -> appContext.getBean(TenantWebFluxTagsContributor.class));
+            assertThrows(NoSuchBeanDefinitionException.class, () -> appContext.getBean(TenantWebFluxObservationConvention.class));
             assertThrows(NoSuchBeanDefinitionException.class, () -> appContext.getBean(TenantGatewayTagsProvider.class));
         }
     }
@@ -39,7 +39,7 @@ class MorpApplicationTests {
 
         @Test
         void test() {
-            assertThat(appContext.getBean(TenantWebFluxTagsContributor.class)).isNotNull();
+            assertThat(appContext.getBean(TenantWebFluxObservationConvention.class)).isNotNull();
             assertThat(appContext.getBean(TenantGatewayTagsProvider.class)).isNotNull();
         }
 

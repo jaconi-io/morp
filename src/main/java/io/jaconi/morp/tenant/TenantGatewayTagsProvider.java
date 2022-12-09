@@ -14,7 +14,7 @@ public class TenantGatewayTagsProvider implements GatewayTagsProvider {
 
     @Override
     public Tags apply(ServerWebExchange exchange) {
-        return TenantExtractor.extractTenant(exchange)
+        return TenantExtractor.extractTenant(exchange.getAttributes())
                 .map(t -> Tags.of(KEY, t))
                 .orElse(Tags.empty());
     }

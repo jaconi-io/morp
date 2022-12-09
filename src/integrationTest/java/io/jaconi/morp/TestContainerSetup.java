@@ -43,7 +43,7 @@ public class TestContainerSetup implements AfterEachCallback {
         this.network = Network.newNetwork();
 
         // setup Keycloak container
-        this.keycloak = new KeycloakContainer("quay.io/keycloak/keycloak:19.0.1")
+        this.keycloak = new KeycloakContainer("quay.io/keycloak/keycloak:20.0.1")
                 .withRealmImportFile("/keycloak/realm-1.json")
                 .withNetwork(network)
                 .withExposedPorts(8080)
@@ -60,7 +60,7 @@ public class TestContainerSetup implements AfterEachCallback {
         // setup morp as auth proxy for upstream
         this.morp = new GenericContainer<>(DockerImageName.parse("ghcr.io/jaconi-io/morp:latest"))
                 .withNetwork(network)
-                .withNetworkAliases("morp", "tenant1-morp", "tenant1a-morp", "tenant2-morp")
+                .withNetworkAliases("morp", "tenant1-morp", "tenant2-morp")
                 .withExposedPorts(8081, 8082)
                 .withEnv("SPRING_PROFILES_ACTIVE", "test")
                 .withFileSystemBind(

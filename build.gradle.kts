@@ -1,45 +1,36 @@
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
+
 plugins {
     java
     jacoco
     `jvm-test-suite`
-    id("org.springframework.boot") version "2.7.3"
-    id("org.springframework.experimental.aot") version "0.12.1"
+    id("io.freefair.lombok") version "6.5.1"
+    id("org.springframework.boot") version "3.0.0"
+    id("io.spring.dependency-management") version "1.1.0"
+    id("org.graalvm.buildtools.native") version "0.9.18"
     id("com.github.rising3.semver") version "0.8.1"
     id("org.barfuin.gradle.jacocolog") version "2.0.0"
     id("org.sonarqube") version "3.4.0.2513"
 }
 
-apply(plugin = "io.spring.dependency-management")
-
 group = "io.jaconi"
 version = "1.2.3"
 
-repositories {
-    mavenCentral()
-    maven(url = "https://repo.spring.io/release")
-}
+val registry = "ghcr.io/jaconi-io"
 
-springAot {
-    removeXmlSupport.set(false)
+repositories {
+    // mavenLocal()
+    mavenCentral()
+    maven(url = "https://repo.spring.io/milestone")
 }
 
 dependencies {
-    annotationProcessor("org.projectlombok:lombok")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-
-    compileOnly("org.projectlombok:lombok")
-    compileOnly("org.springframework.experimental:spring-aot:0.12.1")
-    implementation("org.reflections:reflections:0.10.2")
-
-    // logback workaround
-    // see: https://github.com/spring-projects-experimental/spring-native/tree/main/samples/logger
-    implementation("org.codehaus.janino:janino:3.1.6")
 
     // json logging
     implementation("net.logstash.logback:logstash-logback-encoder:7.2")
     implementation("ch.qos.logback:logback-classic")
 
-    implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2021.0.3"))
+    implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2022.0.0-RC2"))
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
@@ -47,7 +38,7 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-gateway-webflux")
 
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity5")
+    implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
 
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.session:spring-session-data-redis")
@@ -56,7 +47,7 @@ dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine")
 
     implementation("org.apache.commons:commons-lang3")
-    implementation("commons-codec:commons-codec:1.15")
+    implementation("commons-codec:commons-codec")
 
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
@@ -69,7 +60,7 @@ dependencies {
     testImplementation("org.mock-server:mockserver-spring-test-listener:5.14.0") {
         exclude("org.hamcrest", "hamcrest")
     }
-    testImplementation("org.jsoup:jsoup:1.15.2")
+    testImplementation("org.jsoup:jsoup")
     testImplementation("io.projectreactor:reactor-test")
 }
 
@@ -84,6 +75,8 @@ sonarqube {
         property("sonar.host.url", "https://sonarcloud.io")
     }
 }
+
+extra["testcontainersVersion"] = "1.17.6"
 
 // setup separate test suites for unit and integration tests
 testing {
@@ -103,23 +96,28 @@ testing {
 
             dependencies {
                 implementation(project)
-                implementation("org.jsoup:jsoup:1.15.2")
+                implementation("org.jsoup:jsoup")
                 // testcontainers core
-                implementation("org.testcontainers:junit-jupiter:1.17.3")
-                implementation("org.testcontainers:testcontainers:1.17.3")
+                implementation("org.testcontainers:junit-jupiter")
+                implementation("org.testcontainers:testcontainers")
                 // testcontainers containers
-                implementation("org.testcontainers:selenium:1.17.3")
-                implementation("com.github.dasniko:testcontainers-keycloak:2.2.2")
-                implementation("org.testcontainers:mockserver:1.17.3")
+                implementation("org.testcontainers:selenium")
+                implementation("com.github.dasniko:testcontainers-keycloak:2.4.0")
+                implementation("org.testcontainers:mockserver")
                 // selenium itself
-                implementation("org.seleniumhq.selenium:selenium-api:4.3.0")
-                implementation("org.seleniumhq.selenium:selenium-chrome-driver:4.3.0")
-                implementation("org.seleniumhq.selenium:selenium-remote-driver:4.3.0")
+                implementation("org.seleniumhq.selenium:selenium-api")
+                implementation("org.seleniumhq.selenium:selenium-chrome-driver")
+                implementation("org.seleniumhq.selenium:selenium-remote-driver")
+            }
+            dependencyManagement {
+                imports {
+                    mavenBom("org.testcontainers:testcontainers-bom:${property("testcontainersVersion")}")
+                }
             }
             targets {
                 all {
                     testTask.configure {
-                        mustRunAfter(tasks.bootBuildImage)
+                        mustRunAfter(tasks.named("dockerBuild"))
                         testLogging.exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
                         testLogging.showStandardStreams = true
                     }
@@ -129,30 +127,39 @@ testing {
     }
 }
 
-tasks.bootBuildImage {
+tasks.create<Exec>("dockerBuild") {
     mustRunAfter(tasks.test)
-    builder = "paketobuildpacks/builder:tiny"
-    imageName = "ghcr.io/jaconi-io/${project.name}:${project.version}"
-    environment = mapOf(
-            "BP_NATIVE_IMAGE" to setOf("x86_64", "amd64").contains(System.getProperty("os.arch")).toString(),
-            "USE_NATIVE_IMAGE_JAVA_PLATFORM_MODULE_SYSTEM" to "false",
-            "BPE_APPEND_JAVA_TOOL_OPTIONS" to "-XX:MaxDirectMemorySize=100M",
-            "BPE_DELIM_JAVA_TOOL_OPTIONS" to " ",
-    )
-    isPublish = false
-    tag("ghcr.io/jaconi-io/${project.name}:latest")
+    executable("docker")
+    args(listOf("build", "-t", "${registry}/${project.name}:${project.version}", "-t", "${registry}/${project.name}:latest", "."))
+}
+
+tasks.create<Exec>("dockerBuildPush") {
+    executable("docker")
+    args(listOf("buildx", "build", "--platform", "linux/amd64,linux/arm64", "-t", "${registry}/${project.name}:${project.version}", "--push", "."))
+}
+
+tasks.withType<BootBuildImage> {
+    mustRunAfter(tasks.test)
+    imageName.value("${registry}/${project.name}:${project.version}")
+    publish.value(false)
+    environment.putAll(mapOf(
+        "BP_NATIVE_IMAGE" to setOf("x86_64", "amd64").contains(System.getProperty("os.arch")).toString(),
+        "BPE_APPEND_JAVA_TOOL_OPTIONS" to "-XX:MaxDirectMemorySize=100M",
+        "BPE_DELIM_JAVA_TOOL_OPTIONS" to " ",
+    ))
+    tags.add("${registry}/${project.name}:latest")
     docker {
         publishRegistry {
-            url = "ghcr.io"
-            username = "${System.getenv("GITHUB_USER")}"
-            password = "${System.getenv("GITHUB_TOKEN")}"
+            url.value("ghcr.io")
+            username.value("${System.getenv("GITHUB_USER")}")
+            password.value("${System.getenv("GITHUB_TOKEN")}")
         }
     }
 }
 
 tasks.check {
     dependsOn(tasks.test)
-    dependsOn(tasks.bootBuildImage)
+    dependsOn(tasks.named("dockerBuild"))
     dependsOn(testing.suites.named("integrationTest"))
     dependsOn(tasks.jacocoTestReport)
 }
