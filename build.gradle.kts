@@ -4,13 +4,14 @@ plugins {
     java
     jacoco
     `jvm-test-suite`
-    id("io.freefair.lombok") version "6.5.1"
-    id("org.springframework.boot") version "3.0.0"
+    id("io.freefair.lombok") version "6.6"
+    id("org.springframework.boot") version "3.0.1"
     id("io.spring.dependency-management") version "1.1.0"
-    id("org.graalvm.buildtools.native") version "0.9.18"
+    id("org.graalvm.buildtools.native") version "0.9.19"
     id("com.github.rising3.semver") version "0.8.1"
     id("org.barfuin.gradle.jacocolog") version "2.0.0"
-    id("org.sonarqube") version "3.4.0.2513"
+    id("org.sonarqube") version "3.5.0.2730"
+    id("se.ascp.gradle.gradle-versions-filter") version "0.1.16"
 }
 
 group = "io.jaconi"
@@ -19,9 +20,7 @@ version = "1.2.3"
 val registry = "ghcr.io/jaconi-io"
 
 repositories {
-    // mavenLocal()
     mavenCentral()
-    maven(url = "https://repo.spring.io/milestone")
 }
 
 dependencies {
@@ -30,7 +29,7 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:7.2")
     implementation("ch.qos.logback:logback-classic")
 
-    implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2022.0.0-RC2"))
+    implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2022.0.0"))
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
@@ -38,7 +37,6 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-gateway-webflux")
 
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
 
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.session:spring-session-data-redis")
@@ -52,7 +50,7 @@ dependencies {
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
     // workaround to be able to develop on ARM Mac :-(
-    runtimeOnly("io.netty:netty-resolver-dns-native-macos:4.1.77.Final:osx-aarch_64")
+    runtimeOnly("io.netty:netty-resolver-dns-native-macos:4.1.85.Final:osx-aarch_64")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude("org.hamcrest", "hamcrest")
@@ -95,7 +93,7 @@ testing {
             }
 
             dependencies {
-                implementation(project)
+                implementation(project())
                 implementation("org.jsoup:jsoup")
                 // testcontainers core
                 implementation("org.testcontainers:junit-jupiter")

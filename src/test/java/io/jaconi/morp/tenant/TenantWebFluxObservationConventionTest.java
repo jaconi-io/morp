@@ -23,9 +23,9 @@ class TenantWebFluxObservationConventionTest {
 
         TenantWebFluxObservationConvention tenantWebFluxObservationConvention = new TenantWebFluxObservationConvention();
 
-        KeyValues keyValues = tenantWebFluxObservationConvention.getHighCardinalityKeyValues(context);
+        KeyValues keyValues = tenantWebFluxObservationConvention.getLowCardinalityKeyValues(context);
 
-        assertThat(keyValues).containsExactly(KeyValue.of("tenant", "foo"));
+        assertThat(keyValues).contains(KeyValue.of("tenant", "foo"));
     }
 
     @Test
@@ -37,8 +37,8 @@ class TenantWebFluxObservationConventionTest {
 
         TenantWebFluxObservationConvention tenantWebFluxObservationConvention = new TenantWebFluxObservationConvention();
 
-        KeyValues keyValues = tenantWebFluxObservationConvention.getHighCardinalityKeyValues(context);
+        KeyValues keyValues = tenantWebFluxObservationConvention.getLowCardinalityKeyValues(context);
 
-        assertThat(keyValues).isEmpty();
+        assertThat(keyValues).noneMatch(p -> p.getKey().equals("tenant"));
     }
 }
