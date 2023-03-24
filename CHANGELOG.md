@@ -1,3 +1,20 @@
+# [1.3.0](https://github.com/jaconi-io/morp/compare/v1.2.3...v1.3.0) (2023-03-24)
+
+
+### Bug Fixes
+
+* make Sonar happy ([d487443](https://github.com/jaconi-io/morp/commit/d487443a421d35650f98a206ee14a393265279d9))
+* remove all milestones ([0620829](https://github.com/jaconi-io/morp/commit/0620829ee5d186fd54301792a0ebd04e33c58bdf))
+* remove plain OAuth2 test since Keycloak 20 no longer supports this ([3d4c4f2](https://github.com/jaconi-io/morp/commit/3d4c4f20504ed7584dbd679cc0bbbe4e30460b1d))
+* version updates ([83f54ae](https://github.com/jaconi-io/morp/commit/83f54ae6cc22d50f173203554c2e735c02656d14))
+* workarounds for native image ([4a2a38e](https://github.com/jaconi-io/morp/commit/4a2a38ec62aa9fa023c49d308d2bd7af6076d582))
+
+
+### Features
+
+* multi-arch images ([20af4bb](https://github.com/jaconi-io/morp/commit/20af4bbfd2b53de1b74cae2aa39b8530ee3f296d))
+* upgrade Spring Boot 3.0.0 ([ef09508](https://github.com/jaconi-io/morp/commit/ef09508387a16d0b18e1061ec0083ab49245f8dd))
+
 ## [1.2.3](https://github.com/jaconi-io/morp/compare/v1.2.2...v1.2.3) (2022-11-23)
 
 

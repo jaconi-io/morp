@@ -15,7 +15,7 @@ plugins {
 }
 
 group = "io.jaconi"
-version = "1.2.3"
+version = "1.3.0"
 
 val registry = "ghcr.io/jaconi-io"
 
