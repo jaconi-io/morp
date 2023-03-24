@@ -1,6 +1,6 @@
 ![MORP](mkdocs/docs/assets/morp.svg)
 
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/jaconi-io/morp/Continuous%20Integration?style=for-the-badge)](https://github.com/jaconi-io/morp/actions/workflows/continuous.yaml)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/jaconi-io/morp/continuous.yaml?branch=main&style=for-the-badge)](https://github.com/jaconi-io/morp/actions/workflows/continuous.yaml)
 [![Codecov](https://img.shields.io/codecov/c/github/jaconi-io/morp?style=for-the-badge)](https://codecov.io/gh/jaconi-io/morp)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/jaconi-io/morp?label=Image&style=for-the-badge)](https://github.com/jaconi-io/morp/pkgs/container/morp)
 
