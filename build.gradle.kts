@@ -55,7 +55,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude("org.hamcrest", "hamcrest")
     }
-    testImplementation("org.mock-server:mockserver-spring-test-listener:5.14.0") {
+    testImplementation("org.mock-server:mockserver-spring-test-listener:5.15.0") {
         exclude("org.hamcrest", "hamcrest")
     }
     testImplementation("org.jsoup:jsoup")
