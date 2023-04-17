@@ -53,7 +53,8 @@ public class TestContainerSetup implements AfterEachCallback {
                 .withEnv("KC_PROXY", "edge");
 
         // setup mockserver (as protected upstream)
-        this.mockserver = new MockServerContainer(DockerImageName.parse("mockserver/mockserver:5.14.0"))
+        var tag = "mockserver-%s".formatted(MockServerClient.class.getPackage().getImplementationVersion());
+        this.mockserver = new MockServerContainer(DockerImageName.parse("mockserver/mockserver").withTag(tag))
                 .withNetwork(network)
                 .withNetworkAliases("upstream");
 
