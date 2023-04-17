@@ -5,7 +5,7 @@ plugins {
     jacoco
     `jvm-test-suite`
     id("io.freefair.lombok") version "8.0.1"
-    id("org.springframework.boot") version "3.0.1"
+    id("org.springframework.boot") version "3.0.5"
     id("io.spring.dependency-management") version "1.1.0"
     id("org.graalvm.buildtools.native") version "0.9.21"
     id("com.github.rising3.semver") version "0.8.2"
@@ -58,7 +58,7 @@ dependencies {
     testImplementation("org.mock-server:mockserver-spring-test-listener:5.15.0") {
         exclude("org.hamcrest", "hamcrest")
     }
-    testImplementation("org.jsoup:jsoup")
+    testImplementation("org.jsoup:jsoup:1.15.4")
     testImplementation("io.projectreactor:reactor-test")
 }
 
@@ -94,7 +94,7 @@ testing {
 
             dependencies {
                 implementation(project())
-                implementation("org.jsoup:jsoup")
+                implementation("org.jsoup:jsoup:1.15.4")
                 // testcontainers core
                 implementation("org.testcontainers:junit-jupiter")
                 implementation("org.testcontainers:testcontainers")
