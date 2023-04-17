@@ -10,7 +10,7 @@ plugins {
     id("org.graalvm.buildtools.native") version "0.9.19"
     id("com.github.rising3.semver") version "0.8.1"
     id("org.barfuin.gradle.jacocolog") version "2.0.0"
-    id("org.sonarqube") version "3.5.0.2730"
+    id("org.sonarqube") version "4.0.0.2929"
     id("se.ascp.gradle.gradle-versions-filter") version "0.1.16"
 }
 
