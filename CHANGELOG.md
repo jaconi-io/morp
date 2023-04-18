@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/jaconi-io/morp/compare/v1.3.0...v1.3.1) (2023-04-18)
+
+
+### Bug Fixes
+
+* mockserver version ([64a0f80](https://github.com/jaconi-io/morp/commit/64a0f80661e1190adf992b811383851282f36198))
+
 # [1.3.0](https://github.com/jaconi-io/morp/compare/v1.2.3...v1.3.0) (2023-03-24)
 
 
