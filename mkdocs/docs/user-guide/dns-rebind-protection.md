@@ -6,6 +6,7 @@ protection. There are various options to avoid this problem.
 ## Add Exception
 
 You can add an exception for the following domains in your routers configuration:
+
 ```
 bar.localtest.me
 foo.localtest.me
@@ -13,6 +14,7 @@ keycloak.localtest.me
 ```
 
 For instructions see your router vendors documentation. For example:
+
 * [AVM FRITZ!Box](https://en.avm.de/service/knowledge-base/dok/FRITZ-Box-6660-Cable/3565_FRITZ-Box-reports-Your-FRITZ-Box-s-DNS-rebind-protection-rejected-your-query-for-reasons-of-security/)
 * [Google Nest](https://support.google.com/googlenest/answer/9144137)
 
