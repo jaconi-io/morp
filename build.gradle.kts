@@ -26,7 +26,7 @@ repositories {
 dependencies {
 
     // json logging
-    implementation("net.logstash.logback:logstash-logback-encoder:7.2")
+    implementation("net.logstash.logback:logstash-logback-encoder:7.3")
     implementation("ch.qos.logback:logback-classic")
 
     implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2022.0.2"))
