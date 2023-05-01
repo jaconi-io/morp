@@ -1,4 +1,4 @@
-FROM ghcr.io/graalvm/native-image:ol9-java17-22.3.1 AS builder
+FROM ghcr.io/graalvm/native-image:ol9-java17-22.3.2 AS builder
 
 # Install tar and gzip to extract the Maven binaries
 RUN microdnf install --nodocs -y \
