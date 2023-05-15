@@ -7,7 +7,7 @@ plugins {
     id("io.freefair.lombok") version "8.0.1"
     id("org.springframework.boot") version "3.0.5"
     id("io.spring.dependency-management") version "1.1.0"
-    id("org.graalvm.buildtools.native") version "0.9.21"
+    id("org.graalvm.buildtools.native") version "0.9.22"
     id("com.github.rising3.semver") version "0.8.2"
     id("org.barfuin.gradle.jacocolog") version "3.1.0"
     id("org.sonarqube") version "4.0.0.2929"
