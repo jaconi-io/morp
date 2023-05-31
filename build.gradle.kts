@@ -74,7 +74,7 @@ sonarqube {
     }
 }
 
-extra["testcontainersVersion"] = "1.17.6"
+extra["testcontainersVersion"] = "1.18.2"
 
 // setup separate test suites for unit and integration tests
 testing {

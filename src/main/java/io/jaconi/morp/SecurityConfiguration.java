@@ -41,20 +41,17 @@ public class SecurityConfiguration {
                                                FilteringWebHandler webHandler, RouteLocator routeLocator,
                                                GlobalCorsProperties globalCorsProperties, Environment environment) {
         return httpSecurity
-                .csrf().disable()
-                .authorizeExchange()
-                .pathMatchers(DEBUG_ENDPOINT).authenticated()
-                .matchers(EndpointRequest.toAnyEndpoint()).permitAll()
-                .anyExchange().hasAuthority(ROLE_PROXY)
-                .and()
-                .oauth2Login()
-                .and()
-                .oauth2Client()
-                .and()
-                .exceptionHandling().authenticationEntryPoint(serverAuthenticationEntryPoint)
-                .and()
-                .logout()
-                .and()
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .authorizeExchange(authorizeExchangeSpec ->
+                        authorizeExchangeSpec.pathMatchers(DEBUG_ENDPOINT).authenticated()
+                                .matchers(EndpointRequest.toAnyEndpoint()).permitAll()
+                                .anyExchange().hasAuthority(ROLE_PROXY)
+                )
+                .oauth2Login(oAuth2LoginSpec -> {})
+                .oauth2Client(oAuth2ClientSpec -> {})
+                .exceptionHandling(exceptionHandlingSpec ->
+                        exceptionHandlingSpec.authenticationEntryPoint(serverAuthenticationEntryPoint))
+                .logout(logoutSpec -> {})
                 .addFilterAt(new LogoutPageGeneratingWebFilter(),
                         SecurityWebFiltersOrder.LOGOUT_PAGE_GENERATING)
                 .addFilterAfter(new TenantExtractionFilter(webHandler, routeLocator, globalCorsProperties, environment,
