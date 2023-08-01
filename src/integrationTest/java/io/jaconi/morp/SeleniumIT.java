@@ -49,7 +49,7 @@ public class SeleniumIT extends TestBase {
     // we start Chrome for each test to ensure a clean state (i.e. cookies etc)
     // screen recording not working on ARM Mac due to missing ARM image of vnc-recorder
     @Container
-    public BrowserWebDriverContainer chrome = new BrowserWebDriverContainer<>(ArmUtil.select("seleniarm/standalone-chromium:107.0", "selenium/standalone-chrome:107.0"))
+    public final BrowserWebDriverContainer<?> chrome = new BrowserWebDriverContainer<>(ArmUtil.select("seleniarm/standalone-chromium:107.0", "selenium/standalone-chrome:107.0"))
             .withNetwork(containerSetup.getNetwork())
             .withNetworkAliases("chrome")
             .withCapabilities(new ChromeOptions())
@@ -62,7 +62,7 @@ public class SeleniumIT extends TestBase {
     @BeforeEach
     void setUp() {
         // use implicit wait of 10s (for DOM to build) when asking for page elements
-        driver = chrome.getWebDriver();
+        driver = new RemoteWebDriver(chrome.getSeleniumAddress(), new ChromeOptions());
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 
         // Setup upstream behavior via mockserver client.

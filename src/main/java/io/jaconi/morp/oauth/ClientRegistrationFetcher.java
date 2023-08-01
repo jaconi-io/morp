@@ -2,7 +2,7 @@ package io.jaconi.morp.oauth;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesRegistrationAdapter;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesMapper;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ public class ClientRegistrationFetcher {
     public ClientRegistration getRegistration(String tenant, ClientRegistrationSource clientRegistrationSource) {
         log.debug("Creating Client Registration for tenant '{}' from scratch.", tenant);
         var properties = new SimpleOAuth2Properties(tenant, clientRegistrationSource);
-        var clientRegistrations = OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties);
+        var clientRegistrations = new OAuth2ClientPropertiesMapper(properties).asClientRegistrations();
         return withDefaults(clientRegistrations.get(tenant));
     }
 
