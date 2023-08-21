@@ -6,7 +6,7 @@ plugins {
     `jvm-test-suite`
     id("io.freefair.lombok") version "8.2.2"
     id("org.springframework.boot") version "3.1.2"
-    id("io.spring.dependency-management") version "1.1.2"
+    id("io.spring.dependency-management") version "1.1.3"
     id("org.graalvm.buildtools.native") version "0.9.23"
     id("com.github.rising3.semver") version "0.8.2"
     id("org.barfuin.gradle.jacocolog") version "3.1.0"
