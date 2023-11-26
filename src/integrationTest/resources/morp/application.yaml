@@ -1,10 +1,3 @@
-# keycloak is running on 8080 so we need different ports for Morp here
-server:
-  port: 8081
-management:
-  server:
-    port: 8082
-
 # Routing config
 spring:
   cloud:

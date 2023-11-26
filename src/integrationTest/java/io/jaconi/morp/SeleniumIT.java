@@ -47,9 +47,8 @@ public class SeleniumIT extends TestBase {
 
 
     // we start Chrome for each test to ensure a clean state (i.e. cookies etc)
-    // screen recording not working on ARM Mac due to missing ARM image of vnc-recorder
     @Container
-    public final BrowserWebDriverContainer<?> chrome = new BrowserWebDriverContainer<>(ArmUtil.select("seleniarm/standalone-chromium:107.0", "selenium/standalone-chrome:107.0"))
+    public final BrowserWebDriverContainer<?> chrome = new BrowserWebDriverContainer<>(ArmUtil.select("seleniarm/standalone-chromium:latest", "selenium/standalone-chrome:latest"))
             .withNetwork(containerSetup.getNetwork())
             .withNetworkAliases("chrome")
             .withCapabilities(new ChromeOptions())
@@ -83,8 +82,8 @@ public class SeleniumIT extends TestBase {
 
     @ParameterizedTest
     @CsvSource({
-            "tenant1, morp:8081, /upstream/tenant1, /test",
-            "tenant1, tenant1-morp:8081, /upstream, /test"
+            "tenant1, morp:8080, /upstream/tenant1, /test",
+            "tenant1, tenant1-morp:8080, /upstream, /test"
     })
     void testWithKeycloak(String tenant, String host, String prefix, String path) throws MalformedURLException {
 
@@ -105,7 +104,7 @@ public class SeleniumIT extends TestBase {
         // assert that we ended up in the right place
         URL url = new URL(driver.getCurrentUrl());
         assertThat(url.getHost()).isEqualTo(StringUtils.substringBefore(host, ":"));
-        assertThat(url.getPort()).isEqualTo(8081);
+        assertThat(url.getPort()).isEqualTo(8080);
         assertThat(url.getPath()).isEqualTo(prefix + path);
 
         assertThat(driver.findElement(By.id("test")).getText()).isEqualTo("Hello from mockserver");
@@ -128,8 +127,8 @@ public class SeleniumIT extends TestBase {
 
     @ParameterizedTest
     @CsvSource({
-            "tenant2, morp:8081, /upstream/tenant2, /test",
-            "tenant2, tenant2-morp:8081, /upstream, /test"
+            "tenant2, morp:8080, /upstream/tenant2, /test",
+            "tenant2, tenant2-morp:8080, /upstream, /test"
     })
     void testWithOkta(String tenant, String host, String prefix, String path) {
 

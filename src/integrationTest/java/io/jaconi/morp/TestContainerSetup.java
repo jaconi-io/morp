@@ -12,6 +12,7 @@ import org.testcontainers.containers.MockServerContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
+import org.testcontainers.lifecycle.Startables;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.DockerLoggerFactory;
 import reactor.netty.http.client.HttpClient;
@@ -54,29 +55,28 @@ public class TestContainerSetup implements AfterEachCallback {
 
         // setup mockserver (as protected upstream)
         var tag = "mockserver-%s".formatted(MockServerClient.class.getPackage().getImplementationVersion());
-        this.mockserver = new MockServerContainer(DockerImageName.parse("mockserver/mockserver").withTag(tag))
+        DockerImageName mockServerImage = DockerImageName.parse("mockserver/mockserver").withTag(tag);
+        this.mockserver = new MockServerContainer(mockServerImage)
                 .withNetwork(network)
-                .withNetworkAliases("upstream");
+                .withNetworkAliases("upstream")
+                .withLogConsumer(new Slf4jLogConsumer(DockerLoggerFactory.getLogger(mockServerImage.asCanonicalNameString())));
 
         // setup morp as auth proxy for upstream
-        this.morp = new GenericContainer<>(DockerImageName.parse("ghcr.io/jaconi-io/morp:latest"))
+        DockerImageName morpImage = DockerImageName.parse("ghcr.io/jaconi-io/morp:latest");
+        this.morp = new GenericContainer<>(morpImage)
                 .withNetwork(network)
                 .withNetworkAliases("morp", "tenant1-morp", "tenant2-morp")
-                .withExposedPorts(8081, 8082)
+                .withExposedPorts(8080, 8081)
                 .withEnv("SPRING_PROFILES_ACTIVE", "test")
                 .withFileSystemBind(
                         "./src/integrationTest/resources/morp/application.yaml",
                         "/workspace/config/application.yaml",
                         BindMode.READ_ONLY)
                 .waitingFor(new HttpWaitStrategy()
-                        .forPort(8082)
+                        .forPort(8081)
                         .forPath("/actuator/health/readiness")
-                        .withStartupTimeout(Duration.ofMinutes(5)));
-
-        // start the containers
-        keycloak.start();
-        mockserver.withLogConsumer(new Slf4jLogConsumer(DockerLoggerFactory.getLogger(mockserver.getDockerImageName())))
-                .start();
+                        .withStartupTimeout(Duration.ofMinutes(5)))
+                .withLogConsumer(new Slf4jLogConsumer(DockerLoggerFactory.getLogger(morpImage.asCanonicalNameString())));
 
         // for local development convenience, bind mount the git-ignored 'secret.properties' (if it exists)
         if (Files.exists(Path.of("./secret.properties"))) {
@@ -92,8 +92,8 @@ public class TestContainerSetup implements AfterEachCallback {
                 .filter(e -> e.getKey().startsWith("MORP_"))
                 .forEach(e -> morp.withEnv(e.getKey(), e.getValue()));
 
-        morp.withLogConsumer(new Slf4jLogConsumer(DockerLoggerFactory.getLogger(morp.getDockerImageName())))
-                .start();
+        // start the containers
+        Startables.deepStart(keycloak, mockserver, morp).join();
 
         // create client to control mockserver (running as container)
         mockServerClient = new MockServerClient(mockserver.getHost(), mockserver.getServerPort());
@@ -103,11 +103,11 @@ public class TestContainerSetup implements AfterEachCallback {
                 .wiretap(true) // hex dump wiretap
                 .compress(true);
         webTestClient = WebTestClient.bindToServer(new ReactorClientHttpConnector(httpClient))
-                .baseUrl("http://localhost:" + morp.getMappedPort(8081))
+                .baseUrl("http://localhost:" + morp.getMappedPort(8080))
                 .build();
 
         managementTestClient = WebTestClient.bindToServer(new ReactorClientHttpConnector(httpClient))
-                .baseUrl("http://localhost:" + morp.getMappedPort(8082))
+                .baseUrl("http://localhost:" + morp.getMappedPort(8081))
                 .build();
     }
 
