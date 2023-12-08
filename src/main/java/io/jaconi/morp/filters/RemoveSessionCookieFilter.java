@@ -1,11 +1,12 @@
 package io.jaconi.morp.filters;
 
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.cloud.gateway.filter.headers.HttpHeadersFilter;
+import org.springframework.cloud.gateway.server.mvc.filter.HttpHeadersFilter;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.servlet.function.ServerRequest;
 
 import java.util.Collection;
 import java.util.List;
@@ -13,24 +14,25 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public class RemoveSessionCookieFilter implements HttpHeadersFilter {
+public class RemoveSessionCookieFilter implements HttpHeadersFilter.RequestHttpHeadersFilter {
 
     final String cookieName;
 
     @Override
-    public HttpHeaders filter(HttpHeaders input, ServerWebExchange exchange) {
+    public HttpHeaders apply(HttpHeaders input, ServerRequest request) {
         HttpHeaders filtered = new HttpHeaders();
 
         for (Map.Entry<String, List<String>> entry : input.entrySet()) {
-            if (HttpHeaders.COOKIE.equals(entry.getKey())) {
+            if (HttpHeaders.COOKIE.equalsIgnoreCase(entry.getKey())) {
                 continue;
             }
             filtered.addAll(entry.getKey(), entry.getValue());
         }
-        String filteredCookies = exchange.getRequest().getCookies().values()
+        String filteredCookies = request.cookies().values()
                 .stream()
                 .flatMap(Collection::stream)
                 .filter(c -> !cookieName.equals(c.getName()))
+                .map(c-> new HttpCookie(c.getName(), c.getValue()))
                 .map(HttpCookie::toString)
                 .collect(Collectors.joining(";"));
 

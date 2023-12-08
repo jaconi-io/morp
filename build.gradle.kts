@@ -26,10 +26,12 @@ repositories {
 dependencies {
     implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2025.0.0"))
 
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-    implementation("org.springframework.cloud:spring-cloud-starter-gateway-server-webflux")
-    implementation("org.springframework.cloud:spring-cloud-gateway-proxyexchange-webflux")
+    implementation("org.springframework.cloud:spring-cloud-starter-gateway-mvc")
 
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 
@@ -100,6 +102,9 @@ testing {
                 implementation("org.seleniumhq.selenium:selenium-api")
                 implementation("org.seleniumhq.selenium:selenium-chrome-driver")
                 implementation("org.seleniumhq.selenium:selenium-remote-driver")
+                // Spring WebFlux only for testing
+                implementation("org.springframework:spring-webflux")
+                implementation("io.projectreactor.netty:reactor-netty")
             }
             dependencyManagement {
                 imports {

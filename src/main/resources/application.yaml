@@ -1,5 +1,5 @@
 server:
-  reactive:
+  servlet:
     session:
       cookie:
         name: MORP_SESSION

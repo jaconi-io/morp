@@ -1,0 +1,2 @@
+org.springframework.cloud.gateway.server.mvc.predicate.PredicateSupplier=\
+  io.jaconi.morp.predicates.GatewayPredicates.MorpPredicateSupplier
