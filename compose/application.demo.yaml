@@ -2,7 +2,7 @@ spring:
   cloud:
     gateway:
       server:
-        webflux:
+        webmvc:
           routes:
             - id: host-mapping
               uri: https://httpbin.org

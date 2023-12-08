@@ -1,8 +1,9 @@
 server:
-  reactive:
+  servlet:
     session:
       cookie:
         name: MORP_SESSION
+  max-http-request-header-size: 64KB
 
 management:
   server:
@@ -39,21 +40,23 @@ spring:
     banner-mode: off
   cache:
     type: caffeine
+  # Enable virtual threads
+  threads:
+    virtual:
+      enabled: true
   # Workaround for native image:
   cloud:
+    refresh:
+      enabled: false
     gateway:
-      redis:
-        enabled: false
       server:
-        webflux:
-          # Workaround to disable 2nd cacheManager
-          filter:
-            local-response-cache:
-              enabled: false
-          # Disable matching the port in the host header to enable backward compatibility.
-          predicate:
-            host:
-              include-port: false
+        webmvc:
+          # Add a dummy proxy that cannot match anything in order to create the bean definition during AOT
+          trusted-proxies: "^\b$"
+          forwarded-request-headers-filter:
+            enabled: true
+          x-forwarded-request-headers-filter:
+            enabled: true
 
 # Non-spring configuration goes here!
 morp:
@@ -96,11 +99,7 @@ spring.config.activate.on-profile:
 
 logging.level:
   org.springframework.cloud.gateway: DEBUG
-  org.springframework.http.server.reactive: DEBUG
-  org.springframework.web.reactive: DEBUG
   org.springframework.security: DEBUG
-  reactor.netty.http.client.HttpClient: DEBUG
-  reactor.netty.http.server.HttpServer: DEBUG
 
 ---
 spring.config.activate.on-profile: json-log

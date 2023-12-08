@@ -3,13 +3,15 @@ spring:
   cloud:
     gateway:
       server:
-        webflux:
+        webmvc:
+          # Enable X-* headers in test
+          trusted-proxies: ".*"
           routes:
             # test route that identifies tenant via path element
             - id: upstream-tenant-path
               uri: http://upstream:1080
               predicates:
-                - Host=morp
+                - Host=morp:8080
                 - Path=/upstream/{tenant}/{path}
               filters:
                 - SetPath=/{path}
@@ -18,10 +20,17 @@ spring:
             - id: upstream-tenant-host
               uri: http://upstream:1080
               predicates:
-                - Host={tenant}-morp
+                - Host={tenant}-morp:8080
                 - Path=/upstream/{path}
               filters:
                 - SetPath=/{path}
+                - SetRequestHeader=x-tenant-id, {tenant}
+            # add dummy route with custom predicate
+            - id: host-mapping-static
+              uri: https://httpbin.org
+              predicates:
+                - TenantFromHost=none,static.example.com,another-static.example.com
+              filters:
                 - SetRequestHeader=x-tenant-id, {tenant}
 
 morp:
@@ -58,9 +67,7 @@ morp:
 
 
 logging.level:
-  root: DEBUG
-  reactor.core: ERROR
-  io.netty: ERROR
+  root: INFO
 
 # used for integration test cases - for convenience read a git-ignored properties file holding credentials
 spring.config.import: optional:file:./config/secret.properties

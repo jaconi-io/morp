@@ -1,75 +1,38 @@
 package io.jaconi.morp.predicates;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
-import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
-import org.springframework.mock.web.server.MockServerWebExchange;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
-import static org.assertj.core.api.Assertions.*;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.cloud.gateway.server.mvc.common.MvcUtils;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.servlet.function.ServerRequest;
 
 class TenantFromHeaderRoutePredicateFactoryTest {
 
-    @Test
-    void shortcutFieldOrder() {
-        var factory = new TenantFromHeaderRoutePredicateFactory();
-        assertThat(factory.shortcutFieldOrder()).containsExactly("header", "pattern");
-    }
+	@Test
+	void applyMatch() {
+		var predicate = GatewayPredicates.tenantFromHeader("X-Tenant-ID");
 
-    @Test
-    void applyMatch() {
-        var factory = new TenantFromHeaderRoutePredicateFactory();
-        var predicate = factory.apply(config("X-Tenant-ID", "{tenant}"));
+		var request = new MockHttpServletRequest("GET", "/test");
+		request.addHeader("X-Tenant-ID", "foo");
+		var serverRequest = ServerRequest.create(request, List.of());
 
-        var request = MockServerHttpRequest
-                .get("/test")
-                .header("X-Tenant-ID", "foo")
-                .build();
+		assertThat(predicate.test(serverRequest)).isTrue();
+		assertThat(MvcUtils.getUriTemplateVariables(serverRequest)).contains(entry("tenant", "foo"));
+	}
 
-        var exchange = new MockServerWebExchange.Builder(request).build();
-        assertThat(predicate.test(exchange)).isTrue();
-        assertThat(ServerWebExchangeUtils.getUriTemplateVariables(exchange)).contains(entry("tenant", "foo"));
-    }
+	@Test
+	void applyMissingHeader() {
+		var predicate = GatewayPredicates.tenantFromHeader("foo");
 
-    @Test
-    void applyMissingHeader() {
-        var factory = new TenantFromHeaderRoutePredicateFactory();
-        var predicate = factory.apply(config("X-Tenant-ID", "{tenant}"));
+		var request = new MockHttpServletRequest("GET", "/test");
+		var serverRequest = ServerRequest.create(request, List.of());
 
-        var request = MockServerHttpRequest
-                .get("/test")
-                .build();
+		assertThat(predicate.test(serverRequest)).isFalse();
+		assertThat(MvcUtils.getUriTemplateVariables(serverRequest)).doesNotContainKey("tenant");
+	}
 
-        var exchange = new MockServerWebExchange.Builder(request).build();
-        assertThat(predicate.test(exchange)).isFalse();
-        assertThat(ServerWebExchangeUtils.getUriTemplateVariables(exchange)).doesNotContainKey("tenant");
-    }
-
-    @Test
-    void applyNoMatch() {
-        var factory = new TenantFromHeaderRoutePredicateFactory();
-        var predicate = factory.apply(config("X-Tenant-ID", "tenant-{tenant}"));
-
-        var request = MockServerHttpRequest
-                .get("/test")
-                .header("X-Tenant-ID", "foo")
-                .build();
-
-        var exchange = new MockServerWebExchange.Builder(request).build();
-        assertThat(predicate.test(exchange)).isFalse();
-        assertThat(ServerWebExchangeUtils.getUriTemplateVariables(exchange)).doesNotContainKey("tenant");
-    }
-
-    @Test
-    void applyIllegalPattern() {
-        assertThatThrownBy(() -> config("X-Tenant", "{not-tenant}"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("pattern must contain \"{tenant}\"");
-    }
-
-    private TenantFromHeaderRoutePredicateFactory.Config config(String header, String pattern) {
-        var config = new TenantFromHeaderRoutePredicateFactory.Config();
-        config.setHeader(header);
-        config.setPattern(pattern);
-        return config;
-    }
 }

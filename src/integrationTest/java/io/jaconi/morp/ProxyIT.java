@@ -47,7 +47,7 @@ public class ProxyIT extends TestBase {
                 .header("host", "morp:8080")
                 .exchange()
                 .expectStatus().is3xxRedirection()
-                .expectHeader().location("/oauth2/authorization/tenant1")
+                .expectHeader().location("http://morp:8080/oauth2/authorization/tenant1")
                 .expectCookie().exists(SESSION_COOKIE)
                 .expectBody().returnResult();
 
@@ -117,7 +117,7 @@ public class ProxyIT extends TestBase {
                 .header("host", "morp:8080")
                 .exchange()
                 .expectStatus().is3xxRedirection()
-                .expectHeader().location("/upstream/tenant1/test")
+                .expectHeader().location("http://morp:8080/upstream/tenant1/test?continue")
                 .expectCookie().exists(SESSION_COOKIE)
                 .expectBody().returnResult();
 

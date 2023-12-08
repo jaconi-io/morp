@@ -1,37 +1,40 @@
 package io.jaconi.morp.tenant;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
-import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
-import org.springframework.mock.web.server.MockServerWebExchange;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
+import org.springframework.cloud.gateway.server.mvc.common.MvcUtils;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.servlet.function.ServerRequest;
 
 class TenantExtractorTest {
 
-    @Test
-    void extractFooTenant() {
-        var request = MockServerHttpRequest.get("/foo").build();
-        var exchange = new MockServerWebExchange.Builder(request).build();
-        ServerWebExchangeUtils.putUriTemplateVariables(exchange, Map.of("tenant", "foo"));
+	@Test
+	void extractFooTenant() {
+		var servletRequest = new MockHttpServletRequest("GET", "/foo");
+		var request = ServerRequest.create(servletRequest, List.of());
 
-        Optional<String> tenant = TenantExtractor.extractTenant(exchange.getAttributes());
+		MvcUtils.putUriTemplateVariables(request, Map.of("tenant", "foo"));
 
-        assertThat(tenant).contains("foo");
-    }
+		Optional<String> tenant = TenantExtractor.extractTenant(request);
 
-    @Test
-    void extractNoTenant() {
-        var request = MockServerHttpRequest.get("/foo").build();
-        var exchange = new MockServerWebExchange.Builder(request).build();
-        ServerWebExchangeUtils.putUriTemplateVariables(exchange, Map.of());
+		assertThat(tenant).contains("foo");
+	}
 
-        Optional<String> tenant = TenantExtractor.extractTenant(exchange.getAttributes());
+	@Test
+	void extractNoTenant() {
+		var servletRequest = new MockHttpServletRequest("GET", "/foo");
+		var request = ServerRequest.create(servletRequest, List.of());
 
-        assertThat(tenant).isEmpty();
-    }
+		MvcUtils.putUriTemplateVariables(request, Map.of());
+
+		Optional<String> tenant = TenantExtractor.extractTenant(request);
+
+		assertThat(tenant).isEmpty();
+	}
 
 }

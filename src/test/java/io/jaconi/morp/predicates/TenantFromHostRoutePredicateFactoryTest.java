@@ -1,57 +1,58 @@
 package io.jaconi.morp.predicates;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
-import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
-import org.springframework.mock.web.server.MockServerWebExchange;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
+import org.junit.jupiter.api.Test;
+import org.springframework.cloud.gateway.server.mvc.common.MvcUtils;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.servlet.function.ServerRequest;
 
 class TenantFromHostRoutePredicateFactoryTest {
 
     @Test
-    void shortcutFieldOrder() {
-        var factory = new TenantFromHostRoutePredicateFactory();
-        assertThat(factory.shortcutFieldOrder()).containsExactly("tenant", "patterns");
-    }
-
-    @Test
     void applyMatch() {
-        var factory = new TenantFromHostRoutePredicateFactory();
-        var predicate = factory.apply(config("foo", List.of("match.example.com")));
+        var predicate = GatewayPredicates.tenantFromHost("foo", "match.example.com");
 
-        var request = MockServerHttpRequest
-                .get("/test")
-                .header("Host", "match.example.com")
-                .build();
+        var request = new MockHttpServletRequest("GET", "/test");
+        request.addHeader("Host", "match.example.com");
+        var serverRequest = ServerRequest.create(request, List.of());
 
-        var exchange = new MockServerWebExchange.Builder(request).build();
-        assertThat(predicate.test(exchange)).isTrue();
-        assertThat(ServerWebExchangeUtils.getUriTemplateVariables(exchange)).contains(entry("tenant", "foo"));
+        assertThat(predicate.test(serverRequest)).isTrue();
+        assertThat(MvcUtils.getUriTemplateVariables(serverRequest)).contains(entry("tenant", "foo"));
     }
+
+	@Test
+	void applyMatchMultiple() {
+		var predicate = GatewayPredicates.tenantFromHost("foo", "match.example.com", "match.example.org");
+
+		var request1 = new MockHttpServletRequest("GET", "/test");
+		request1.addHeader("Host", "match.example.com");
+		var serverRequest1 = ServerRequest.create(request1, List.of());
+
+		var request2 = new MockHttpServletRequest("GET", "/test");
+		request2.addHeader("Host", "match.example.org");
+		var serverRequest2 = ServerRequest.create(request2, List.of());
+
+		assertThat(predicate.test(serverRequest1)).isTrue();
+		assertThat(MvcUtils.getUriTemplateVariables(serverRequest1)).contains(entry("tenant", "foo"));
+
+		assertThat(predicate.test(serverRequest2)).isTrue();
+		assertThat(MvcUtils.getUriTemplateVariables(serverRequest2)).contains(entry("tenant", "foo"));
+	}
 
     @Test
     void applyNoMatch() {
-        var factory = new TenantFromHostRoutePredicateFactory();
-        var predicate = factory.apply(config("foo", List.of("static.example.com")));
+        var predicate = GatewayPredicates.tenantFromHost("foo", "static.example.com");
 
-        var request = MockServerHttpRequest
-                .get("/test")
-                .header("Host", "mismatch.example.com")
-                .build();
+        var request = new MockHttpServletRequest("GET", "/test");
+        request.addHeader("Host", "mismatch.example.com");
+        var serverRequest = ServerRequest.create(request, List.of());
 
-        var exchange = new MockServerWebExchange.Builder(request).build();
-        assertThat(predicate.test(exchange)).isFalse();
-        assertThat(ServerWebExchangeUtils.getUriTemplateVariables(exchange)).doesNotContainKey("tenant");
+        assertThat(predicate.test(serverRequest)).isFalse();
+        assertThat(MvcUtils.getUriTemplateVariables(serverRequest)).doesNotContainKey("tenant");
     }
 
-    private TenantFromHostRoutePredicateFactory.Config config(String tenant, List<String> patterns) {
-        var config = new TenantFromHostRoutePredicateFactory.Config();
-        config.setTenant(tenant);
-        config.setPatterns(patterns);
-        return config;
-    }
 }

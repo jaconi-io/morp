@@ -44,8 +44,8 @@ morp:
 ## Registration
 
 Providers cannot be used for authentication by default. A registration is required to specify additional configuration.
-This allows multiple registrations per provider. Registrations are configured in the documentations
-`morp.oauth-client.registration` section:
+This allows multiple registrations per provider.
+Registrations are configured in the `morp.oauth-client.registration` section:
 
 ```yaml
 morp:
@@ -77,6 +77,6 @@ Usually, only `client-id` and `client-secret` are required.
 
 ## Tenant
 
-A tenant is the entity determining the registration to be used. This might be a customer, an application or a
+A tenant is the entity determining the registration to be used. This might be a customer, an application, or a
 department. To figure out the tenant for a request, MORP uses predicates. See
 [Tenant Extraction](user-guide/routing.md#tenant-extraction) for details.
