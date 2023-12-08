@@ -2,7 +2,7 @@ spring:
   cloud:
     gateway:
       server:
-        webflux:
+        webmvc:
           routes:
             - id: routed-with-tenant
               uri: http://localhost:${mockServerPort}

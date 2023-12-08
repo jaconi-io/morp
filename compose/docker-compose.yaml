@@ -1,4 +1,3 @@
-version: "3.9"
 services:
 
   keycloak:
@@ -25,7 +24,7 @@ services:
           - keycloak.localtest.me
 
   httpbin:
-    image: kennethreitz/httpbin:latest
+    image: kong/httpbin:0.2.3
     ports:
       - "80"
 
