@@ -2,6 +2,8 @@ package io.jaconi.morp;
 
 import java.util.List;
 import java.util.Set;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
@@ -12,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration test validating several Actuator endpoints against a running MORP container.
  * No authenticated session should be required to access those endpoints.
  */
-public class ActuatorIT extends TestBase {
+class ActuatorIT extends TestBase {
 
 	@Test
 	void testClientRegistrationEndpoints() {
@@ -57,6 +59,7 @@ public class ActuatorIT extends TestBase {
 	}
 
 	@Test
+	@Disabled("Refresh scope is not supported with native images.")
 	void testGatewayRefresh() {
 		// step 1 - send a POST request to the "/actuator/gateway/refresh" endpoint
 		// expect the call to be successful (no authentication or CSRF token required)

@@ -25,8 +25,8 @@ dependencies {
     implementation(platform("org.springframework.cloud:spring-cloud-gateway-dependencies:5.0.0"))
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-security-oauth2-client")
-    implementation("org.springframework.cloud:spring-cloud-starter-gateway-server-webflux")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+    implementation("org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc")
 
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 
@@ -40,17 +40,14 @@ dependencies {
 
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
-    // workaround to be able to develop on ARM Mac :-(
-    runtimeOnly("io.netty:netty-resolver-dns-native-macos:4.1.85.Final:osx-aarch_64")
-
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude("org.hamcrest", "hamcrest")
     }
     testImplementation("org.mock-server:mockserver-spring-test-listener:5.15.0") {
         exclude("org.hamcrest", "hamcrest")
     }
+    testImplementation("org.springframework:spring-webflux")
     testImplementation("org.jsoup:jsoup:1.22.1")
-    testImplementation("io.projectreactor:reactor-test")
 }
 
 java {
@@ -97,6 +94,9 @@ testing {
                 implementation("org.seleniumhq.selenium:selenium-api")
                 implementation("org.seleniumhq.selenium:selenium-chrome-driver")
                 implementation("org.seleniumhq.selenium:selenium-remote-driver")
+                // Spring WebFlux only for testing
+                implementation("org.springframework:spring-webflux")
+                implementation("io.projectreactor.netty:reactor-netty")
             }
             dependencyManagement {
                 imports {

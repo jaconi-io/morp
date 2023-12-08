@@ -641,7 +641,8 @@
       "secret": "secret",
       "redirectUris": [
         "http://foo.localtest.me:8080/login/oauth2/code/foo",
-        "http://localhost:8080/login/oauth2/code/foo"
+        "http://static.localtest.me:8080/login/oauth2/code/foo",
+        "http://another-static.localtest.me:8080/login/oauth2/code/foo"
       ],
       "webOrigins": [],
       "notBefore": 0,
