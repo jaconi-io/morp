@@ -13,6 +13,7 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.test.context.aot.DisabledInAotMode;
 import reactor.test.StepVerifier;
 
 import java.time.Instant;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@DisabledInAotMode
 class MorpReactiveOidcUserServiceTest {
 
     @Autowired

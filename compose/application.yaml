@@ -9,12 +9,12 @@ spring:
           uri: https://httpbin.org
           order: 2
           predicates:
-            - Host={tenant}.localtest.me:8080
+            - Host={tenant}.localtest.me
         - id: host-mapping-with-stage
           uri: https://httpbin.org
           order: 1
           predicates:
-            - Host={tenant}-{stage}.localtest.me:8080
+            - Host={tenant}-{stage}.localtest.me
         - id: path-mapping
           uri: https://httpbin.org
           predicates:
@@ -26,8 +26,8 @@ spring:
             - name: TenantFromHost
               args:
                 patterns:
-                  - static.localtest.me:8080
-                  - another-static.localtest.me:8080
+                  - static.localtest.me
+                  - another-static.localtest.me
                 tenant: foo
         - id: header-mapping
           uri: https://httpbin.org
