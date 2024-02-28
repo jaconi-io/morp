@@ -12,6 +12,7 @@ import org.testcontainers.containers.MockServerContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
+import org.testcontainers.lifecycle.Startables;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.DockerLoggerFactory;
 import reactor.netty.http.client.HttpClient;
@@ -54,12 +55,15 @@ public class TestContainerSetup implements AfterEachCallback {
 
         // setup mockserver (as protected upstream)
         var tag = "mockserver-%s".formatted(MockServerClient.class.getPackage().getImplementationVersion());
-        this.mockserver = new MockServerContainer(DockerImageName.parse("mockserver/mockserver").withTag(tag))
+        var mockServerImage = DockerImageName.parse("mockserver/mockserver").withTag(tag);
+        this.mockserver = new MockServerContainer(mockServerImage)
                 .withNetwork(network)
-                .withNetworkAliases("upstream");
+                .withNetworkAliases("upstream")
+                .withLogConsumer(new Slf4jLogConsumer(DockerLoggerFactory.getLogger(mockServerImage.asCanonicalNameString())));
 
         // setup morp as auth proxy for upstream
-        this.morp = new GenericContainer<>(DockerImageName.parse("ghcr.io/jaconi-io/morp:latest"))
+        var morpImage = DockerImageName.parse("ghcr.io/jaconi-io/morp:latest");
+        this.morp = new GenericContainer<>(morpImage)
                 .withNetwork(network)
                 .withNetworkAliases("morp", "tenant1-morp", "tenant2-morp")
                 .withExposedPorts(8080, 8081)
@@ -71,12 +75,8 @@ public class TestContainerSetup implements AfterEachCallback {
                 .waitingFor(new HttpWaitStrategy()
                         .forPort(8081)
                         .forPath("/actuator/health/readiness")
-                        .withStartupTimeout(Duration.ofMinutes(5)));
-
-        // start the containers
-        keycloak.start();
-        mockserver.withLogConsumer(new Slf4jLogConsumer(DockerLoggerFactory.getLogger(mockserver.getDockerImageName())))
-                .start();
+                        .withStartupTimeout(Duration.ofMinutes(5)))
+                .withLogConsumer(new Slf4jLogConsumer(DockerLoggerFactory.getLogger(morpImage.asCanonicalNameString())));
 
         // for local development convenience, bind mount the git-ignored 'secret.properties' (if it exists)
         if (Files.exists(Path.of("./secret.properties"))) {
@@ -92,8 +92,7 @@ public class TestContainerSetup implements AfterEachCallback {
                 .filter(e -> e.getKey().startsWith("MORP_"))
                 .forEach(e -> morp.withEnv(e.getKey(), e.getValue()));
 
-        morp.withLogConsumer(new Slf4jLogConsumer(DockerLoggerFactory.getLogger(morp.getDockerImageName())))
-                .start();
+        Startables.deepStart(keycloak, mockserver, morp).join();
 
         // create client to control mockserver (running as container)
         mockServerClient = new MockServerClient(mockserver.getHost(), mockserver.getServerPort());
