@@ -47,9 +47,8 @@ public class SeleniumIT extends TestBase {
 
 
     // we start Chrome for each test to ensure a clean state (i.e. cookies etc)
-    // screen recording not working on ARM Mac due to missing ARM image of vnc-recorder
     @Container
-    public final BrowserWebDriverContainer<?> chrome = new BrowserWebDriverContainer<>(ArmUtil.select("seleniarm/standalone-chromium:107.0", "selenium/standalone-chrome:107.0"))
+    public final BrowserWebDriverContainer<?> chrome = new BrowserWebDriverContainer<>(ArmUtil.select("seleniarm/standalone-chromium:latest", "selenium/standalone-chrome:latest"))
             .withNetwork(containerSetup.getNetwork())
             .withNetworkAliases("chrome")
             .withCapabilities(new ChromeOptions())
