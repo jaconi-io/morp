@@ -5,7 +5,7 @@ plugins {
     jacoco
     `jvm-test-suite`
     id("io.freefair.lombok") version "8.6"
-    id("org.springframework.boot") version "3.1.5"
+    id("org.springframework.boot") version "3.2.3"
     id("io.spring.dependency-management") version "1.1.4"
     id("org.graalvm.buildtools.native") version "0.10.1"
     id("com.github.rising3.semver") version "0.8.2"
@@ -29,7 +29,7 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
     implementation("ch.qos.logback:logback-classic")
 
-    implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2022.0.4"))
+    implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2023.0.0"))
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
@@ -74,7 +74,7 @@ sonarqube {
     }
 }
 
-extra["testcontainersVersion"] = "1.18.2"
+extra["testcontainersVersion"] = "1.19.6"
 
 // setup separate test suites for unit and integration tests
 testing {

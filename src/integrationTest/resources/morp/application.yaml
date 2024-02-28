@@ -14,7 +14,7 @@ spring:
         - id: upstream-tenant-path
           uri: http://upstream:1080
           predicates:
-            - Host=morp:8081
+            - Host=morp
             - Path=/upstream/{tenant}/{path}
           filters:
             - SetPath=/{path}
@@ -23,7 +23,7 @@ spring:
         - id: upstream-tenant-host
           uri: http://upstream:1080
           predicates:
-            - Host={tenant}-morp:8081
+            - Host={tenant}-morp
             - Path=/upstream/{path}
           filters:
             - SetPath=/{path}

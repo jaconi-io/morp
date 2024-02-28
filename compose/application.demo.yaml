@@ -6,7 +6,7 @@ spring:
           uri: https://httpbin.org
           order: 2
           predicates:
-            - Host={tenant}.localtest.me:8080
+            - Host={tenant}.localtest.me
 
 morp:
   default-oauth2-client-registration: keycloak

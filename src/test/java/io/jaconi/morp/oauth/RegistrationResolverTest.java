@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2Clien
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.test.context.aot.DisabledInAotMode;
 
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +17,7 @@ import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@DisabledInAotMode
 class RegistrationResolverTest {
 
     @Autowired
