@@ -62,14 +62,14 @@ public class TestContainerSetup implements AfterEachCallback {
         this.morp = new GenericContainer<>(DockerImageName.parse("ghcr.io/jaconi-io/morp:latest"))
                 .withNetwork(network)
                 .withNetworkAliases("morp", "tenant1-morp", "tenant2-morp")
-                .withExposedPorts(8081, 8082)
+                .withExposedPorts(8080, 8081)
                 .withEnv("SPRING_PROFILES_ACTIVE", "test")
                 .withFileSystemBind(
                         "./src/integrationTest/resources/morp/application.yaml",
                         "/workspace/config/application.yaml",
                         BindMode.READ_ONLY)
                 .waitingFor(new HttpWaitStrategy()
-                        .forPort(8082)
+                        .forPort(8081)
                         .forPath("/actuator/health/readiness")
                         .withStartupTimeout(Duration.ofMinutes(5)));
 
@@ -103,11 +103,11 @@ public class TestContainerSetup implements AfterEachCallback {
                 .wiretap(true) // hex dump wiretap
                 .compress(true);
         webTestClient = WebTestClient.bindToServer(new ReactorClientHttpConnector(httpClient))
-                .baseUrl("http://localhost:" + morp.getMappedPort(8081))
+                .baseUrl("http://localhost:" + morp.getMappedPort(8080))
                 .build();
 
         managementTestClient = WebTestClient.bindToServer(new ReactorClientHttpConnector(httpClient))
-                .baseUrl("http://localhost:" + morp.getMappedPort(8082))
+                .baseUrl("http://localhost:" + morp.getMappedPort(8081))
                 .build();
     }
 
