@@ -591,7 +591,7 @@ To figure out the tenant for a request, MORP uses predicates. MORP supports the 
 </tr>
 <tr>
 <td><code>TenantFromHost</code></td>
-<td><pre>name: TenantFromHost<br/>args:<br/>  patterns:<br/>    - static.localtest.me:8080<br/>    - another-static.localtest.me:8080<br/>  tenant: foo</pre></td>
+<td><pre>name: TenantFromHost<br/>args:<br/>  patterns:<br/>    - static.localtest.me<br/>    - another-static.localtest.me<br/>  tenant: foo</pre></td>
 <td>static.example.com</td>
 <td>foo</td>
 </tr>
