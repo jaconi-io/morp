@@ -6,11 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cache.CacheManager;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.test.context.aot.DisabledInAotMode;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import reactor.test.StepVerifier;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -29,13 +29,13 @@ class TenantAwareClientRegistrationRepositoryTest {
     @Autowired
     private CacheManager cacheManager;
 
-    @MockBean
+    @MockitoBean
     private ClientRegistrationFetcher clientRegistrationFetcher;
 
-    @MockBean
+    @MockitoBean
     private RegistrationResolver registrationResolver;
 
-    @MockBean
+    @MockitoBean
     private ProviderResolver providerResolver;
 
     private ClientRegistration clientRegistration = ClientRegistration.withRegistrationId(TENANT)
