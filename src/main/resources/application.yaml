@@ -58,6 +58,10 @@ spring:
       filter:
         local-response-cache:
           enabled: false
+      # Disable matching the port in the host header to enable backward compatibility.
+      predicate:
+        host:
+          include-port: false
 
 # Non-spring configuration goes here!
 morp:
