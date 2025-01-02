@@ -44,10 +44,9 @@ public class TestContainerSetup implements AfterEachCallback {
         this.network = Network.newNetwork();
 
         // setup Keycloak container
-        this.keycloak = new KeycloakContainer("quay.io/keycloak/keycloak:20.0.1")
+        this.keycloak = new KeycloakContainer("quay.io/keycloak/keycloak:26.0")
                 .withRealmImportFile("/keycloak/realm-1.json")
                 .withNetwork(network)
-                .withExposedPorts(8080)
                 .withNetworkAliases("keycloak")
                 .withEnv("KC_HOSTNAME_STRICT", "false")
                 .withEnv("KC_HOSTNAME_STRICT_HTTPS", "false")
