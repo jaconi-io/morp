@@ -1,3 +1,32 @@
+# [2.0.0](https://github.com/jaconi-io/morp/compare/v1.3.1...v2.0.0) (2025-01-02)
+
+
+### Bug Fixes
+
+* remove Spring Security deprecations ([87f36dc](https://github.com/jaconi-io/morp/commit/87f36dc32b54e1edd4cdbf4cc995deb9fe0437d0))
+
+
+### Build System
+
+* update to Spring Boot 3.2 ([2aa807a](https://github.com/jaconi-io/morp/commit/2aa807a0f1d879603c3bbbcd202a4b330bddec2a))
+
+
+### BREAKING CHANGES
+
+* Host mappings do not support ports anymore.
+
+```yaml
+- id: invalid-host-mapping
+   uri: https://example.com
+   predicates:
+     - Host={tenant}.localtest.me:8080
+
+- id: valid-host-mapping
+   uri: https://example.com
+   predicates:
+     - Host={tenant}.localtest.me
+```
+
 ## [1.3.1](https://github.com/jaconi-io/morp/compare/v1.3.0...v1.3.1) (2023-04-18)
 
 
