@@ -5,7 +5,7 @@ plugins {
     jacoco
     `jvm-test-suite`
     id("io.freefair.lombok") version "8.11"
-    id("org.springframework.boot") version "3.2.5"
+    id("org.springframework.boot") version "3.4.0"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.graalvm.buildtools.native") version "0.10.4"
     id("com.github.rising3.semver") version "0.8.2"
@@ -29,7 +29,7 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:8.0")
     implementation("ch.qos.logback:logback-classic")
 
-    implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2023.0.0"))
+    implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2024.0.0"))
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")

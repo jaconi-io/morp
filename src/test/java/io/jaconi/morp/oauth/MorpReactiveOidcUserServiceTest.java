@@ -4,7 +4,6 @@ import io.jaconi.morp.tenant.TenantService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
@@ -14,6 +13,7 @@ import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.test.context.aot.DisabledInAotMode;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import reactor.test.StepVerifier;
 
 import java.time.Instant;
@@ -34,7 +34,7 @@ class MorpReactiveOidcUserServiceTest {
     @Autowired
     MorpReactiveOidcUserService userService;
 
-    @MockBean
+    @MockitoBean
     TenantService tenantService;
 
     @Test

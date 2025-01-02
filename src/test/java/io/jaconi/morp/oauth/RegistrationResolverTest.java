@@ -5,9 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.test.context.aot.DisabledInAotMode;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Map;
 import java.util.Set;
@@ -23,10 +23,10 @@ class RegistrationResolverTest {
     @Autowired
     RegistrationResolver registrationResolver;
 
-    @MockBean
+    @MockitoBean
     OAuth2ClientProperties properties;
 
-    @MockBean
+    @MockitoBean
     TenantService tenantService;
 
     private static OAuth2ClientProperties.Registration tenantRegistration() {
