@@ -69,10 +69,12 @@ jobs:
           distribution: 'temurin'
 
       - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v3
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Test with Gradle
-        uses: gradle/gradle-build-action@v3
         env:
           MORP_OAUTH2CLIENT_REGISTRATION_GOOGLE_CLIENTID: ${{ secrets.GOOGLE_CLIENT_ID }}
           MORP_OAUTH2CLIENT_REGISTRATION_GOOGLE_CLIENTSECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
@@ -81,8 +83,7 @@ jobs:
           TEST_OKTA_PASSWORD: ${{ secrets.OKTA_USER_PASSWORD }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          arguments: clean check sonarqube
+        run: ./gradlew clean check sonarqube
 
       - name: JUnit Report
         if: always() # always run even if the previous step fails
