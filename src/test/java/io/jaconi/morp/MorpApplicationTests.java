@@ -14,7 +14,7 @@ import org.springframework.test.context.aot.DisabledInAotMode;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DisabledInAotMode
 class MorpApplicationTests {
 
