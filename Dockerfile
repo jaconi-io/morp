@@ -1,4 +1,4 @@
-FROM ghcr.io/graalvm/native-image:ol9-java17-22.3.3 AS builder
+FROM container-registry.oracle.com/graalvm/native-image:21 AS builder
 
 # Install tar and gzip to extract the Maven binaries
 RUN microdnf install --nodocs -y \
@@ -15,7 +15,7 @@ COPY . /build
 RUN ./gradlew nativeCompile
 
 # The deployment Image
-FROM docker.io/oraclelinux:9-slim
+FROM container-registry.oracle.com/os/oraclelinux:9-slim
 
 EXPOSE 8080
 EXPOSE 8081
