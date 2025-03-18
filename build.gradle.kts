@@ -4,7 +4,7 @@ plugins {
     java
     jacoco
     `jvm-test-suite`
-    id("io.freefair.lombok") version "8.12.2.1"
+    id("io.freefair.lombok") version "8.13"
     id("org.springframework.boot") version "3.4.3"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.graalvm.buildtools.native") version "0.10.5"
