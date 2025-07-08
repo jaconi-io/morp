@@ -15,7 +15,7 @@ COPY . /build
 RUN ./gradlew nativeCompile
 
 # The deployment Image
-FROM container-registry.oracle.com/os/oraclelinux:9-slim
+FROM container-registry.oracle.com/os/oraclelinux:10-slim
 
 EXPOSE 8080
 EXPOSE 8081
