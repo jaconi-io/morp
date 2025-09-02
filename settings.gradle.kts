@@ -1,17 +1,17 @@
 plugins {
-    id("com.gradle.enterprise") version("3.10.2")
+	id("com.gradle.develocity") version "4.1.1"
 }
 
 rootProject.name = "morp"
 
-gradleEnterprise {
-    buildScan {
-        termsOfServiceUrl = "https://gradle.com/terms-of-service"
-        termsOfServiceAgree = "yes"
+develocity {
+	buildScan {
+		termsOfUseUrl = "https://gradle.com/help/legal-terms-of-use"
+		termsOfUseAgree = "yes"
 
-        capture {
-            isBuildLogging = true
-            isTestLogging = true
-        }
-    }
+		capture {
+			buildLogging = true
+			testLogging = true
+		}
+	}
 }
