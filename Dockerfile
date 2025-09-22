@@ -1,4 +1,4 @@
-FROM container-registry.oracle.com/graalvm/native-image:21 AS builder
+FROM container-registry.oracle.com/graalvm/native-image:25 AS builder
 
 # Install tar and gzip to extract the Maven binaries
 RUN microdnf install --nodocs -y \
