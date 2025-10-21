@@ -29,7 +29,7 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:8.1")
     implementation("ch.qos.logback:logback-classic")
 
-    implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2024.0.1"))
+    implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2025.0.0"))
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
