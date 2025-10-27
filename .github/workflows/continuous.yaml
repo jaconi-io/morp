@@ -42,7 +42,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/gradle-9-jdk21@master
+        uses: snyk/actions/gradle-9-jdk21@9adf32b1121593767fc3c057af55b55db032dc04
         continue-on-error: true # To make sure that SARIF upload gets called
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
@@ -69,10 +69,10 @@ jobs:
           distribution: 'temurin'
 
       - name: Validate Gradle wrapper
-        uses: gradle/actions/wrapper-validation@v5
+        uses: gradle/actions/wrapper-validation@a009669cd5ded58aeceb80a10a7b8697138f01d0
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@a009669cd5ded58aeceb80a10a7b8697138f01d0
 
       - name: Test with Gradle
         env:
@@ -87,11 +87,11 @@ jobs:
 
       - name: JUnit Report
         if: always() # always run even if the previous step fails
-        uses: mikepenz/action-junit-report@v5
+        uses: mikepenz/action-junit-report@71ca73c48774342bd54ce644f65c6b721f105ae8
         with:
           report_paths: 'build/test-results/*/*.xml'
 
-      - uses: codecov/codecov-action@v5
+      - uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7
         if: always() # always run even if the previous step fails
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
