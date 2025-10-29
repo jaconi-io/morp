@@ -4,3 +4,7 @@ test:
 
 # used for integration test cases - for convenience read a git-ignored properties file holding credentials
 spring.config.import: optional:file:./secret.properties
+
+logging.level:
+  com.github.dockerjava: warn
+  org.testcontainers: info

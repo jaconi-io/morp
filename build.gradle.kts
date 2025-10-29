@@ -24,11 +24,6 @@ repositories {
 }
 
 dependencies {
-
-    // json logging
-    implementation("net.logstash.logback:logstash-logback-encoder:9.0")
-    implementation("ch.qos.logback:logback-classic")
-
     implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2025.0.0"))
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
