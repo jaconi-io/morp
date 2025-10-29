@@ -7,11 +7,13 @@ basic route could be configured like this:
 spring:
   cloud:
     gateway:
-      routes:
-        - id: my_route
-          uri: https://example.org
-          predicates:
-            - Path=/{tenant}/example
+      server:
+        webflux:
+          routes:
+            - id: my_route
+              uri: https://example.org
+              predicates:
+                - Path=/{tenant}/example
 ```
 
 With this routing configuration, MORP will forward any traffic arriving at `/{tenant}/example` to
@@ -32,8 +34,8 @@ To figure out the tenant for a request, MORP uses predicates. MORP supports the 
 | `TenantFromHost`   | <pre>name: TenantFromHost<br/>args:<br/>  patterns:<br/>    - static.localtest.me<br/>    - another-static.localtest.me<br/>  tenant: foo</pre> | static.example.com            | foo            |
 | `TenantFromHeader` | <pre>TenantFromHeader=X-Tenant-ID,{tenant}</pre>                                                                                                | X-Tenant-ID: foo              | foo            |
 
-Predicates are configured in the `spring.cloud.gateway.routes[*].predicates` section and are applied per route. When no
-tenant is extracted for a request, the request will fail.
+Predicates are configured in the `spring.cloud.gateway.server.webflux.routes[*].predicates` section and are applied per
+route. When no tenant is extracted for a request, the request will fail.
 
 The extracted tenant ID is used to determine how the request will be authenticated. See
 [Configuration](../configuration.md) on how to configure authentication.
