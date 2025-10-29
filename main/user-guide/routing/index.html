@@ -564,11 +564,13 @@ basic route could be configured like this:</p>
 <pre><code class="language-yaml">spring:
   cloud:
     gateway:
-      routes:
-        - id: my_route
-          uri: https://example.org
-          predicates:
-            - Path=/{tenant}/example
+      server:
+        webflux:
+          routes:
+            - id: my_route
+              uri: https://example.org
+              predicates:
+                - Path=/{tenant}/example
 </code></pre>
 <p>With this routing configuration, MORP will forward any traffic arriving at <code>/{tenant}/example</code> to
 <a href="https://example.com">https://example.com</a>. <code>{tenant}</code> is a special URI template variable used by MORP to determine the
@@ -624,8 +626,8 @@ To figure out the tenant for a request, MORP uses predicates. MORP supports the 
 </tr>
 </tbody>
 </table>
-<p>Predicates are configured in the <code>spring.cloud.gateway.routes[*].predicates</code> section and are applied per route. When no
-tenant is extracted for a request, the request will fail.</p>
+<p>Predicates are configured in the <code>spring.cloud.gateway.server.webflux.routes[*].predicates</code> section and are applied per
+route. When no tenant is extracted for a request, the request will fail.</p>
 <p>The extracted tenant ID is used to determine how the request will be authenticated. See
 <a href="../../configuration/">Configuration</a> on how to configure authentication.</p>
 
