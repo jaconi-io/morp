@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/jaconi-io/morp/compare/v2.0.0...v2.1.0) (2025-10-29)
+
+
+### Features
+
+* update to Spring Boot 3.5 ([c14e7c2](https://github.com/jaconi-io/morp/commit/c14e7c206471e41a13e46c51d0e3bacefe4b928c))
+
 # [2.0.0](https://github.com/jaconi-io/morp/compare/v1.3.1...v2.0.0) (2025-01-02)
 
 
