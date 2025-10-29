@@ -57,7 +57,7 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
 }
 
 sonarqube {
@@ -124,7 +124,6 @@ tasks.withType<BootBuildImage> {
     imageName.value("${registry}/${project.name}:${project.version}")
     publish.value(false)
     environment.putAll(mapOf(
-        "BP_NATIVE_IMAGE" to setOf("x86_64", "amd64").contains(System.getProperty("os.arch")).toString(),
         "BPE_APPEND_JAVA_TOOL_OPTIONS" to "-XX:MaxDirectMemorySize=100M",
         "BPE_DELIM_JAVA_TOOL_OPTIONS" to " ",
     ))
