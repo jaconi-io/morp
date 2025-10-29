@@ -117,15 +117,15 @@ class MorpReactiveOAuth2UserServiceTest {
                               "awesome_name": "foo"
                             }
                             """;
-                    out.println("HTTP/1.1 200 OK");
-                    out.println("Connection: close");
-                    out.println("Content-Type: application/json");
-                    out.println("Content-Length:" + resp.length());
-                    out.println();
+                    out.println("HTTP/1.1 200 OK\r");
+                    out.println("Connection: close\r");
+                    out.println("Content-Type: application/json\r");
+                    out.println("Content-Length: %d\r".formatted(resp.length()));
+                    out.println("\r");
                     out.println(resp);
                 } else {
-                    out.println("HTTP/1.1 404 Not Found");
-                    out.println("Connection: close");
+                    out.println("HTTP/1.1 404 Not Found\r");
+                    out.println("Connection: close\r");
                     out.println();
                 }
             } catch (IOException e) {
