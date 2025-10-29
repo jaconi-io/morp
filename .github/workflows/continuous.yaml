@@ -91,7 +91,6 @@ jobs:
       - id: semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.JACONI_BOT_GITHUB_TOKEN }}
-          GITHUB_USER: ${{ secrets.JACONI_BOT_USERNAME }}
         run: |
           yarn add semantic-release
           yarn add @semantic-release/changelog
