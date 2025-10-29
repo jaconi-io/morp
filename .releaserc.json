@@ -1,0 +1,44 @@
+{
+  "branches": [
+    "main"
+  ],
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "releaseRules": [
+          {
+            "type": "build",
+            "scope": "java",
+            "release": "patch"
+          }
+        ]
+      }
+    ],
+    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/changelog",
+      {
+        "changelogFile": "CHANGELOG.md"
+      }
+    ],
+    [
+      "@semantic-release/exec",
+      {
+        "publishCmd": "echo \"next-release-version=${nextRelease.version}\" > \"$GITHUB_OUTPUT\"",
+        "successCmd": "sed -i 's/^version = \".*\"$/version = \"${nextRelease.version}\"/' build.gradle.kts"
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "message": "[no ci] release ${nextRelease.version}\n\n${nextRelease.notes}",
+        "assets": [
+          "build.gradle.kts",
+          "CHANGELOG.md"
+        ]
+      }
+    ],
+    "@semantic-release/github"
+  ]
+}

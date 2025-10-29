@@ -115,7 +115,7 @@ testing {
             targets {
                 all {
                     testTask.configure {
-                        mustRunAfter(tasks.named("dockerBuild"))
+                        mustRunAfter(tasks.bootBuildImage)
                         testLogging.exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
                         testLogging.showStandardStreams = true
                     }
@@ -123,17 +123,6 @@ testing {
             }
         }
     }
-}
-
-tasks.create<Exec>("dockerBuild") {
-    mustRunAfter(tasks.test)
-    executable("docker")
-    args(listOf("build", "-t", "${registry}/${project.name}:${project.version}", "-t", "${registry}/${project.name}:latest", "."))
-}
-
-tasks.create<Exec>("dockerBuildPush") {
-    executable("docker")
-    args(listOf("buildx", "build", "--platform", "linux/amd64,linux/arm64", "-t", "${registry}/${project.name}:${project.version}", "--push", "."))
 }
 
 tasks.withType<BootBuildImage> {
@@ -146,18 +135,11 @@ tasks.withType<BootBuildImage> {
         "BPE_DELIM_JAVA_TOOL_OPTIONS" to " ",
     ))
     tags.add("${registry}/${project.name}:latest")
-    docker {
-        publishRegistry {
-            url.value("ghcr.io")
-            username.value("${System.getenv("GITHUB_USER")}")
-            password.value("${System.getenv("GITHUB_TOKEN")}")
-        }
-    }
 }
 
 tasks.check {
     dependsOn(tasks.test)
-    dependsOn(tasks.named("dockerBuild"))
+    dependsOn(tasks.bootBuildImage)
     dependsOn(testing.suites.named("integrationTest"))
     dependsOn(tasks.jacocoTestReport)
 }
