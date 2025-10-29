@@ -45,7 +45,6 @@ dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine")
 
     implementation("org.apache.commons:commons-lang3")
-    implementation("commons-codec:commons-codec")
 
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
