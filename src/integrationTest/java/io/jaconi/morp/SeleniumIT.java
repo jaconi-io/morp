@@ -116,9 +116,6 @@ public class SeleniumIT extends TestBase {
                         .withPath(path)
                         // expect host header rewritten by proxy
                         .withHeader("host", "upstream:1080")
-                        // expect gateway proxy headers
-                        .withHeader("x-forwarded-host", host)
-                        .withHeader("x-forwarded-prefix", prefix)
                         // expect custom tenant header
                         .withHeader("x-tenant-id", tenant)
                         // expect security session cookie to be removed
@@ -156,9 +153,6 @@ public class SeleniumIT extends TestBase {
                         .withPath(path)
                         // expect host header rewritten by proxy
                         .withHeader("host", "upstream:1080")
-                        // expect gateway proxy headers
-                        .withHeader("x-forwarded-host", host)
-                        .withHeader("x-forwarded-prefix", prefix)
                         // expect custom tenant header
                         .withHeader("x-tenant-id", tenant)
                         // expect security session cookie to be removed

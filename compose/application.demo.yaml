@@ -1,12 +1,14 @@
 spring:
   cloud:
     gateway:
-      routes:
-        - id: host-mapping
-          uri: https://httpbin.org
-          order: 2
-          predicates:
-            - Host={tenant}.localtest.me
+      server:
+        webflux:
+          routes:
+            - id: host-mapping
+              uri: https://httpbin.org
+              order: 2
+              predicates:
+                - Host={tenant}.localtest.me
 
 morp:
   default-oauth2-client-registration: keycloak

@@ -1,12 +1,14 @@
 spring:
   cloud:
     gateway:
-      routes:
-        - id: routed-with-tenant
-          uri: http://localhost:${mockServerPort}
-          predicates:
-            - Path=/routed-with-tenant/{tenant}
-        - id: routed-without-tenant
-          uri: http://localhost:${mockServerPort}
-          predicates:
-            - Path=/routed-without-tenant
+      server:
+        webflux:
+          routes:
+            - id: routed-with-tenant
+              uri: http://localhost:${mockServerPort}
+              predicates:
+                - Path=/routed-with-tenant/{tenant}
+            - id: routed-without-tenant
+              uri: http://localhost:${mockServerPort}
+              predicates:
+                - Path=/routed-without-tenant

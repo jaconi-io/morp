@@ -4,35 +4,37 @@ spring.config.import: file:./secret.properties
 spring:
   cloud:
     gateway:
-      routes:
-        - id: host-mapping
-          uri: https://httpbin.org
-          order: 2
-          predicates:
-            - Host={tenant}.localtest.me
-        - id: host-mapping-with-stage
-          uri: https://httpbin.org
-          order: 1
-          predicates:
-            - Host={tenant}-{stage}.localtest.me
-        - id: path-mapping
-          uri: https://httpbin.org
-          predicates:
-            - Path=/tenant/{tenant}/**
-        - id: host-mapping-static
-          uri: https://httpbin.org
-          order: 0
-          predicates:
-            - name: TenantFromHost
-              args:
-                patterns:
-                  - static.localtest.me
-                  - another-static.localtest.me
-                tenant: foo
-        - id: header-mapping
-          uri: https://httpbin.org
-          predicates:
-            - TenantFromHeader=X-Tenant-ID,{tenant}
+      server:
+        webflux:
+          routes:
+            - id: host-mapping
+              uri: https://httpbin.org
+              order: 2
+              predicates:
+                - Host={tenant}.localtest.me
+            - id: host-mapping-with-stage
+              uri: https://httpbin.org
+              order: 1
+              predicates:
+                - Host={tenant}-{stage}.localtest.me
+            - id: path-mapping
+              uri: https://httpbin.org
+              predicates:
+                - Path=/tenant/{tenant}/**
+            - id: host-mapping-static
+              uri: https://httpbin.org
+              order: 0
+              predicates:
+                - name: TenantFromHost
+                  args:
+                    patterns:
+                      - static.localtest.me
+                      - another-static.localtest.me
+                    tenant: foo
+            - id: header-mapping
+              uri: https://httpbin.org
+              predicates:
+                - TenantFromHeader=X-Tenant-ID,{tenant}
 
 morp:
 

@@ -11,10 +11,8 @@ management:
     health:
       probes:
         enabled: true
-    prometheus:
-      enabled: true
     gateway:
-      enabled: true
+      access: unrestricted
   endpoints:
     web:
       exposure:
@@ -26,19 +24,11 @@ management:
   metrics:
     distribution:
       percentiles-histogram:
+        http.client.requests: true
+        http.server.requests: true
         spring.cloud.gateway.requests: true
     tags:
       application: ${spring.application.name}
-    web:
-      client:
-        request:
-          autotime:
-            percentiles-histogram: true
-      server:
-        request:
-          autotime:
-            percentiles-histogram: true
-
 
 spring:
   application:
@@ -54,14 +44,16 @@ spring:
     gateway:
       redis:
         enabled: false
-      # Workaround to disable 2nd cacheManager
-      filter:
-        local-response-cache:
-          enabled: false
-      # Disable matching the port in the host header to enable backward compatibility.
-      predicate:
-        host:
-          include-port: false
+      server:
+        webflux:
+          # Workaround to disable 2nd cacheManager
+          filter:
+            local-response-cache:
+              enabled: false
+          # Disable matching the port in the host header to enable backward compatibility.
+          predicate:
+            host:
+              include-port: false
 
 # Non-spring configuration goes here!
 morp:
