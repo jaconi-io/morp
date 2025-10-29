@@ -1,9 +1,13 @@
 package io.jaconi.morp.oauth;
 
 import lombok.*;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.builder.*;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 
 
 @Getter
@@ -35,7 +39,10 @@ public class ClientRegistrationSource {
                 + ")";
     }
 
+	@SneakyThrows(NoSuchAlgorithmException.class)
     public String sha256() {
-        return DigestUtils.sha256Hex(toString());
+		var messageDigest = MessageDigest.getInstance("SHA-256");
+		var hash = messageDigest.digest(toString().getBytes(StandardCharsets.UTF_8));
+		return HexFormat.of().formatHex(hash);
     }
 }
