@@ -4,15 +4,23 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
+    commit-message:
+      prefix: "build(docker)"
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
       interval: weekly
+    commit-message:
+      prefix: "ci"
   - package-ecosystem: gradle
     directory: "/"
     schedule:
       interval: weekly
+    commit-message:
+      prefix: "build(java)"
   - package-ecosystem: pip
     directory: "/mkdocs"
     schedule:
       interval: weekly
+    commit-message:
+      prefix: "docs"
