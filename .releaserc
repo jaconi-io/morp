@@ -4,8 +4,11 @@ branches:
 plugins:
 - - "@semantic-release/commit-analyzer"
   - releaseRules:
-    - type: chore
-      scope: deps
+    - type: build
+      scope: docker
+      release: patch
+    - type: build
+      scope: java
       release: patch
 
 - "@semantic-release/release-notes-generator"
