@@ -25,8 +25,8 @@
     [
       "@semantic-release/exec",
       {
-        "publishCmd": "echo \"next-release-version=${nextRelease.version}\" > \"$GITHUB_OUTPUT\"",
-        "successCmd": "sed -i 's/^version = \".*\"$/version = \"${nextRelease.version}\"/' build.gradle.kts"
+        "prepareCmd": "sed -i 's/^version = \".*\"$/version = \"${nextRelease.version}\"/' build.gradle.kts",
+        "publishCmd": "echo \"next-release-version=${nextRelease.version}\" > \"$GITHUB_OUTPUT\""
       }
     ],
     [
