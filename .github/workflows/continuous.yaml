@@ -52,7 +52,7 @@ jobs:
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '25'
       - uses: gradle/actions/wrapper-validation@02b57c1c5296e09cd9bce1ca28ce5ee0b3708f67
       - name: Test with Gradle
         env:
