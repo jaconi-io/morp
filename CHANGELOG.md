@@ -1,3 +1,10 @@
+## [2.2.1](https://github.com/jaconi-io/morp/compare/v2.2.0...v2.2.1) (2025-10-30)
+
+
+### Bug Fixes
+
+* tag multi-arch image as latest ([ae67c08](https://github.com/jaconi-io/morp/commit/ae67c084a94fa43715bf4519fec3bb44fe076e95))
+
 # [2.2.0](https://github.com/jaconi-io/morp/compare/v2.1.0...v2.2.0) (2025-10-30)
 
 
