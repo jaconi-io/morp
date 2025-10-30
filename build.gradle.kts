@@ -127,7 +127,6 @@ tasks.withType<BootBuildImage> {
         "BPE_APPEND_JAVA_TOOL_OPTIONS" to "-XX:MaxDirectMemorySize=100M",
         "BPE_DELIM_JAVA_TOOL_OPTIONS" to " ",
     ))
-    tags.add("${registry}/${project.name}:latest")
 }
 
 tasks.check {
