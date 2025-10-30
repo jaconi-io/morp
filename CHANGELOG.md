@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/jaconi-io/morp/compare/v2.1.0...v2.2.0) (2025-10-30)
+
+
+### Features
+
+* use Java 25 ([baca96f](https://github.com/jaconi-io/morp/commit/baca96f427d55ece41d5cff06d9c0bc82e92868e))
+
 # [2.1.0](https://github.com/jaconi-io/morp/compare/v2.0.0...v2.1.0) (2025-10-29)
 
 
