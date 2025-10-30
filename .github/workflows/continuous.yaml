@@ -152,3 +152,7 @@ jobs:
                --amend ghcr.io/${{ github.repository }}:${{ needs.release.outputs.next-release-version }}-amd64 \
                --amend ghcr.io/${{ github.repository }}:${{ needs.release.outputs.next-release-version }}-arm64
           docker manifest push ghcr.io/${{ github.repository }}:${{ needs.release.outputs.next-release-version }}
+          docker manifest create ghcr.io/${{ github.repository }}:${{ needs.release.outputs.next-release-version }} \
+               --amend ghcr.io/${{ github.repository }}:${{ needs.release.outputs.next-release-version }}-amd64 \
+               --amend ghcr.io/${{ github.repository }}:${{ needs.release.outputs.next-release-version }}-arm64
+          docker manifest push ghcr.io/${{ github.repository }}:latest
