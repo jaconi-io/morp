@@ -1,3 +1,10 @@
+## [2.2.2](https://github.com/jaconi-io/morp/compare/v2.2.1...v2.2.2) (2025-10-30)
+
+
+### Bug Fixes
+
+* fix latest manifest ([f1733ae](https://github.com/jaconi-io/morp/commit/f1733ae36b83c1ac319f7a948c12cffabcf581ae))
+
 ## [2.2.1](https://github.com/jaconi-io/morp/compare/v2.2.0...v2.2.1) (2025-10-30)
 
 
