@@ -17,8 +17,6 @@ plugins {
 group = "io.jaconi"
 version = "2.2.2"
 
-val registry = "ghcr.io/jaconi-io"
-
 repositories {
     mavenCentral()
 }
@@ -121,8 +119,7 @@ testing {
 
 tasks.withType<BootBuildImage> {
     mustRunAfter(tasks.test)
-    imageName.value("${registry}/${project.name}:${project.version}")
-    publish.value(false)
+    imageName.value("ghcr.io/jaconi-io/${project.name}:latest")
     environment.putAll(mapOf(
         "BPE_APPEND_JAVA_TOOL_OPTIONS" to "-XX:MaxDirectMemorySize=100M",
         "BPE_DELIM_JAVA_TOOL_OPTIONS" to " ",
