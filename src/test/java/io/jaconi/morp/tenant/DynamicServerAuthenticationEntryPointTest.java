@@ -1,42 +1,41 @@
 package io.jaconi.morp.tenant;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
-import org.springframework.http.HttpStatus;
-import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
-import org.springframework.mock.web.server.MockServerWebExchange;
-import org.springframework.web.client.HttpServerErrorException;
-import reactor.test.StepVerifier;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import java.net.URI;
+import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.springframework.cloud.gateway.server.mvc.common.MvcUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.web.servlet.function.ServerRequest;
 
 class DynamicServerAuthenticationEntryPointTest {
 
-    @Test
-    void commence() {
-        var entryPoint = new DynamicServerAuthenticationEntryPoint();
-        var request = MockServerHttpRequest.get("/foo").build();
-        var exchange = new MockServerWebExchange.Builder(request).build();
-        ServerWebExchangeUtils.putUriTemplateVariables(exchange, Map.of("tenant", "foo"));
+	@Test
+	void commence() {
+		var entryPoint = new DynamicServerAuthenticationEntryPoint();
+		var request = new MockHttpServletRequest("GET", "/foo");
+		var response = new MockHttpServletResponse();
+		MvcUtils.putUriTemplateVariables(ServerRequest.create(request, List.of()), Map.of("tenant", "foo"));
 
-        entryPoint.commence(exchange, null).block();
+		entryPoint.commence(request, response, null);
 
-        assertEquals(HttpStatus.FOUND, exchange.getResponse().getStatusCode());
-        assertEquals(URI.create("/oauth2/authorization/foo"), exchange.getResponse().getHeaders().getLocation());
-    }
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.FOUND.value());
+		assertThat(response.getHeaders("Location").getFirst()).endsWith("/oauth2/authorization/foo");
+	}
 
-    @Test
-    void commenceNoTenant() {
-        var entryPoint = new DynamicServerAuthenticationEntryPoint();
-        var request = MockServerHttpRequest.get("/foo").build();
-        var exchange = new MockServerWebExchange.Builder(request).build();
-        ServerWebExchangeUtils.putUriTemplateVariables(exchange, Map.of());
+	@Test
+	void commenceNoTenant() {
+		var entryPoint = new DynamicServerAuthenticationEntryPoint();
+		var request = new MockHttpServletRequest("GET", "/foo");
+		var response = new MockHttpServletResponse();
+		MvcUtils.putUriTemplateVariables(ServerRequest.create(request, List.of()), Map.of());
 
-        StepVerifier.create(entryPoint.commence(exchange, null))
-                .expectError(HttpServerErrorException.class)
-                .verify();
-    }
+		entryPoint.commence(request, response, null);
+
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+	}
 }
