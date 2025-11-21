@@ -2,6 +2,8 @@ package io.jaconi.morp;
 
 import java.util.List;
 import java.util.Set;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
@@ -57,6 +59,7 @@ public class ActuatorIT extends TestBase {
 	}
 
 	@Test
+	@Disabled("Apparently not supported by Spring Cloud Gateway WebMVC yet")
 	void testGatewayRefresh() {
 		// step 1 - send a POST request to the "/actuator/gateway/refresh" endpoint
 		// expect the call to be successful (no authentication or CSRF token required)

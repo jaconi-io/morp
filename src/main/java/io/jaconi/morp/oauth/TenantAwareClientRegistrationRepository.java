@@ -1,20 +1,20 @@
 package io.jaconi.morp.oauth;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Objects;
+
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Mono;
 
-import java.util.Objects;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class TenantAwareClientRegistrationRepository implements ReactiveClientRegistrationRepository {
+public class TenantAwareClientRegistrationRepository implements ClientRegistrationRepository {
 
     public static final String REGISTRATIONS = "registrations";
 
@@ -29,11 +29,7 @@ public class TenantAwareClientRegistrationRepository implements ReactiveClientRe
     private final ClientRegistrationFetcher clientRegistrationFetcher;
 
     @Override
-    public Mono<ClientRegistration> findByRegistrationId(String tenant) {
-        return Mono.fromSupplier(() -> this.getRegistration(tenant));
-    }
-
-    private ClientRegistration getRegistration(String tenant) {
+    public ClientRegistration findByRegistrationId(String tenant) {
         log.debug("Creating Client Registration for tenant '{}'.", tenant);
 
         var registration = registrationResolver.getRegistration(tenant);
