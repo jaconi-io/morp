@@ -4,10 +4,10 @@ plugins {
     java
     jacoco
     `jvm-test-suite`
-    id("io.freefair.lombok") version "9.0.0"
-    id("org.springframework.boot") version "3.5.7"
+    id("io.freefair.lombok") version "9.1.0"
+    id("org.springframework.boot") version "3.5.8"
     id("io.spring.dependency-management") version "1.1.7"
-    id("org.graalvm.buildtools.native") version "0.11.2"
+    id("org.graalvm.buildtools.native") version "0.11.3"
     id("com.github.rising3.semver") version "0.8.2"
     id("org.barfuin.gradle.jacocolog") version "3.1.0"
     id("org.sonarqube") version "7.0.1.6134"
@@ -66,7 +66,7 @@ sonarqube {
     }
 }
 
-extra["testcontainersVersion"] = "1.19.6"
+extra["testcontainersVersion"] = "2.0.2"
 
 // setup separate test suites for unit and integration tests
 testing {
@@ -88,12 +88,12 @@ testing {
                 implementation(project())
                 implementation("org.jsoup:jsoup:1.21.2")
                 // testcontainers core
-                implementation("org.testcontainers:junit-jupiter")
+                implementation("org.testcontainers:testcontainers-junit-jupiter")
                 implementation("org.testcontainers:testcontainers")
                 // testcontainers containers
-                implementation("org.testcontainers:selenium")
+                implementation("org.testcontainers:testcontainers-selenium")
                 implementation("com.github.dasniko:testcontainers-keycloak:3.9.0")
-                implementation("org.testcontainers:mockserver")
+                implementation("org.testcontainers:testcontainers-mockserver")
                 // selenium itself
                 implementation("org.seleniumhq.selenium:selenium-api")
                 implementation("org.seleniumhq.selenium:selenium-chrome-driver")

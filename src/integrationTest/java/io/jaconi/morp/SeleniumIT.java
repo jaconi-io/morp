@@ -3,6 +3,7 @@ package io.jaconi.morp;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockserver.model.MediaType;
@@ -127,6 +128,7 @@ public class SeleniumIT extends TestBase {
             "tenant2, morp:8080, /upstream/tenant2, /test",
             "tenant2, tenant2-morp:8080, /upstream, /test"
     })
+	@Disabled("Disabled until new org is fully set up.")
     void testWithOkta(String tenant, String host, String prefix, String path) {
 
         // have browser access the protected upstream via Morp
