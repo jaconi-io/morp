@@ -1,3 +1,10 @@
+## [2.2.3](https://github.com/jaconi-io/morp/compare/v2.2.2...v2.2.3) (2025-11-21)
+
+
+### Bug Fixes
+
+* fix docker issues ([6b5c0a9](https://github.com/jaconi-io/morp/commit/6b5c0a92d452c258a215ea38b11091a5d07d0796))
+
 ## [2.2.2](https://github.com/jaconi-io/morp/compare/v2.2.1...v2.2.2) (2025-10-30)
 
 
