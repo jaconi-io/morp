@@ -1,3 +1,10 @@
+## [2.2.4](https://github.com/jaconi-io/morp/compare/v2.2.3...v2.2.4) (2025-11-21)
+
+
+### Bug Fixes
+
+* okta selenium it ([d39434a](https://github.com/jaconi-io/morp/commit/d39434ac5b797f675a1eb701bffaa2ca9c9692f7))
+
 ## [2.2.3](https://github.com/jaconi-io/morp/compare/v2.2.2...v2.2.3) (2025-11-21)
 
 
