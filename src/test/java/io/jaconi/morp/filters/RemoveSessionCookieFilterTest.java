@@ -1,16 +1,15 @@
 package io.jaconi.morp.filters;
 
+import static java.util.Map.entry;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
-
-import java.util.List;
-import java.util.Map;
-
-import static java.util.Map.entry;
-import static org.assertj.core.api.Assertions.assertThat;
 
 class RemoveSessionCookieFilterTest {
 
@@ -24,7 +23,7 @@ class RemoveSessionCookieFilterTest {
 
         HttpHeaders headers = filter.filter(request.getHeaders(), MockServerWebExchange.from(request));
 
-        assertThat(headers).containsExactly(entry("foo", List.of("bar")));
+        assertThat(headers.toSingleValueMap()).containsExactly(entry("foo", "bar"));
     }
 
     @Test
@@ -37,7 +36,7 @@ class RemoveSessionCookieFilterTest {
 
         HttpHeaders headers = filter.filter(request.getHeaders(), MockServerWebExchange.from(request));
 
-        assertThat(headers).containsExactly(entry("foo", List.of("bar")));
+        assertThat(headers.toSingleValueMap()).containsExactly(entry("foo", "bar"));
     }
 
     @Test
@@ -50,7 +49,7 @@ class RemoveSessionCookieFilterTest {
 
         HttpHeaders headers = filter.filter(request.getHeaders(), MockServerWebExchange.from(request));
 
-        assertThat(headers).containsExactly(entry("foo", List.of("bar")));
+        assertThat(headers.toSingleValueMap()).containsExactly(entry("foo", "bar"));
     }
 
     @Test
@@ -63,9 +62,8 @@ class RemoveSessionCookieFilterTest {
 
         HttpHeaders headers = filter.filter(request.getHeaders(), MockServerWebExchange.from(request));
 
-        assertThat(headers).containsExactlyInAnyOrderEntriesOf(Map.of(
-                HttpHeaders.COOKIE, List.of("OTHER=xxx"),
-                "foo", List.of("bar"))
+        assertThat(headers.toSingleValueMap()).containsExactlyInAnyOrderEntriesOf(Map.of(
+                HttpHeaders.COOKIE, "OTHER=xxx", "foo", "bar")
         );
     }
 
@@ -79,9 +77,8 @@ class RemoveSessionCookieFilterTest {
 
         HttpHeaders headers = filter.filter(request.getHeaders(), MockServerWebExchange.from(request));
 
-        assertThat(headers).containsExactlyInAnyOrderEntriesOf(Map.of(
-                HttpHeaders.COOKIE, List.of("ANY=whatever;OTHER=xxx"),
-                "foo", List.of("bar"))
+        assertThat(headers.toSingleValueMap()).containsExactlyInAnyOrderEntriesOf(Map.of(
+                HttpHeaders.COOKIE, "ANY=whatever;OTHER=xxx", "foo", "bar")
         );
     }
 }

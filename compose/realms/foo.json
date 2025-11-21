@@ -26,7 +26,7 @@
   "oauth2DeviceCodeLifespan": 600,
   "oauth2DevicePollingInterval": 5,
   "enabled": true,
-  "sslRequired": "external",
+  "sslRequired": "none",
   "registrationAllowed": false,
   "registrationEmailAsUsername": false,
   "rememberMe": false,
@@ -640,7 +640,8 @@
       "clientAuthenticatorType": "client-secret",
       "secret": "secret",
       "redirectUris": [
-        "http://foo.localtest.me:8080/login/oauth2/code/foo"
+        "http://foo.localtest.me:8080/login/oauth2/code/foo",
+        "http://localhost:8080/login/oauth2/code/foo"
       ],
       "webOrigins": [],
       "notBefore": 0,

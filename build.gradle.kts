@@ -5,7 +5,7 @@ plugins {
     jacoco
     `jvm-test-suite`
     id("io.freefair.lombok") version "9.1.0"
-    id("org.springframework.boot") version "3.5.8"
+    id("org.springframework.boot") version "4.0.0"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.graalvm.buildtools.native") version "0.11.3"
     id("com.github.rising3.semver") version "0.8.2"
@@ -22,12 +22,11 @@ repositories {
 }
 
 dependencies {
-    implementation(platform("org.springframework.cloud:spring-cloud-gateway-dependencies:4.3.2"))
+    implementation(platform("org.springframework.cloud:spring-cloud-gateway-dependencies:5.0.0"))
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+    implementation("org.springframework.boot:spring-boot-starter-security-oauth2-client")
     implementation("org.springframework.cloud:spring-cloud-starter-gateway-server-webflux")
-    implementation("org.springframework.cloud:spring-cloud-gateway-proxyexchange-webflux")
 
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 
@@ -119,6 +118,10 @@ testing {
 
 tasks.withType<BootBuildImage> {
     mustRunAfter(tasks.test)
+    // We ran into an UnsatisfiedLinkError when starting with the default runImage
+    // and created the following ticket: https://github.com/spring-projects/spring-boot/issues/48230
+    // Setting the following runImage, as suggested, fixed the issue:
+    runImage.set("paketobuildpacks/ubuntu-noble-run:latest")
     imageName.value("ghcr.io/jaconi-io/${project.name}:latest")
     environment.putAll(mapOf(
         "BPE_APPEND_JAVA_TOOL_OPTIONS" to "-XX:MaxDirectMemorySize=100M",
