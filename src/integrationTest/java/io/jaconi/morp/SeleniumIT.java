@@ -1,32 +1,31 @@
 package io.jaconi.morp;
 
-import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.mockserver.model.MediaType;
-import org.mockserver.model.NottableString;
-import org.openqa.selenium.By;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Configuration;
-import org.testcontainers.containers.BrowserWebDriverContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
-
+import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.mockserver.model.MediaType;
+import org.mockserver.model.NottableString;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Configuration;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.selenium.BrowserWebDriverContainer;
 
 /**
  * Integration test that runs a real web browser (i.e. Chrome via Selenium TestContainers) to verify successful
@@ -49,12 +48,11 @@ public class SeleniumIT extends TestBase {
 
     // we start Chrome for each test to ensure a clean state (i.e. cookies etc)
     @Container
-    public final BrowserWebDriverContainer<?> chrome = new BrowserWebDriverContainer<>(ArmUtil.select("seleniarm/standalone-chromium:latest", "selenium/standalone-chrome:latest"))
+    public final BrowserWebDriverContainer chrome = new BrowserWebDriverContainer(ArmUtil.select("seleniarm/standalone-chromium:latest", "selenium/standalone-chrome:latest"))
             .withNetwork(containerSetup.getNetwork())
             .withNetworkAliases("chrome")
-            .withCapabilities(new ChromeOptions())
             .withStartupTimeout(Duration.ofSeconds(30))
-            .withRecordingMode(BrowserWebDriverContainer.VncRecordingMode.SKIP, new File("./build/"))
+            .withRecordingMode(BrowserWebDriverContainer.VncRecordingMode.RECORD_FAILING, new File("./build/"))
             .withRecordingFileFactory(new TruncatedRecordingFileFactory());
 
     protected RemoteWebDriver driver;
@@ -128,21 +126,19 @@ public class SeleniumIT extends TestBase {
             "tenant2, morp:8080, /upstream/tenant2, /test",
             "tenant2, tenant2-morp:8080, /upstream, /test"
     })
-	@Disabled("Disabled until new org is fully set up.")
     void testWithOkta(String tenant, String host, String prefix, String path) {
 
         // have browser access the protected upstream via Morp
         driver.get("http://" + host + prefix + path);
 
         // expect redirects to take us to the Keycloak login mast
-        //SELENIUM.saveScreenshot("01-okta-login-mask.png");
-        driver.findElement(By.id("okta-sign-in"));
+		driver.findElement(By.id("okta-sign-in"));
 
-        // fill login form with our test user credentials
-        driver.findElement(By.id("okta-signin-username")).sendKeys(oktaUsername);
-        driver.findElement(By.id("okta-signin-password")).sendKeys(oktaPassword);
-        //SELENIUM.saveScreenshot("02-okta-login-filled.png");
-        driver.findElement(By.id("okta-signin-submit")).click();
+        // fill in username
+        driver.findElement(By.name("identifier")).sendKeys("%s%s".formatted(oktaUsername, Keys.RETURN));
+
+		// fill in password
+        driver.findElement(By.name("credentials.passcode")).sendKeys("%s%s".formatted(oktaPassword, Keys.RETURN));
 
         // match upstream browser content
         assertThat(driver.findElement(By.id("test")).getText()).isEqualTo("Hello from mockserver");

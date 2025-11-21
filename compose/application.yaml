@@ -83,6 +83,6 @@ morp:
           - email
     provider:
       okta:
-        issuer-uri: https://dev-3715202.okta.com
+        issuer-uri: https://integrator-6194182.okta.com
       keycloak:
         issuer-uri: http://keycloak.localtest.me:9000/realms/{tenant}
