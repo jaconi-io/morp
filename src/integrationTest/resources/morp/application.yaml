@@ -2,25 +2,27 @@
 spring:
   cloud:
     gateway:
-      routes:
-        # test route that identifies tenant via path element
-        - id: upstream-tenant-path
-          uri: http://upstream:1080
-          predicates:
-            - Host=morp
-            - Path=/upstream/{tenant}/{path}
-          filters:
-            - SetPath=/{path}
-            - SetRequestHeader=x-tenant-id, {tenant}
-        # test route that identifies tenant via host header pattern
-        - id: upstream-tenant-host
-          uri: http://upstream:1080
-          predicates:
-            - Host={tenant}-morp
-            - Path=/upstream/{path}
-          filters:
-            - SetPath=/{path}
-            - SetRequestHeader=x-tenant-id, {tenant}
+      server:
+        webflux:
+          routes:
+            # test route that identifies tenant via path element
+            - id: upstream-tenant-path
+              uri: http://upstream:1080
+              predicates:
+                - Host=morp
+                - Path=/upstream/{tenant}/{path}
+              filters:
+                - SetPath=/{path}
+                - SetRequestHeader=x-tenant-id, {tenant}
+            # test route that identifies tenant via host header pattern
+            - id: upstream-tenant-host
+              uri: http://upstream:1080
+              predicates:
+                - Host={tenant}-morp
+                - Path=/upstream/{path}
+              filters:
+                - SetPath=/{path}
+                - SetRequestHeader=x-tenant-id, {tenant}
 
 morp:
   default-oauth2-client-registration: keycloak
