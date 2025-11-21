@@ -52,7 +52,7 @@ morp:
       keycloak:
         issuer-uri: http://keycloak:8080/realms/tenant1
       okta:
-        issuer-uri: https://dev-3715202.okta.com
+        issuer-uri: https://integrator-6194182.okta.com
 
 
 logging.level:
