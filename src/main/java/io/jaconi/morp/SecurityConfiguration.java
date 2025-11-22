@@ -2,13 +2,15 @@ package io.jaconi.morp;
 
 import io.jaconi.morp.filters.RemoveSessionCookieFilter;
 import io.jaconi.morp.filters.TenantExtractionFilter;
-import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
+
+import org.springframework.boot.security.autoconfigure.actuate.web.reactive.EndpointRequest;
 import org.springframework.cloud.gateway.config.GlobalCorsProperties;
 import org.springframework.cloud.gateway.handler.FilteringWebHandler;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
@@ -21,6 +23,7 @@ import org.springframework.web.server.session.CookieWebSessionIdResolver;
 import org.springframework.web.server.session.WebSessionIdResolver;
 
 import static io.jaconi.morp.oauth.ProxyAuthorityMapper.ROLE_PROXY;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 public class SecurityConfiguration {
@@ -47,11 +50,11 @@ public class SecurityConfiguration {
                                 .matchers(EndpointRequest.toAnyEndpoint()).permitAll()
                                 .anyExchange().hasAuthority(ROLE_PROXY)
                 )
-                .oauth2Login(oAuth2LoginSpec -> {})
-                .oauth2Client(oAuth2ClientSpec -> {})
+                .oauth2Login(withDefaults())
+                .oauth2Client(withDefaults())
                 .exceptionHandling(exceptionHandlingSpec ->
                         exceptionHandlingSpec.authenticationEntryPoint(serverAuthenticationEntryPoint))
-                .logout(logoutSpec -> {})
+                .logout(withDefaults())
                 .addFilterAt(new LogoutPageGeneratingWebFilter(),
                         SecurityWebFiltersOrder.LOGOUT_PAGE_GENERATING)
                 .addFilterAfter(new TenantExtractionFilter(webHandler, routeLocator, globalCorsProperties, environment,
@@ -61,10 +64,10 @@ public class SecurityConfiguration {
 
     @Bean
     public RemoveSessionCookieFilter removeSessionCookie(WebSessionIdResolver webSessionIdResolver) {
-        if (!(webSessionIdResolver instanceof CookieWebSessionIdResolver)) {
-            return null;
+        if (webSessionIdResolver instanceof CookieWebSessionIdResolver cookieWebSessionIdResolver) {
+            return new RemoveSessionCookieFilter(cookieWebSessionIdResolver.getCookieName());
         }
-        return new RemoveSessionCookieFilter(((CookieWebSessionIdResolver) webSessionIdResolver).getCookieName());
+        return null;
     }
 
 }

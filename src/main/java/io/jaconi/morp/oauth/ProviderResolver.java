@@ -1,7 +1,8 @@
 package io.jaconi.morp.oauth;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
+
+import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -17,10 +18,6 @@ public class ProviderResolver {
     private final OAuth2ClientProperties properties;
 
     OAuth2ClientProperties.Provider getProvider(String tenant, String providerId) {
-        if (properties.getProvider() == null) {
-            return null;
-        }
-
         if (!properties.getProvider().containsKey(providerId)) {
             return null;
         }
