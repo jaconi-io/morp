@@ -3,8 +3,8 @@ package io.jaconi.morp.oauth;
 import io.jaconi.morp.tenant.TenantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientProperties;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.stereotype.Component;
 
@@ -32,7 +32,7 @@ class RegistrationResolver {
 
         BeanUtils.copyProperties(global, merged);
         if (tenantSpecific != null) {
-            var map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+            var map = PropertyMapper.get();
             map.from(tenantSpecific::getAuthorizationGrantType).to(merged::setAuthorizationGrantType);
             map.from(tenantSpecific::getProvider).to(merged::setProvider);
             map.from(tenantSpecific::getClientId).to(merged::setClientId);
@@ -76,7 +76,7 @@ class RegistrationResolver {
             return null;
         }
 
-        if (properties.getRegistration() == null || !properties.getRegistration().containsKey(registrationId)) {
+        if (!properties.getRegistration().containsKey(registrationId)) {
             return null;
         }
 

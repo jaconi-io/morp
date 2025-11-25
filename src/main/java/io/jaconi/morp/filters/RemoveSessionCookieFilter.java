@@ -21,7 +21,7 @@ public class RemoveSessionCookieFilter implements HttpHeadersFilter {
     public HttpHeaders filter(HttpHeaders input, ServerWebExchange exchange) {
         HttpHeaders filtered = new HttpHeaders();
 
-        for (Map.Entry<String, List<String>> entry : input.entrySet()) {
+        for (Map.Entry<String, List<String>> entry : input.headerSet()) {
             if (HttpHeaders.COOKIE.equals(entry.getKey())) {
                 continue;
             }

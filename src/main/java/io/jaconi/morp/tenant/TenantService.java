@@ -2,7 +2,8 @@ package io.jaconi.morp.tenant;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
+
+import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
