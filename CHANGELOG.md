@@ -1,3 +1,16 @@
+# [3.0.0](https://github.com/jaconi-io/morp/compare/v2.2.4...v3.0.0) (2025-11-25)
+
+
+### Features
+
+* migrate to Spring Boot 4 ([59bd90e](https://github.com/jaconi-io/morp/commit/59bd90e9e66a21ab948e9dd1204bca2fc514c353))
+
+
+### BREAKING CHANGES
+
+* Config prefix changed from `spring.cloud.gateway`
+ to `spring.cloud.gateway.webflux`.
+
 ## [2.2.4](https://github.com/jaconi-io/morp/compare/v2.2.3...v2.2.4) (2025-11-21)
 
 
