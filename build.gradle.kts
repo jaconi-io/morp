@@ -91,7 +91,7 @@ testing {
                 implementation("org.testcontainers:testcontainers")
                 // testcontainers containers
                 implementation("org.testcontainers:testcontainers-selenium")
-                implementation("com.github.dasniko:testcontainers-keycloak:4.0.0")
+                implementation("com.github.dasniko:testcontainers-keycloak:4.0.1")
                 implementation("org.testcontainers:testcontainers-mockserver")
                 // selenium itself
                 implementation("org.seleniumhq.selenium:selenium-api")
