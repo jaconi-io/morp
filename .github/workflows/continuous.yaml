@@ -64,7 +64,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew check sonar
-      - uses: mikepenz/action-junit-report@fb8f411a1c1fee06cf3b8a321454b50544761f7a
+      - uses: mikepenz/action-junit-report@a294a61c909bd8a4b563024a2faa28897fd53ebc
         if: always()
         with:
           report_paths: build/test-results/*/*.xml
