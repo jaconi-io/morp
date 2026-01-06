@@ -49,7 +49,7 @@ dependencies {
     testImplementation("org.mock-server:mockserver-spring-test-listener:5.15.0") {
         exclude("org.hamcrest", "hamcrest")
     }
-    testImplementation("org.jsoup:jsoup:1.21.2")
+    testImplementation("org.jsoup:jsoup:1.22.1")
     testImplementation("io.projectreactor:reactor-test")
 }
 
@@ -85,7 +85,7 @@ testing {
 
             dependencies {
                 implementation(project())
-                implementation("org.jsoup:jsoup:1.21.2")
+                implementation("org.jsoup:jsoup:1.22.1")
                 // testcontainers core
                 implementation("org.testcontainers:testcontainers-junit-jupiter")
                 implementation("org.testcontainers:testcontainers")
