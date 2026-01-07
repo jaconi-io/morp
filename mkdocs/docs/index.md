@@ -4,7 +4,7 @@ like Google, GitHub, Okta, and Keycloak.
 
 ## Motivation 
 
-There are several excellent OAuth2 and OpenID Connect proxies out there today that can be used to protect you backend
+There are several excellent OAuth2 and OpenID Connect proxies out there today that can be used to protect your backend
 apps. However, existing implementations typically only support a single tenant (with a single identity provider). MORP
 aims at making **multi-tenancy** a first class citizen so that you can run apps on behalf of different tenants that may
 be using different identity providers to authenticate users.
