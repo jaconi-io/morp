@@ -1,3 +1,17 @@
+# [4.0.0](https://github.com/jaconi-io/morp/compare/v3.0.4...v4.0.0) (2026-01-16)
+
+
+### Features
+
+* initial mvc implementation ([e39cf9d](https://github.com/jaconi-io/morp/commit/e39cf9d46350ffd5bc5b7e09f66a2ee6d1291adb))
+
+
+### BREAKING CHANGES
+
+* Missing refresh support for now
+* Config key for routes changed to `spring.cloud.gateway.server.webmvc.routes`
+* Syntax for custom predicates `TenantFromHost`, and `TenantFromHeader` changed
+
 ## [3.0.4](https://github.com/jaconi-io/morp/compare/v3.0.3...v3.0.4) (2026-01-07)
 
 ## [3.0.3](https://github.com/jaconi-io/morp/compare/v3.0.2...v3.0.3) (2026-01-06)
