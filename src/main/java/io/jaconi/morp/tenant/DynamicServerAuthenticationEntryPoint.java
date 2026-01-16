@@ -1,24 +1,36 @@
 package io.jaconi.morp.tenant;
 
-import org.springframework.http.HttpStatus;
+import java.io.IOException;
+import java.util.List;
+
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.server.ServerAuthenticationEntryPoint;
-import org.springframework.security.web.server.authentication.RedirectServerAuthenticationEntryPoint;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.server.ServerWebExchange;
-import reactor.core.publisher.Mono;
+import org.springframework.web.servlet.function.ServerRequest;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.SneakyThrows;
 
 @Component
-public class DynamicServerAuthenticationEntryPoint implements ServerAuthenticationEntryPoint {
+public class DynamicServerAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    @Override
-    public Mono<Void> commence(ServerWebExchange exchange, AuthenticationException ex) {
-        return TenantExtractor.extractTenant(exchange.getAttributes())
-                .map(t -> {
-                    var redirect = new RedirectServerAuthenticationEntryPoint("/oauth2/authorization/%s".formatted(t));
-                    return redirect.commence(exchange, ex);
-                })
-                .orElse(Mono.error(new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "no tenant")));
-    }
+	@Override
+	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException ex) {
+		TenantExtractor.extractTenant(ServerRequest.create(request, List.of()))
+				.ifPresentOrElse(t -> sendRedirect(response, t),
+						() -> sendError(response)
+				);
+
+	}
+
+	@SneakyThrows(IOException.class)
+	private static void sendError(HttpServletResponse response) {
+		response.sendError(500, "No tenant.");
+	}
+
+	@SneakyThrows(IOException.class)
+	private void sendRedirect(HttpServletResponse response, String tenant) {
+		response.sendRedirect("/oauth2/authorization/%s".formatted(tenant));
+	}
 }

@@ -1,30 +1,23 @@
 package io.jaconi.morp.filters;
 
-import lombok.NonNull;
-import org.springframework.cloud.gateway.config.GlobalCorsProperties;
-import org.springframework.cloud.gateway.handler.FilteringWebHandler;
-import org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping;
-import org.springframework.cloud.gateway.route.RouteLocator;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.ReactiveSecurityContextHolder;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.WebFilter;
-import org.springframework.web.server.WebFilterChain;
-import reactor.core.publisher.Mono;
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExecutionChain;
+import org.springframework.web.servlet.function.support.RouterFunctionMapping;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.SneakyThrows;
 
 /**
  * The tenant extraction filter determines a tenant from route predicates. Supported predicates are:
  * <ul>
  *     <li>Host</li>
  *     <li>Path</li>
- *     <li>{@link io.jaconi.morp.predicates.TenantFromHostRoutePredicateFactory TenantFromHost}</li>
- *     <li>{@link io.jaconi.morp.predicates.TenantFromHeaderRoutePredicateFactory TenantFromHeader}</li>
+ *     <li>{@link io.jaconi.morp.predicates.GatewayPredicates#tenantFromHost(String...)} TenantFromHost}</li>
+ *     <li>{@link io.jaconi.morp.predicates.GatewayPredicates#tenantFromHeader(String)} TenantFromHeader}</li>
  * </ul>
  * <p>
  * Host and Port predicates are expected to have a URI variable "{tenant}". See README.md for additional details on
@@ -36,42 +29,31 @@ import reactor.core.publisher.Mono;
  * The filters position in the Spring Security filter chain is configured in the
  * {@link io.jaconi.morp.SecurityConfiguration}.
  */
-public class TenantExtractionFilter extends RoutePredicateHandlerMapping implements WebFilter {
+public class TenantExtractionFilter extends OncePerRequestFilter {
 
-    private final ServerWebExchangeMatcher exchangeMatcher;
+	private final RequestMatcher requestMatcher;
 
-    public TenantExtractionFilter(FilteringWebHandler webHandler, RouteLocator routeLocator,
-                                  GlobalCorsProperties globalCorsProperties, Environment environment,
-                                  ServerWebExchangeMatcher exchangeMatcher) {
-        super(webHandler, routeLocator, globalCorsProperties, environment);
-        Assert.notNull(exchangeMatcher, "exchangeMatcher cannot be null");
-        this.exchangeMatcher = exchangeMatcher;
-    }
+	private final RouterFunctionMapping routerFunctionMapping;
 
-    @Override
-    public @NonNull Mono<Void> filter(@NonNull ServerWebExchange exchange, WebFilterChain chain) {
-        // Apply all predicates to determine the tenant. We are aware that this code is executed twice (once here and
-        // again by Spring Cloud Gateway). However, changing the order of Spring Cloud Gateway and Spring Security
-        // causes side effects (for example, breaking injection of principals inside controllers) and might create
-        // security issues as well.
-        return this.exchangeMatcher.matches(exchange)
-                .filter(ServerWebExchangeMatcher.MatchResult::isMatch)
-                .filterWhen(b -> isNotAuthenticated())
-                .switchIfEmpty(chain.filter(exchange).then(Mono.empty()))
-                .flatMap(r -> lookupTenant(exchange, chain));
-    }
+	public TenantExtractionFilter(RequestMatcher requestMatcher, RouterFunctionMapping routerFunctionMapping) {
+		Assert.notNull(requestMatcher, "requestMatcher cannot be null");
+		this.requestMatcher = requestMatcher;
+		this.routerFunctionMapping = routerFunctionMapping;
+	}
 
-    private Mono<Void> lookupTenant(ServerWebExchange exchange, WebFilterChain chain) {
-        return lookupRoute(exchange)
-                        .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
-                        .then(chain.filter(exchange));
-    }
+	@SneakyThrows
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
+		if (!requestMatcher.matches(request)) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+		HandlerExecutionChain handler = routerFunctionMapping.getHandler(request);
+		if (handler == null) {
+			response.setStatus(404);
+			return;
+		}
 
-    private Mono<Boolean> isNotAuthenticated() {
-        return ReactiveSecurityContextHolder.getContext().filter(c -> c.getAuthentication() != null)
-                .map(SecurityContext::getAuthentication)
-                .map(Authentication::isAuthenticated)
-                .switchIfEmpty(Mono.just(Boolean.FALSE))
-                .map(r -> !r);
-    }
+		filterChain.doFilter(request, response);
+	}
 }

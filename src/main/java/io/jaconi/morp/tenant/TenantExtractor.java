@@ -1,20 +1,23 @@
 package io.jaconi.morp.tenant;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
+
+import org.springframework.cloud.gateway.server.mvc.common.MvcUtils;
+import org.springframework.web.servlet.function.ServerRequest;
+
 import lombok.experimental.UtilityClass;
-import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
 
 @UtilityClass
 public class TenantExtractor {
 
-    public static final String KEY = "tenant";
+	public static final String KEY = "tenant";
 
-    @SuppressWarnings("unchecked")
-    public static Optional<String> extractTenant(Map<String, Object> attributes) {
-        var templateVariables = (Map<String, String>) attributes.getOrDefault(ServerWebExchangeUtils.URI_TEMPLATE_VARIABLES_ATTRIBUTE, new HashMap<>());
-        return Optional.ofNullable(templateVariables.get(KEY));
-    }
+	public static Optional<String> extractTenant(ServerRequest request) {
+		if (MvcUtils.getUriTemplateVariables(request).containsKey(KEY)) {
+			String tenant = (String) MvcUtils.getUriTemplateVariables(request).get(KEY);
+			return Optional.ofNullable(tenant);
+		}
+		return Optional.empty();
+	}
 
 }

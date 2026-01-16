@@ -66,6 +66,7 @@ public class TestContainerSetup implements AfterEachCallback {
                 .withNetwork(network)
                 .withNetworkAliases("morp", "tenant1-morp", "tenant2-morp")
                 .withExposedPorts(8080, 8081)
+				//.withEnv("JAVA_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:6666")
                 .withEnv("SPRING_PROFILES_ACTIVE", "test")
                 .withFileSystemBind(
                         "./src/integrationTest/resources/morp/application.yaml",

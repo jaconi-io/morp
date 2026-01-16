@@ -1,19 +1,16 @@
 package io.jaconi.morp;
 
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.springtest.MockServerTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import reactor.netty.http.client.HttpClient;
-
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
-
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"test", "wiretap"})
@@ -30,13 +27,8 @@ class RoutingTest {
     @BeforeEach
     void setUp() {
 
-        // control the HTTP client to enable wiretap logs
-        HttpClient httpClient = HttpClient.create()
-                .wiretap(true) // hex dump wiretap
-                .compress(true);
-
         // bind the client to the gateway running on a random port
-        client = WebTestClient.bindToServer(new ReactorClientHttpConnector(httpClient))
+        client = WebTestClient.bindToServer()
                 .baseUrl("http://localhost:" + port)
                 .build();
 
@@ -76,6 +68,6 @@ class RoutingTest {
                 .uri("/routed-with-tenant/tenant1")
                 .exchange()
                 .expectStatus().is3xxRedirection()
-                .expectHeader().location("/oauth2/authorization/tenant1");
+                .expectHeader().location("http://localhost:%s/oauth2/authorization/tenant1".formatted(port));
     }
 }
