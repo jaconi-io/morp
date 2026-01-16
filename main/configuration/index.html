@@ -709,8 +709,8 @@ tenant, use the following configuration:</p>
 </code></pre>
 <h2 id="registration">Registration</h2>
 <p>Providers cannot be used for authentication by default. A registration is required to specify additional configuration.
-This allows multiple registrations per provider. Registrations are configured in the documentations
-<code>morp.oauth-client.registration</code> section:</p>
+This allows multiple registrations per provider.
+Registrations are configured in the <code>morp.oauth-client.registration</code> section:</p>
 <pre><code class="language-yaml">morp:
   oauth2-client:
     registration:
@@ -767,7 +767,7 @@ This allows multiple registrations per provider. Registrations are configured in
 </table>
 <p>Usually, only <code>client-id</code> and <code>client-secret</code> are required.</p>
 <h2 id="tenant">Tenant</h2>
-<p>A tenant is the entity determining the registration to be used. This might be a customer, an application or a
+<p>A tenant is the entity determining the registration to be used. This might be a customer, an application, or a
 department. To figure out the tenant for a request, MORP uses predicates. See
 <a href="../user-guide/routing/#tenant-extraction">Tenant Extraction</a> for details.</p>
 

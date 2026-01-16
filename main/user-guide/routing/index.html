@@ -610,13 +610,13 @@ You're not viewing the latest version.
 
 
 <h1 id="routing">Routing</h1>
-<p>Routing in MORP uses <a href="https://docs.spring.io/spring-cloud-gateway/docs/current/reference/html/">Spring Cloud Gateway</a>. A
-basic route could be configured like this:</p>
+<p>Routing in MORP uses <a href="https://docs.spring.io/spring-cloud-gateway/docs/current/reference/html/">Spring Cloud Gateway</a> in WebMVC mode.
+A basic route could be configured like this:</p>
 <pre><code class="language-yaml">spring:
   cloud:
     gateway:
       server:
-        webflux:
+        webmvc:
           routes:
             - id: my_route
               uri: https://example.org
@@ -665,19 +665,19 @@ To figure out the tenant for a request, MORP uses predicates. MORP supports the 
 </tr>
 <tr>
 <td><code>TenantFromHost</code></td>
-<td><pre>name: TenantFromHost<br/>args:<br/>  patterns:<br/>    - static.localtest.me<br/>    - another-static.localtest.me<br/>  tenant: foo</pre></td>
+<td><pre>TenantFromHost=foo,static.example.com,another-static.example.com</pre></td>
 <td>static.example.com</td>
 <td>foo</td>
 </tr>
 <tr>
 <td><code>TenantFromHeader</code></td>
-<td><pre>TenantFromHeader=X-Tenant-ID,{tenant}</pre></td>
+<td><pre>TenantFromHeader=X-Tenant-ID</pre></td>
 <td>X-Tenant-ID: foo</td>
 <td>foo</td>
 </tr>
 </tbody>
 </table>
-<p>Predicates are configured in the <code>spring.cloud.gateway.server.webflux.routes[*].predicates</code> section and are applied per
+<p>Predicates are configured in the <code>spring.cloud.gateway.server.webmvc.routes[*].predicates</code> section and are applied per
 route. When no tenant is extracted for a request, the request will fail.</p>
 <p>The extracted tenant ID is used to determine how the request will be authenticated. See
 <a href="../../configuration/">Configuration</a> on how to configure authentication.</p>
