@@ -109,7 +109,7 @@ jobs:
           distribution: temurin
           java-version: 25
       - uses: gradle/actions/wrapper-validation@576fcbecfed70890e466eeffd7c78d93b30b0472
-      - uses: docker/login-action@916386b00027d425839f8da46d302dab33f5875b
+      - uses: docker/login-action@0567fa5ae8c9a197cb207537dc5cbb43ca3d803f
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -127,7 +127,7 @@ jobs:
           distribution: temurin
           java-version: 25
       - uses: gradle/actions/wrapper-validation@576fcbecfed70890e466eeffd7c78d93b30b0472
-      - uses: docker/login-action@916386b00027d425839f8da46d302dab33f5875b
+      - uses: docker/login-action@0567fa5ae8c9a197cb207537dc5cbb43ca3d803f
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -142,7 +142,7 @@ jobs:
       - publish-arm
     runs-on: ubuntu-latest
     steps:
-      - uses: docker/login-action@916386b00027d425839f8da46d302dab33f5875b
+      - uses: docker/login-action@0567fa5ae8c9a197cb207537dc5cbb43ca3d803f
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
