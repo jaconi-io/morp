@@ -1,3 +1,5 @@
+## [4.0.3](https://github.com/jaconi-io/morp/compare/v4.0.2...v4.0.3) (2026-01-29)
+
 ## [4.0.2](https://github.com/jaconi-io/morp/compare/v4.0.1...v4.0.2) (2026-01-28)
 
 ## [4.0.1](https://github.com/jaconi-io/morp/compare/v4.0.0...v4.0.1) (2026-01-21)
