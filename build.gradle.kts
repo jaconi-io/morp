@@ -15,7 +15,7 @@ plugins {
 }
 
 group = "io.jaconi"
-version = "4.0.9"
+version = "4.0.10"
 
 repositories {
     mavenCentral()
