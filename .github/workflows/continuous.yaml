@@ -53,7 +53,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '25'
-      - uses: gradle/actions/wrapper-validation@0f4528296b4bc09e8ae0fc7be30185a4ab435545
+      - uses: gradle/actions/wrapper-validation@39e147cb9de83bb9910b8ef8bd7fff0ee20fcd6f
       - name: Test with Gradle
         env:
           MORP_OAUTH2CLIENT_REGISTRATION_GOOGLE_CLIENTID: ${{ secrets.GOOGLE_CLIENT_ID }}
@@ -108,7 +108,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 25
-      - uses: gradle/actions/wrapper-validation@0f4528296b4bc09e8ae0fc7be30185a4ab435545
+      - uses: gradle/actions/wrapper-validation@39e147cb9de83bb9910b8ef8bd7fff0ee20fcd6f
       - uses: docker/login-action@a0d57b8e43b6ef1cca20559d68cec2227e63fccd
         with:
           registry: ghcr.io
@@ -126,7 +126,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 25
-      - uses: gradle/actions/wrapper-validation@0f4528296b4bc09e8ae0fc7be30185a4ab435545
+      - uses: gradle/actions/wrapper-validation@39e147cb9de83bb9910b8ef8bd7fff0ee20fcd6f
       - uses: docker/login-action@a0d57b8e43b6ef1cca20559d68cec2227e63fccd
         with:
           registry: ghcr.io
