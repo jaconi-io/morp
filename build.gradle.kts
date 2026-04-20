@@ -47,7 +47,7 @@ dependencies {
         exclude("org.hamcrest", "hamcrest")
     }
     testImplementation("org.springframework:spring-webflux")
-    testImplementation("org.jsoup:jsoup:1.22.1")
+    testImplementation("org.jsoup:jsoup:1.22.2")
 }
 
 java {
@@ -82,7 +82,7 @@ testing {
 
             dependencies {
                 implementation(project())
-                implementation("org.jsoup:jsoup:1.22.1")
+                implementation("org.jsoup:jsoup:1.22.2")
                 // testcontainers core
                 implementation("org.testcontainers:testcontainers-junit-jupiter")
                 implementation("org.testcontainers:testcontainers")
