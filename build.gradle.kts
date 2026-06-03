@@ -43,11 +43,14 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude("org.hamcrest", "hamcrest")
     }
-    testImplementation("org.mock-server:mockserver-spring-test-listener:5.15.0") {
+    testImplementation("org.mock-server:mockserver-spring-test-listener:6.0.0") {
         exclude("org.hamcrest", "hamcrest")
     }
     testImplementation("org.springframework:spring-webflux")
     testImplementation("org.jsoup:jsoup:1.22.2")
+
+    // Required by MockServer.
+    testRuntimeOnly("io.prometheus:prometheus-metrics-tracer-initializer")
 }
 
 java {
