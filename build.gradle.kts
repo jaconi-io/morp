@@ -43,9 +43,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude("org.hamcrest", "hamcrest")
     }
-    testImplementation("org.mock-server:mockserver-spring-test-listener:6.0.0") {
-        exclude("org.hamcrest", "hamcrest")
-    }
+    testImplementation("org.mock-server:mockserver-junit-jupiter:7.1.0")
     testImplementation("org.springframework:spring-webflux")
     testImplementation("org.jsoup:jsoup:1.22.2")
 
@@ -170,7 +168,6 @@ subprojects {
 tasks.sonarqube {
     dependsOn(tasks.jacocoTestReport)
 }
-
 
 configurations {
     get("integrationTestImplementation").apply {
