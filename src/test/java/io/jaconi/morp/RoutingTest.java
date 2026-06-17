@@ -5,8 +5,9 @@ import static org.mockserver.model.HttpResponse.response;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockserver.client.MockServerClient;
-import org.mockserver.springtest.MockServerTest;
+import org.mockserver.junit.jupiter.MockServerExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
@@ -14,7 +15,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"test", "wiretap"})
-@MockServerTest
+@ExtendWith(MockServerExtension.class)
 class RoutingTest {
 
     @LocalServerPort
@@ -25,14 +26,14 @@ class RoutingTest {
     private WebTestClient client;
 
     @BeforeEach
-    void setUp() {
+    void setUp(MockServerClient mockServerClient) {
+        this.mockServerClient = mockServerClient;
+        this.mockServerClient.reset();
 
         // bind the client to the gateway running on a random port
         client = WebTestClient.bindToServer()
                 .baseUrl("http://localhost:" + port)
                 .build();
-
-        mockServerClient.reset();
     }
 
     @Test

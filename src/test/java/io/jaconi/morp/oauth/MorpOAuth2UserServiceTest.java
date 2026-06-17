@@ -14,9 +14,10 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockserver.client.MockServerClient;
+import org.mockserver.junit.jupiter.MockServerExtension;
 import org.mockserver.model.MediaType;
-import org.mockserver.springtest.MockServerTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.GrantedAuthority;
@@ -30,7 +31,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import io.jaconi.morp.tenant.TenantService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@MockServerTest
+@ExtendWith(MockServerExtension.class)
 class MorpOAuth2UserServiceTest {
 
 	@Autowired
@@ -42,8 +43,9 @@ class MorpOAuth2UserServiceTest {
 	MockServerClient mockServerClient;
 
 	@BeforeEach
-	void setUp() {
-		mockServerClient.reset();
+	void setUp(MockServerClient mockServerClient) {
+		this.mockServerClient = mockServerClient;
+		this.mockServerClient.reset();
 	}
 
 	@Test
