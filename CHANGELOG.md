@@ -1,3 +1,10 @@
+## [4.0.29](https://github.com/jaconi-io/morp/compare/v4.0.28...v4.0.29) (2026-06-18)
+
+
+### Bug Fixes
+
+* workaround for missing metadata in Hibernate Validator ([744ff8d](https://github.com/jaconi-io/morp/commit/744ff8d72cadb26076e6757fc1ca0cc66fd94612))
+
 ## [4.0.28](https://github.com/jaconi-io/morp/compare/v4.0.27...v4.0.28) (2026-06-18)
 
 ## [4.0.27](https://github.com/jaconi-io/morp/compare/v4.0.26...v4.0.27) (2026-06-17)
