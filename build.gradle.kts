@@ -42,7 +42,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude("org.hamcrest", "hamcrest")
     }
-    testImplementation("org.mock-server:mockserver-junit-jupiter:7.2.0")
+    testImplementation("org.mock-server:mockserver-junit-jupiter:7.4.0")
     testImplementation("org.springframework:spring-webflux")
     testImplementation("org.jsoup:jsoup:1.22.2")
 
