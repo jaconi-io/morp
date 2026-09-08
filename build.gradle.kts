@@ -9,7 +9,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     id("org.graalvm.buildtools.native") version "1.1.12"
     id("org.barfuin.gradle.jacocolog") version "4.0.2"
-    id("org.sonarqube") version "7.4.0.8496"
+    id("org.sonarqube") version "7.5.0.8588"
     id("se.ascp.gradle.gradle-versions-filter") version "0.1.16"
 }
 
