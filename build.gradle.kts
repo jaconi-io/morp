@@ -44,7 +44,7 @@ dependencies {
     }
     testImplementation("org.mock-server:mockserver-junit-jupiter:7.6.0")
     testImplementation("org.springframework:spring-webflux")
-    testImplementation("org.jsoup:jsoup:1.23.1")
+    testImplementation("org.jsoup:jsoup:1.23.2")
 
     // Required by MockServer.
     testRuntimeOnly("io.prometheus:prometheus-metrics-tracer-initializer")
@@ -82,7 +82,7 @@ testing {
 
             dependencies {
                 implementation(project())
-                implementation("org.jsoup:jsoup:1.23.1")
+                implementation("org.jsoup:jsoup:1.23.2")
                 // testcontainers core
                 implementation("org.testcontainers:testcontainers-junit-jupiter")
                 implementation("org.testcontainers:testcontainers")
