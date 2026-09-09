@@ -21,7 +21,7 @@ repositories {
 }
 
 dependencies {
-    implementation(platform("org.springframework.cloud:spring-cloud-gateway-dependencies:5.0.2"))
+    implementation(platform("org.springframework.cloud:spring-cloud-gateway-dependencies:5.0.3"))
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
