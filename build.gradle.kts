@@ -16,6 +16,9 @@ plugins {
 group = "io.jaconi"
 version = "4.0.59"
 
+// Workaround incompatible versions between Spring Boot 4.1.1 and mockserver 9.x.
+extra["netty.version"] = "4.2.19.Final"
+
 repositories {
     mavenCentral()
 }
@@ -42,7 +45,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude("org.hamcrest", "hamcrest")
     }
-    testImplementation("org.mock-server:mockserver-junit-jupiter:8.0.0")
+    testImplementation("org.mock-server:mockserver-junit-jupiter:9.2.0")
     testImplementation("org.springframework:spring-webflux")
     testImplementation("org.jsoup:jsoup:1.23.2")
 
