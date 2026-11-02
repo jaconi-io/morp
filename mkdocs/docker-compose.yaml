@@ -1,8 +1,6 @@
-version: "3.9"
 services:
-
   mkdocs:
-    image: python:3.10-alpine
+    image: python:3.15-alpine
     command: >
       sh -c "cd /workspace &&
              pip install -r requirements.txt &&
