@@ -63,7 +63,7 @@ jobs:
           TEST_OKTA_PASSWORD: ${{ secrets.OKTA_USER_PASSWORD }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew check sonar
+        run: ./gradlew bootBuildImage --imagePlatform=linux/amd64 check sonar
       - uses: mikepenz/action-junit-report@6ef3fdcfcd5f0b5d14df3e659ef19b8c6820f93d
         if: always()
         with:
@@ -114,7 +114,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - run: ./gradlew bootBuildImage --publishImage --imageName=ghcr.io/${{ github.repository }}:${{ needs.release.outputs.next-release-version }}-amd64
+      - run: ./gradlew bootBuildImage --imagePlatform=linux/amd64 --publishImage --imageName=ghcr.io/${{ github.repository }}:${{ needs.release.outputs.next-release-version }}-amd64
 
   publish-arm:
     if: needs.release.outputs.next-release-version != ''
@@ -132,7 +132,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - run: ./gradlew bootBuildImage --publishImage --imageName=ghcr.io/${{ github.repository }}:${{ needs.release.outputs.next-release-version }}-arm64
+      - run: ./gradlew bootBuildImage --imagePlatform=linux/arm64 --publishImage --imageName=ghcr.io/${{ github.repository }}:${{ needs.release.outputs.next-release-version }}-arm64
 
   publish:
     if: needs.release.outputs.next-release-version != ''
