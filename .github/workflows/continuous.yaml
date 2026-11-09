@@ -121,6 +121,11 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Temporary Workaround
+        # See https://github.com/spring-projects/spring-boot/issues/49251
+        run: |
+          echo '{"storage-driver":"overlay2"}' | sudo tee /etc/docker/daemon.json
+          sudo systemctl restart docker
       - run: ./gradlew bootBuildImage --imagePlatform=linux/amd64 --publishImage --imageName=ghcr.io/${{ github.repository }}:${{ needs.release.outputs.next-release-version }}-amd64
 
   publish-arm:
