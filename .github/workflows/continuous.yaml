@@ -17,7 +17,7 @@ on:
 jobs:
   lint:
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
         with:
@@ -32,7 +32,7 @@ jobs:
           yarn run commitlint --from HEAD~${{ github.event.pull_request.commits }}
 
   security:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
       - uses: snyk/actions/gradle-9-jdk21@9adf32b1121593767fc3c057af55b55db032dc04
@@ -46,7 +46,9 @@ jobs:
           sarif_file: snyk.sarif
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
+    permissions:
+      checks: write
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-java@v6
@@ -54,6 +56,11 @@ jobs:
           distribution: temurin
           java-version: '25'
       - uses: gradle/actions/wrapper-validation@3f5f9adaf7d9fecd50b5935e54106014257a94e6
+      - name: Temporary Workaround
+        # See https://github.com/spring-projects/spring-boot/issues/49251
+        run: |
+          echo '{"storage-driver":"overlay2"}' | sudo tee /etc/docker/daemon.json
+          sudo systemctl restart docker
       - name: Test with Gradle
         env:
           MORP_OAUTH2CLIENT_REGISTRATION_GOOGLE_CLIENTID: ${{ secrets.GOOGLE_CLIENT_ID }}
@@ -79,7 +86,7 @@ jobs:
     needs: test
     outputs:
       next-release-version: ${{ steps.semantic-release.outputs.next-release-version }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
         with:
@@ -101,7 +108,7 @@ jobs:
   publish-amd:
     if: needs.release.outputs.next-release-version != ''
     needs: release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-java@v6
@@ -119,7 +126,7 @@ jobs:
   publish-arm:
     if: needs.release.outputs.next-release-version != ''
     needs: release
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-26.04-arm
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-java@v6
@@ -140,7 +147,7 @@ jobs:
       - release
       - publish-amd
       - publish-arm
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6
         with:
