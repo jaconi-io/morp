@@ -6,6 +6,7 @@ import static org.mockserver.model.HttpResponse.response;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.time.Duration;
 
@@ -100,13 +101,15 @@ public class SeleniumIT extends TestBase {
 
         // match upstream browser content
         //SELENIUM.saveScreenshot("02-keycloak-after-login.png");
-        // assert that we ended up in the right place
-        URL url = new URL(driver.getCurrentUrl());
-        assertThat(url.getHost()).isEqualTo(StringUtils.substringBefore(host, ":"));
-        assertThat(url.getPort()).isEqualTo(8080);
-        assertThat(url.getPath()).isEqualTo(prefix + path);
 
+        // Wait for the upstream page before inspecting the URL: clicking login can return before redirects finish.
         assertThat(driver.findElement(By.id("test")).getText()).isEqualTo("Hello from mockserver");
+
+        // assert that we ended up in the right place
+        var uri = URI.create(driver.getCurrentUrl());
+        assertThat(uri.getHost()).isEqualTo(StringUtils.substringBefore(host, ":"));
+        assertThat(uri.getPort()).isEqualTo(8080);
+        assertThat(uri.getPath()).isEqualTo(prefix + path);
 
         // assert what upstream has seen (i.e. headers etc)
         containerSetup.getMockServerClient()
